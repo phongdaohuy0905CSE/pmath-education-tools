@@ -3411,3 +3411,902 @@ dialog.login-dialog {
     align-items: stretch;
   }
 }
+
+/* ==========================================================================
+   DECOUPLED MODULES: FORMULA HUB (#cheatsheetDialog) & KNOWLEDGE HANDBOOK (#knowledgeHandbookDialog)
+   ========================================================================== */
+
+/* Shared Modal Surface overrides for Large Decoupled Hubs */
+.formula-hub-dialog,
+.knowledge-handbook-dialog {
+  width: min(1260px, 95vw);
+  max-width: 1260px;
+  height: min(860px, 91vh);
+  max-height: 91vh;
+  padding: 0;
+  border-radius: 20px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: var(--bg-panel);
+  color: var(--text-main);
+  box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.65), 0 0 40px rgba(30, 100, 180, 0.18);
+  overflow: hidden;
+}
+
+.formula-hub-dialog[open],
+.knowledge-handbook-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.formula-hub-dialog::backdrop,
+.knowledge-handbook-dialog::backdrop {
+  background: rgba(3, 7, 18, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+/* Header & Action Bar */
+.fh-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.5rem;
+  background: linear-gradient(135deg, rgba(30, 100, 180, 0.1) 0%, rgba(0, 140, 150, 0.08) 100%);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.fh-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.fh-badge-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--excolor), var(--tfcolor));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  box-shadow: 0 6px 16px rgba(30, 100, 180, 0.3);
+  flex-shrink: 0;
+}
+
+.fh-badge-knowledge {
+  background: linear-gradient(135deg, var(--defcolor), var(--excolor));
+  box-shadow: 0 6px 16px rgba(20, 130, 80, 0.3);
+}
+
+.fh-header h2 {
+  margin: 0;
+  font-size: 1.22rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-main);
+}
+
+.fh-subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.fh-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.fh-action-btn {
+  padding: 0.48rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fh-action-btn:hover {
+  border-color: var(--excolor);
+  color: var(--excolor);
+  transform: translateY(-1px);
+}
+
+.fh-action-primary {
+  background: linear-gradient(135deg, var(--excolor), #2563eb);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+}
+
+.fh-action-primary:hover {
+  color: #ffffff;
+  filter: brightness(1.08);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+}
+
+/* Formula Hub Toolbar (Search + Category Filter Pills) */
+.fh-toolbar {
+  padding: 0.95rem 1.5rem;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.fh-search-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.fh-search-box {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-color);
+  border-radius: 11px;
+  padding: 0.45rem 0.85rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fh-search-box:focus-within {
+  border-color: var(--excolor);
+  box-shadow: 0 0 0 3px rgba(30, 100, 180, 0.15);
+}
+
+.fh-search-icon {
+  font-size: 0.95rem;
+  opacity: 0.7;
+}
+
+.fh-search-box input {
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 0.86rem;
+  width: 100%;
+  outline: none;
+}
+
+.fh-filter-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--warncolor);
+  cursor: pointer;
+  user-select: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: 9px;
+  background: var(--warnbg);
+  border: 1px solid rgba(180, 90, 20, 0.25);
+}
+
+.fh-count-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--excolor);
+  background: var(--exbg);
+  padding: 0.38rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(30, 100, 180, 0.2);
+}
+
+.fh-category-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.fh-cat-pill {
+  padding: 0.42rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-panel);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  transition: all 0.18s ease;
+}
+
+.fh-cat-pill:hover {
+  border-color: var(--cat-accent, var(--excolor));
+  color: var(--text-main);
+}
+
+.fh-cat-pill.active {
+  background: var(--cat-accent, var(--excolor));
+  border-color: var(--cat-accent, var(--excolor));
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(30, 100, 180, 0.25);
+}
+
+.fh-cat-count {
+  font-size: 0.7rem;
+  padding: 0.08rem 0.42rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.fh-cat-pill.active .fh-cat-count {
+  background: rgba(255, 255, 255, 0.24);
+  color: #ffffff;
+}
+
+/* Inline Formula Editor Panel */
+.fh-editor-panel {
+  margin: 0.85rem 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--excolor);
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+}
+
+.fh-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.86rem;
+  color: var(--excolor);
+}
+
+.fh-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.fh-field label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 0.28rem;
+}
+
+.fh-field input,
+.fh-field select,
+.fh-field textarea {
+  width: 100%;
+  padding: 0.48rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-family: inherit;
+}
+
+.fh-field-full {
+  grid-column: 1 / -1;
+}
+
+.fh-editor-footer {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Formula Cards Bento Grid */
+.fh-cards-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1rem;
+  align-content: start;
+}
+
+.fh-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-top: 3.5px solid var(--card-accent, var(--excolor));
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.fh-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--card-accent, var(--excolor));
+}
+
+.fh-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.fh-card-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.fh-cat-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+}
+
+.fh-star-tag {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #d97706;
+  background: rgba(245, 158, 11, 0.14);
+  padding: 0.16rem 0.5rem;
+  border-radius: 999px;
+}
+
+.fh-custom-tag {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--defcolor);
+  background: var(--defbg);
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+
+.fh-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.fh-icon-btn {
+  padding: 0.24rem 0.5rem;
+  border-radius: 7px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-panel);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.fh-icon-btn:hover {
+  border-color: var(--excolor);
+  color: var(--excolor);
+  background: var(--exbg);
+}
+
+.fh-icon-danger:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.fh-card-title {
+  margin: 0.1rem 0 0;
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.35;
+}
+
+.fh-math-box {
+  background: var(--exbg);
+  border-left: 3.5px solid var(--card-accent, var(--excolor));
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--excolor);
+  line-height: 1.5;
+  word-break: break-word;
+  user-select: all;
+}
+
+.fh-card-note {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.48;
+}
+
+.fh-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding-top: 0.25rem;
+}
+
+.fh-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  padding: 0.12rem 0.45rem;
+  border-radius: 6px;
+}
+
+.fh-footer {
+  padding: 0.7rem 1.5rem;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   KNOWLEDGE HANDBOOK 24 TOPICS (2-Column Master-Detail Layout)
+   ========================================================================== */
+.kh-split-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.kh-sidebar {
+  border-right: 1px solid var(--border-color);
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.kh-sidebar-search {
+  padding: 0.85rem 0.9rem 0.6rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.kh-sidebar-search input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 9px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-main);
+  font-size: 0.82rem;
+  outline: none;
+}
+
+.kh-sidebar-search input:focus {
+  border-color: var(--defcolor);
+}
+
+.kh-filter-pills {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.3rem;
+}
+
+.kh-filter-pill {
+  padding: 0.32rem 0.25rem;
+  border-radius: 7px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-panel);
+  color: var(--text-muted);
+  font-size: 0.71rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.kh-filter-pill.active {
+  background: var(--defcolor);
+  border-color: var(--defcolor);
+  color: #ffffff;
+}
+
+.kh-topics-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+}
+
+.kh-topic-item {
+  width: 100%;
+  text-align: left;
+  padding: 0.62rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  transition: all 0.15s ease;
+}
+
+.kh-topic-item:hover {
+  background: var(--bg-panel);
+  border-color: var(--border-color);
+}
+
+.kh-topic-item.active {
+  background: var(--defbg);
+  border-color: rgba(20, 130, 80, 0.4);
+  box-shadow: var(--shadow-sm);
+}
+
+.kh-topic-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kh-topic-item.active .kh-topic-num {
+  background: var(--defcolor);
+  border-color: var(--defcolor);
+  color: #ffffff;
+}
+
+.kh-topic-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.kh-topic-name {
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kh-topic-sub {
+  font-size: 0.71rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kh-topic-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.14rem 0.42rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.kh-tag-2d {
+  background: var(--exbg);
+  color: var(--excolor);
+}
+
+.kh-tag-3d {
+  background: var(--tfbg);
+  color: var(--tfcolor);
+}
+
+.kh-tag-calc12 {
+  background: var(--warnbg);
+  color: var(--warncolor);
+}
+
+/* Right Detail Pane */
+.kh-detail-pane {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.kh-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.kh-detail-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--defcolor);
+  background: var(--defbg);
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  margin-bottom: 0.4rem;
+}
+
+.kh-detail-title {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.kh-detail-sub {
+  margin: 0.25rem 0 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.kh-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Pedagogical Boxes (defbox, exbox, warnbox, quiz) */
+.kh-box {
+  border-radius: 14px;
+  padding: 1.05rem 1.25rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.kh-box-header {
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kh-box-def {
+  background: var(--defbg);
+  border-left: 4px solid var(--defcolor);
+}
+.kh-box-def .kh-box-header {
+  color: var(--defcolor);
+}
+
+.kh-box-ex {
+  background: var(--exbg);
+  border-left: 4px solid var(--excolor);
+}
+.kh-box-ex .kh-box-header {
+  color: var(--excolor);
+}
+
+.kh-box-warn {
+  background: var(--warnbg);
+  border-left: 4px solid var(--warncolor);
+}
+.kh-box-warn .kh-box-header {
+  color: var(--warncolor);
+}
+
+.kh-box-note {
+  background: var(--tfbg);
+  border-left: 4px solid var(--tfcolor);
+}
+.kh-box-note .kh-box-header {
+  color: var(--tfcolor);
+}
+
+.kh-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.kh-prop-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.kh-mini-formulas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.75rem;
+}
+
+.kh-mini-formula-item {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+}
+
+.kh-mf-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+}
+
+.kh-mf-math {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--excolor);
+  margin-bottom: 0.2rem;
+}
+
+.kh-mf-note {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.kh-link-btn {
+  background: transparent;
+  border: none;
+  color: var(--excolor);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.kh-exercises-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.kh-ex-item {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.75rem 0.95rem;
+}
+
+.kh-ex-q {
+  font-size: 0.86rem;
+  margin-bottom: 0.45rem;
+  line-height: 1.45;
+}
+
+.kh-ex-item summary {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--defcolor);
+  cursor: pointer;
+}
+
+.kh-ex-a {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed var(--border-color);
+  font-size: 0.82rem;
+  color: var(--text-main);
+}
+
+.kh-editor-card {
+  background: var(--bg-card);
+  border: 2px solid var(--defcolor);
+  border-radius: 14px;
+  padding: 1.15rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.kh-editor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--defcolor);
+  font-size: 0.9rem;
+}
+
+/* Studio Right Drawer bridge banner */
+.knowledge-drawer-hub-bar {
+  display: flex;
+  gap: 0.45rem;
+  padding: 0.55rem 0.85rem;
+  background: var(--exbg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.btn-hub-bridge {
+  flex: 1;
+  padding: 0.38rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(30, 100, 180, 0.3);
+  background: var(--bg-card);
+  color: var(--excolor);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-hub-bridge:hover {
+  background: var(--excolor);
+  color: #ffffff;
+}
+
+.btn-hub-formula {
+  color: var(--tfcolor);
+  border-color: rgba(0, 140, 150, 0.3);
+}
+
+.btn-hub-formula:hover {
+  background: var(--tfcolor);
+  color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .kh-split-layout {
+    grid-template-columns: 1fr;
+  }
+  .kh-sidebar {
+    max-height: 220px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .fh-editor-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -399,12 +399,11 @@ function bindUIEvents() {
     });
   });
 
-  // Knowledge Panel Drawer Toggle (On-Demand Reference)
+  // Studio Side Drawer Toggle (Live Canvas Interactions & Topic Quick View)
   const bindKnowledgeToggle = (btnId) => {
     const btn = document.getElementById(btnId);
     if (btn) btn.addEventListener("click", () => toggleKnowledgeDrawer());
   };
-  bindKnowledgeToggle("toggleKnowledgeBtn");
   bindKnowledgeToggle("studioToggleKnowledgeBtn");
   const closeKnBtn = document.getElementById("closeKnowledgeBtn");
   if (closeKnBtn) closeKnBtn.addEventListener("click", () => toggleKnowledgeDrawer(false));
@@ -518,8 +517,7 @@ function bindUIEvents() {
     drawScene();
   });
 
-  // Modals (Cheat sheet, Shortcuts, Rename, Edit Object)
-  bindModal("openCheatsheetBtn", "closeCheatsheetBtn", "cheatsheetDialog");
+  // Modals (Shortcuts, Rename, Edit Object; Formula Hub & Knowledge Handbook are managed by knowledge-handbook.js)
   bindModal("openShortcutsBtn", "closeShortcutsBtn", "shortcutsDialog");
 
   const renameDialog = document.getElementById("renameDialog");
@@ -2523,7 +2521,10 @@ function renderLiveMetrics() {
 }
 
 function renderKnowledgePanel() {
-  const shape = GEOMETRY_DATA.find((s) => s.id === state.activeKnowledgeId) || GEOMETRY_DATA[0];
+  const shape =
+    (window.PMATH_Hub && window.PMATH_Hub.getMergedTopic(state.activeKnowledgeId)) ||
+    GEOMETRY_DATA.find((s) => s.id === state.activeKnowledgeId) ||
+    GEOMETRY_DATA[0];
   document.getElementById("knowledgeTitle").textContent = shape.name;
   document.getElementById("knowledgeSubtitle").textContent = shape.subtitle;
 
@@ -2584,23 +2585,6 @@ function renderKnowledgePanel() {
         </div>
       `;
     }
-
-    // Also append quick summary of current selected shape's formulas below interactions
-    body.innerHTML += `
-      <div class="info-section">
-        <h4>📐 Công Thức Của ${shape.name}</h4>
-        ${shape.formulas
-          .map(
-            (f) => `
-          <div class="formula-card">
-            <div class="formula-title">${f.title}</div>
-            <div class="formula-math">${f.math}</div>
-            <div class="formula-note">${f.note}</div>
-          </div>`
-          )
-          .join("")}
-      </div>
-    `;
   } else if (state.activeInfoTab === "theory") {
     body.innerHTML = `
       <div class="info-section">

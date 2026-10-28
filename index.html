@@ -98,7 +98,10 @@
         </div>
       </div>
 
-      <button class="btn-top-action" id="toggleKnowledgeBtn" title="Mở / Đóng Sổ tay kiến thức, công thức &amp; tương tác">
+      <button class="btn-top-action" id="topOpenFormulaSheetBtn" title="Mở Bảng Công Thức Toán Học (Tra cứu nhanh, Copy &amp; Cập nhật công thức)">
+        📋 Bảng Công Thức
+      </button>
+      <button class="btn-top-action" id="toggleKnowledgeBtn" title="Mở Sổ Tay Kiến Thức 24 Chuyên Đề (Lý thuyết, Định lý, Mẹo giải nhanh &amp; Bài tập)">
         📖 Sổ Tay Kiến Thức
       </button>
       <button class="btn-top-action theme-action-btn" id="themeToggleBtn" title="Chuyển đổi Giao diện Tối / Sáng">
@@ -125,7 +128,7 @@
       </h1>
 
       <p class="bioforge-hero-desc">
-        Hệ sinh thái toán học tương tác thế hệ mới chuẩn thiết kế LaTeX PMATH. Tích hợp sổ tay hình học động kéo thả, khối 3D trải phẳng, máy tính Casio fx-580VN X ảo, mô phỏng vectơ vận tốc không gian Oxyz và kho kiến thức 24 chuyên đề ôn thi tốt nghiệp THPT.
+        Hệ sinh thái toán học tương tác thế hệ mới chuẩn thiết kế LaTeX PMATH. Tích hợp sổ tay hình học động kéo thả, khối 3D trải phẳng, máy tính Casio fx-580VN X ảo, mô phỏng vectơ vận tốc không gian Oxyz, bảng công thức tra cứu nhanh và sổ tay 24 chuyên đề THPT.
       </p>
 
       <!-- Primary Action Buttons -->
@@ -146,11 +149,19 @@
           </div>
         </button>
 
+        <button type="button" class="bioforge-btn-outline" id="heroBtnOpenFormulas">
+          <span class="bioforge-btn-icon">📋</span>
+          <div class="bioforge-btn-text">
+            <strong>Bảng Công Thức Toán Học</strong>
+            <small>Tra cứu nhanh, Copy &amp; Tự thêm mới</small>
+          </div>
+        </button>
+
         <button type="button" class="bioforge-btn-outline" id="heroBtnOpenKnowledge">
           <span class="bioforge-btn-icon">📖</span>
           <div class="bioforge-btn-text">
-            <strong>Kho Kiến Thức 24 Chuyên Đề</strong>
-            <small>Công thức tính nhanh &amp; Trắc nghiệm THPT</small>
+            <strong>Sổ Tay 24 Chuyên Đề</strong>
+            <small>Lý thuyết, Mẹo giải nhanh &amp; Bài tập</small>
           </div>
         </button>
       </div>
@@ -599,20 +610,28 @@
         </div>
       </section>
 
-      <!-- Right Drawer: Interactions, Theory, Formulas & Quiz (Collapsible / Toggleable on Demand) -->
+      <!-- Right Drawer: Live Canvas Interactions & Quick Topic Summary -->
       <aside class="knowledge-panel" id="knowledgePanel" style="display: none;">
         <div class="knowledge-header">
           <div class="knowledge-header-top">
-            <span class="knowledge-badge-tag">SỔ TAY TRA CỨU KIẾN THỨC</span>
-            <button type="button" class="icon-mini-btn close-knowledge-btn" id="closeKnowledgeBtn" title="Đóng sổ tay để mở rộng không gian vẽ">✕ Đóng</button>
+            <span class="knowledge-badge-tag">NGĂN TƯƠNG TÁC &amp; TRA CỨU NHANH</span>
+            <button type="button" class="icon-mini-btn close-knowledge-btn" id="closeKnowledgeBtn" title="Đóng ngăn bên phải để mở rộng không gian vẽ">✕ Đóng</button>
           </div>
           <h2 id="knowledgeTitle">Hình Tam Giác (△ABC)</h2>
-          <p id="knowledgeSubtitle">Kiến thức cần nắm, Định lý, Công thức &amp; Bài tập Vận dụng</p>
+          <p id="knowledgeSubtitle">Giao tuyến trực tiếp, Lý thuyết tóm tắt &amp; Vận dụng</p>
+          <div style="display:flex; gap:0.4rem; margin-top:0.55rem;">
+            <button type="button" class="cad-btn mini" id="expandFullHandbookBtn" style="flex:1; justify-content:center; font-weight:700; color:var(--excolor);">
+              📖 Mở Sổ Tay 24 Chuyên Đề
+            </button>
+            <button type="button" class="cad-btn mini" id="drawerOpenFormulaSheetBtn" style="flex:1; justify-content:center; font-weight:700; color:var(--defcolor);">
+              📋 Bảng Công Thức
+            </button>
+          </div>
         </div>
 
         <div class="info-tabs">
           <button type="button" class="info-tab active" data-tab="interactions">🔗 Giao Tuyến &amp; Tương Tác</button>
-          <button type="button" class="info-tab" data-tab="theory">📖 Kiến Thức &amp; Công Thức</button>
+          <button type="button" class="info-tab" data-tab="theory">📖 Lý Thuyết Tóm Tắt</button>
           <button type="button" class="info-tab" data-tab="practice">🎯 Câu Hỏi Vận Dụng</button>
         </div>
 
@@ -799,106 +818,168 @@
     </div>
   </dialog>
 
-  <!-- Quick Formula Cheat Sheet Modal -->
-  <dialog class="app-dialog" id="cheatsheetDialog">
-    <div class="dialog-header">
-      <h3>📋 Bảng Tóm Tắt Công Thức Hình Học 2D, 3D &amp; Phương Trình — PMATH EDUCATION</h3>
-      <button class="btn-secondary" id="closeCheatsheetBtn">✕ Đóng</button>
+  <!-- ===================================================================== -->
+  <!-- MODAL 1: BẢNG CÔNG THỨC TOÁN HỌC (INTERACTIVE FORMULA HUB)            -->
+  <!-- Độc lập, hỗ trợ Tìm kiếm, Lọc chuyên đề, Copy 1 chạm & Tự cập nhật   -->
+  <!-- ===================================================================== -->
+  <dialog class="app-dialog formula-hub-dialog" id="cheatsheetDialog">
+    <div class="dialog-header fh-header">
+      <div class="fh-header-title-wrap">
+        <span class="fh-badge-pill">FORMULA HUB • GDPT 2018</span>
+        <h3>📋 Bảng Công Thức Toán Học THPT (Tra Cứu Nhanh &amp; Cập Nhật)</h3>
+      </div>
+      <div class="fh-header-actions">
+        <span class="fh-count-badge" id="formulaTotalCountBadge">18 công thức</span>
+        <button type="button" class="btn-primary fh-top-btn" id="openAddFormulaBtn" title="Thêm công thức mới vào bảng">
+          ➕ Thêm Công Thức
+        </button>
+        <button type="button" class="btn-secondary fh-top-btn" id="exportFormulasJsonBtn" title="Xuất dữ liệu công thức ra file JSON để lưu trữ hoặc cập nhật code">
+          📥 Xuất JSON
+        </button>
+        <button type="button" class="btn-secondary fh-top-btn" id="resetFormulasDefaultBtn" title="Khôi phục danh sách công thức mặc định">
+          ↺ Mặc định
+        </button>
+        <button type="button" class="dialog-close-btn" id="closeCheatsheetBtn">✕</button>
+      </div>
     </div>
-    <div class="dialog-body">
-      <h4 style="color: var(--excolor); margin-bottom: 0.5rem;">1. Phương Trình Hình Học Giải Tích (Oxy &amp; Oxyz)</h4>
-      <table class="summary-table" style="margin-bottom: 1.2rem;">
-        <thead>
-          <tr>
-            <th>Đối tượng</th>
-            <th>Phương trình chuẩn</th>
-            <th>Tính chất &amp; Công thức khoảng cách / Giao tuyến</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Đường thẳng 2D (d)</strong></td>
-            <td>ax + by + c = 0 hoặc y = kx + m</td>
-            <td>VTPT n⃗ = (a; b), VTCP u⃗ = (-b; a). Khoảng cách từ M(x₀,y₀): d = |ax₀+by₀+c| / √(a²+b²)</td>
-          </tr>
-          <tr>
-            <td><strong>Đường tròn 2D (C)</strong></td>
-            <td>(x - a)² + (y - b)² = R²</td>
-            <td>Khai triển: x² + y² - 2ax - 2by + c = 0 với R = √(a² + b² - c)</td>
-          </tr>
-          <tr>
-            <td><strong>Mặt phẳng 3D (α)</strong></td>
-            <td>Ax + By + Cz + D = 0</td>
-            <td>VTPT n⃗ = (A; B; C). Khoảng cách từ I(x₀,y₀,z₀): d = |Ax₀+By₀+Cz₀+D| / √(A²+B²+C²)</td>
-          </tr>
-          <tr>
-            <td><strong>Mặt cầu 3D (S)</strong></td>
-            <td>(x - a)² + (y - b)² + (z - c)² = R²</td>
-            <td>Mặt phẳng cắt mặt cầu theo đường tròn bán kính r = √(R² - d²) khi d(I, α) &lt; R</td>
-          </tr>
-          <tr>
-            <td><strong>Đường thẳng 3D (Δ)</strong></td>
-            <td>x = x₀ + at, y = y₀ + bt, z = z₀ + ct</td>
-            <td>Chính tắc: (x - x₀)/a = (y - y₀)/b = (z - z₀)/c với VTCP u⃗ = (a; b; c)</td>
-          </tr>
-        </tbody>
-      </table>
 
-      <h4 style="color: var(--defcolor); margin-bottom: 0.5rem;">2. Hình Học Phẳng 2D &amp; Điểm Đặc Biệt</h4>
-      <table class="summary-table" style="margin-bottom: 1.2rem;">
-        <thead>
-          <tr>
-            <th>Tên hình / Đường</th>
-            <th>Chu vi / Tỉ lệ</th>
-            <th>Diện tích / Công thức cốt lõi</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Tam giác (△ABC)</strong></td>
-            <td>P = a + b + c ; p = P/2</td>
-            <td>S = ½·a·hₐ = ½bc·sinA = √[p(p-a)(p-b)(p-c)] = abc/(4R) = p·r</td>
-          </tr>
-          <tr>
-            <td><strong>Trọng tâm G, Trực tâm H, Tâm O, I</strong></td>
-            <td>AG = (2/3)AMₐ ; OH = 3·OG</td>
-            <td>Đường thẳng Euler đi qua O, G, H ; Bán kính đường tròn 9 điểm R_E = R/2</td>
-          </tr>
-          <tr>
-            <td><strong>Hình vuông, HCN, Hình thoi, Hình thang</strong></td>
-            <td>d_vuông = a√2 ; d_HCN = √(a²+b²)</td>
-            <td>S_vuông = a² ; S_HCN = ab ; S_thoi = ½d₁d₂ ; S_thang = ½(a+b)h</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Formula Search & Filter Bar -->
+    <div class="fh-toolbar">
+      <div class="fh-search-row">
+        <div class="fh-search-box">
+          <span class="fh-search-icon">🔍</span>
+          <input
+            type="search"
+            id="formulaSearchInput"
+            class="fh-search-input"
+            placeholder="Tìm công thức theo tên, ký hiệu, từ khóa (VD: mặt cầu, vận tốc, Heron, cực trị, tích phân...)"
+            autocomplete="off"
+          />
+        </div>
+        <button type="button" class="fh-important-btn" id="formulaImportantToggleBtn" title="Chỉ hiển thị các công thức trọng tâm hay xuất hiện trong đề thi">
+          ⭐ Chỉ hiện Trọng tâm
+        </button>
+      </div>
 
-      <h4 style="color: var(--tfcolor); margin-bottom: 0.5rem;">3. Hình Học Không Gian 3D</h4>
-      <table class="summary-table">
-        <thead>
-          <tr>
-            <th>Khối 3D</th>
-            <th>Diện tích xung quanh &amp; Toàn phần</th>
-            <th>Thể tích (V)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Lập phương (a) &amp; Hộp chữ nhật (a,b,h)</strong></td>
-            <td>Lập phương: S_xq = 4a², S_tp = 6a² ; Hộp: S_xq = 2(a+b)h</td>
-            <td>V_lập_phương = a³ (AC' = a√3) ; V_hộp = a·b·h</td>
-          </tr>
-          <tr>
-            <td><strong>Hình chóp đều &amp; Lăng trụ đứng</strong></td>
-            <td>Chóp đều: S_xq = ½·P_đáy·d (d: trung đoạn) ; Lăng trụ: S_xq = P_đáy·h</td>
-            <td>V_chóp = ⅓·S_đáy·h ; V_lăng_trụ = S_đáy·h</td>
-          </tr>
-          <tr>
-            <td><strong>Trụ (r,h), Nón (r,h,l) &amp; Cầu (R)</strong></td>
-            <td>S_xq_trụ = 2πrh ; S_xq_nón = πrl (l=√(r²+h²)) ; S_cầu = 4πR²</td>
-            <td>V_trụ = πr²h ; V_nón = ⅓πr²h ; V_cầu = (4/3)πR³</td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Category Filter Pills (Rendered by knowledge-handbook.js) -->
+      <div class="fh-category-pills" id="formulaCategoryPills"></div>
+    </div>
+
+    <!-- Inline Editor for Adding / Updating Formulas (Hidden by default) -->
+    <div class="fh-editor-panel" id="formulaEditorPanel" style="display: none;">
+      <form id="formulaEditForm" class="fh-editor-form">
+        <div class="fh-editor-header">
+          <strong id="feModalTitle">➕ Thêm Công Thức Mới</strong>
+          <span style="font-size:0.76rem; color:var(--text-muted);">Dữ liệu lưu tự động vào trình duyệt &amp; có thể xuất JSON</span>
+        </div>
+
+        <div class="fh-form-grid">
+          <div class="fh-form-field">
+            <label>Tên công thức / Chủ đề (*):</label>
+            <input type="text" id="feTitleInput" class="eq-input" placeholder="VD: Khoảng cách giữa 2 đường thẳng chéo nhau" required />
+          </div>
+
+          <div class="fh-form-field">
+            <label>Phân môn / Chuyên đề (*):</label>
+            <select id="feCategorySelect" class="stroke-select" style="width:100%; height:36px;">
+              <option value="oxyz">🧊 Không gian Oxyz &amp; Vận tốc</option>
+              <option value="oxy">📐 Hình giải tích Oxy</option>
+              <option value="plane2d">△ Hệ thức lượng &amp; Hình 2D</option>
+              <option value="solid3d">📦 Khối đa diện &amp; Tròn xoay 3D</option>
+              <option value="calculus">📈 Đạo hàm, Đồ thị &amp; Tích phân</option>
+              <option value="trig">〰️ Lượng giác &amp; Cấp số</option>
+            </select>
+          </div>
+
+          <div class="fh-form-field full">
+            <label>Biểu thức công thức chính (*):</label>
+            <input type="text" id="feFormulaInput" class="eq-input" placeholder="VD: d(Δ₁, Δ₂) = |[u⃗₁, u⃗₂] · M₁M₂⃗| / |[u⃗₁, u⃗₂]|" required />
+          </div>
+
+          <div class="fh-form-field full">
+            <label>Công thức phụ / Mở rộng (Tùy chọn):</label>
+            <input type="text" id="feSubFormulaInput" class="eq-input" placeholder="VD: Δ₁, Δ₂ chéo nhau ⇔ [u⃗₁, u⃗₂] · M₁M₂⃗ ≠ 0" />
+          </div>
+
+          <div class="fh-form-field full">
+            <label>Giải thích ký hiệu &amp; Mẹo áp dụng:</label>
+            <input type="text" id="feDescInput" class="eq-input" placeholder="VD: Δ₁ đi qua M₁ có VTCP u⃗₁; Δ₂ đi qua M₂ có VTCP u⃗₂." />
+          </div>
+
+          <div class="fh-form-field">
+            <label>Từ khóa (cách nhau bằng dấu phẩy):</label>
+            <input type="text" id="feTagsInput" class="eq-input" placeholder="VD: Oxyz, Khoảng cách, Chéo nhau" />
+          </div>
+
+          <div class="fh-form-field" style="display:flex; align-items:flex-end; padding-bottom:0.4rem;">
+            <label style="display:inline-flex; align-items:center; gap:0.5rem; cursor:pointer; font-weight:700; color:var(--warncolor);">
+              <input type="checkbox" id="feImportantCheck" checked />
+              ⭐ Đánh dấu là Công thức Trọng tâm
+            </label>
+          </div>
+        </div>
+
+        <div class="fh-editor-actions">
+          <button type="button" class="cad-btn danger" id="feDeleteBtn" style="display:none;">🗑️ Xóa công thức này</button>
+          <div style="display:flex; gap:0.5rem; margin-left:auto;">
+            <button type="button" class="btn-secondary" id="feCancelBtn">Hủy</button>
+            <button type="submit" class="btn-primary">💾 Lưu Công Thức</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Formula Cards Grid Body -->
+    <div class="dialog-body fh-body">
+      <div class="fh-cards-grid" id="formulaCardsGrid"></div>
+    </div>
+  </dialog>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 2: SỔ TAY KIẾN THỨC 24 CHUYÊN ĐỀ (KNOWLEDGE HANDBOOK EXPLORER)  -->
+  <!-- Độc lập với Bảng công thức: Lý thuyết, Định lý, Mẹo giải & Bài tập    -->
+  <!-- ===================================================================== -->
+  <dialog class="app-dialog knowledge-handbook-dialog" id="knowledgeHandbookDialog">
+    <div class="dialog-header kh-header">
+      <div class="fh-header-title-wrap">
+        <span class="fh-badge-pill emerald">KNOWLEDGE HANDBOOK • 24 CHUYÊN ĐỀ</span>
+        <h3>📖 Sổ Tay Kiến Thức Toán Học THPT (Lý Thuyết, Định Lý, Mẹo Giải &amp; Bài Tập)</h3>
+      </div>
+      <div class="fh-header-actions">
+        <span class="fh-count-badge" id="khTopicsCountBadge">24/24 chuyên đề</span>
+        <button type="button" class="btn-secondary fh-top-btn" id="exportKnowledgeJsonBtn" title="Xuất toàn bộ nội dung Sổ tay 24 chuyên đề ra file JSON">
+          📥 Xuất JSON
+        </button>
+        <button type="button" class="dialog-close-btn" id="closeKnowledgeHandbookBtn">✕</button>
+      </div>
+    </div>
+
+    <div class="kh-split-layout">
+      <!-- Left Column: 24 Topics Directory & Filter -->
+      <aside class="kh-sidebar">
+        <div class="kh-sidebar-top">
+          <input
+            type="search"
+            id="khSearchInput"
+            class="search-input"
+            placeholder="🔍 Tìm chuyên đề (Tam giác, Euler, Mặt cầu...)"
+            autocomplete="off"
+          />
+          <div class="kh-filter-pills" id="khFilterPills">
+            <button type="button" class="kh-filter-pill active" data-kfilter="all">Tất cả</button>
+            <button type="button" class="kh-filter-pill" data-kfilter="2d">2D Phẳng</button>
+            <button type="button" class="kh-filter-pill" data-kfilter="3d">3D Khối</button>
+            <button type="button" class="kh-filter-pill" data-kfilter="special">Đường &amp; Điểm</button>
+            <button type="button" class="kh-filter-pill" data-kfilter="motion">🚀 Vận Tốc</button>
+          </div>
+        </div>
+        <ul class="kh-topics-list" id="khTopicsList"></ul>
+      </aside>
+
+      <!-- Right Column: Detailed Pedagogical Content & Interactive Editor -->
+      <main class="kh-detail-pane" id="khDetailContent">
+        <!-- Rendered dynamically by knowledge-handbook.js -->
+      </main>
     </div>
   </dialog>
 
@@ -1101,16 +1182,6 @@
       const heroStudio = document.getElementById("heroBtnOpenStudio");
       if (heroStudio) heroStudio.addEventListener("click", () => activateGeoLab());
 
-      const heroKnowledge = document.getElementById("heroBtnOpenKnowledge");
-      if (heroKnowledge) {
-        heroKnowledge.addEventListener("click", () => {
-          activateGeoLab();
-          if (typeof toggleKnowledgeDrawer === "function") {
-            toggleKnowledgeDrawer(true);
-          }
-        });
-      }
-
       // Home Module Cards
       const cardNR = document.getElementById("cardBtnNR");
       if (cardNR) cardNR.addEventListener("click", activateNR);
@@ -1120,16 +1191,6 @@
 
       const cardGraph = document.getElementById("cardBtnGraph");
       if (cardGraph) cardGraph.addEventListener("click", () => activateGeoLab("cubic_extrema"));
-
-      const cardKnowledge = document.getElementById("cardBtnKnowledge");
-      if (cardKnowledge) {
-        cardKnowledge.addEventListener("click", () => {
-          activateGeoLab();
-          if (typeof toggleKnowledgeDrawer === "function") {
-            toggleKnowledgeDrawer(true);
-          }
-        });
-      }
 
       // Home Presets Quick Launch
       const pAirplanes = document.getElementById("presetLaunchAirplanes");
@@ -1471,10 +1532,12 @@
 
   <!-- PMATH Board Core Engine -->
   <script defer src="./assets/index-Cfxrtuua.js"></script>
-  <!-- PMATH 2D/3D Equation & Knowledge Engine -->
+  <!-- PMATH 2D/3D Equation, Formula Hub & Knowledge Handbook Engine -->
   <script defer src="./data.js"></script>
+  <script defer src="./formulas-data.js"></script>
   <script defer src="./equations.js"></script>
   <script defer src="./auth.js"></script>
   <script defer src="./app.js"></script>
+  <script defer src="./knowledge-handbook.js"></script>
 </body>
 </html>
