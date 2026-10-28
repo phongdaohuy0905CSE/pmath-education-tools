@@ -2805,8 +2805,39 @@ dialog.storage-dialog {
 
 /* Login Modal */
 dialog.login-dialog {
-  max-width: 440px;
+  max-width: 460px;
   width: 92vw;
+}
+
+.user-quick-login-card {
+  padding: 1rem 1.1rem;
+  background: var(--defbg);
+  border: 1.5px solid rgba(20, 130, 80, 0.35);
+  border-radius: var(--radius-md);
+  margin-bottom: 0.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.oauth-help-alert {
+  padding: 0.65rem 0.85rem;
+  background: rgba(198, 40, 40, 0.08);
+  border: 1px solid rgba(198, 40, 40, 0.25);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+.oauth-help-alert strong {
+  display: block;
+  color: #c62828;
+  margin-bottom: 0.2rem;
+}
+
+.oauth-help-alert p {
+  margin: 0;
+  color: var(--text-muted);
 }
 
 .login-intro-card {

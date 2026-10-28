@@ -839,34 +839,55 @@
       <button type="button" class="dialog-close-btn" id="closeLoginDialogBtn">✕</button>
     </div>
     <div class="dialog-body">
-      <div class="login-intro-card">
-        <p>Đăng nhập bằng tài khoản Google để kích hoạt tính năng sao lưu đám mây, đồng bộ hóa sổ tay giữa các thiết bị và chia sẻ trực tiếp bài giảng với học sinh.</p>
-      </div>
-
-      <!-- Google Identity Services Official One-Tap / Button Container -->
-      <div style="display:flex; flex-direction:column; align-items:center; gap:0.85rem; margin:1.2rem 0;">
-        <div id="googleGsiButtonContainer" style="min-height:44px; display:flex; justify-content:center;"></div>
-        
-        <div style="display:flex; align-items:center; width:100%; gap:0.8rem; margin:0.3rem 0;">
-          <hr style="flex:1; border:none; border-top:1px solid var(--border-color);" />
-          <span style="font-size:0.76rem; color:var(--text-muted); font-weight:600;">HOẶC TRẢI NGHIỆM NHANH</span>
-          <hr style="flex:1; border:none; border-top:1px solid var(--border-color);" />
+      <!-- Fast One-Click Login for User's Account -->
+      <div class="user-quick-login-card">
+        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+          <img src="./favicon.png" alt="" style="width:36px; height:36px; border-radius:50%; border:2px solid var(--excolor);" />
+          <div>
+            <strong style="display:block; font-size:0.92rem; color:var(--text-main);">Huy Đào Phong</strong>
+            <span style="font-size:0.78rem; color:var(--text-muted);">huydaophong@gmail.com</span>
+          </div>
         </div>
-
-        <button type="button" class="btn-demo-login" id="demoTeacherLoginBtn">
-          👨‍🏫 Đăng Nhập Nhanh (Chế Độ Giáo Viên Demo)
+        <button type="button" class="btn-primary" id="loginAsHuyDaoBtn" style="width:100%; justify-content:center; padding:0.65rem 1rem;">
+          🚀 Tiếp Tục Với Tài Khoản huydaophong@gmail.com
         </button>
       </div>
 
-      <!-- Custom OAuth Client ID Configuration Accordion -->
-      <details class="oauth-config-details">
-        <summary>⚙️ Cấu hình Google OAuth Client ID cho tên miền riêng</summary>
+      <div style="display:flex; align-items:center; width:100%; gap:0.8rem; margin:1rem 0 0.8rem;">
+        <hr style="flex:1; border:none; border-top:1px solid var(--border-color);" />
+        <span style="font-size:0.74rem; color:var(--text-muted); font-weight:700;">HOẶC ĐĂNG NHẬP VỚI GMAIL KHÁC</span>
+        <hr style="flex:1; border:none; border-top:1px solid var(--border-color);" />
+      </div>
+
+      <!-- Custom Gmail input form -->
+      <form id="customLoginForm" style="display:flex; flex-direction:column; gap:0.6rem; margin-bottom:1rem;">
+        <div>
+          <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-main); margin-bottom:0.25rem;">Họ và Tên:</label>
+          <input type="text" id="loginInputName" class="edit-input-text" placeholder="VD: Thầy Huy Đào Phong" value="Huy Đào Phong" required />
+        </div>
+        <div>
+          <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-main); margin-bottom:0.25rem;">Địa chỉ Gmail:</label>
+          <input type="email" id="loginInputEmail" class="edit-input-text" placeholder="VD: huydaophong@gmail.com" value="huydaophong@gmail.com" required />
+        </div>
+        <button type="submit" class="btn-secondary" style="width:100%; justify-content:center; padding:0.55rem 1rem; font-weight:700;">
+          ✓ Xác Nhận Đăng Nhập
+        </button>
+      </form>
+
+      <!-- Google Cloud Console Official Client ID Configuration -->
+      <details class="oauth-config-details" id="oauthConfigDetails">
+        <summary>⚙️ Cấu hình Google OAuth Client ID chính thức (Dành cho Production / Deploy)</summary>
         <div class="oauth-config-content">
-          <small>Nếu bạn deploy lên tên miền riêng (VD: <code>https://pmath.edu.vn</code> hoặc Firebase Hosting), hãy dán Client ID tạo từ Google Cloud Console vào đây:</small>
+          <div class="oauth-help-alert">
+            <strong>ℹ️ Vì sao Google báo lỗi 401: invalid_client?</strong>
+            <p>Google yêu cầu Client ID phải được tạo thực tế trên <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer">Google Cloud Console</a> và cấp quyền cho địa chỉ <code>http://localhost:8000</code> hoặc tên miền web của bạn.</p>
+          </div>
+          <p style="font-size:0.76rem; color:var(--text-muted); margin:0.4rem 0;">Nếu bạn muốn hiển thị cửa sổ Popup chính thức từ Google, hãy dán mã Client ID của bạn vào ô dưới:</p>
           <div style="display:flex; gap:0.5rem; margin-top:0.4rem;">
             <input type="text" id="customGoogleClientIdInput" class="edit-input-text" placeholder="xxxx.apps.googleusercontent.com" />
             <button type="button" class="btn-primary" id="saveGoogleClientIdBtn" style="white-space:nowrap;">Lưu ID</button>
           </div>
+          <div style="margin-top:0.6rem;" id="googleGsiButtonContainer"></div>
         </div>
       </details>
     </div>

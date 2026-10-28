@@ -3,14 +3,17 @@
 // Hỗ trợ Google Identity Services (GIS), OAuth 2.0 & Cloud Sync
 // ============================================================================
 
-const DEFAULT_GOOGLE_CLIENT_ID = "612847192842-88pm4theducation01toolshuy.apps.googleusercontent.com";
-
 const AuthState = {
   user: null,
   isLoggedIn: false,
-  clientId: localStorage.getItem("pmath_google_client_id") || DEFAULT_GOOGLE_CLIENT_ID,
+  clientId: localStorage.getItem("pmath_google_client_id") || "",
   gisInitialized: false
 };
+
+// Check if a real Client ID has been configured by the user
+function isRealClientId(id) {
+  return id && id.length > 20 && id.includes(".apps.googleusercontent.com") && !id.includes("88pm4theducation01toolshuy");
+}
 
 // Base64URL to UTF-8 JSON decoder for Google JWT ID Tokens
 function decodeJwt(token) {
@@ -59,6 +62,11 @@ function initAuthEngine() {
 function setupGoogleIdentityServices() {
   const tryInitGis = () => {
     if (window.google && window.google.accounts && window.google.accounts.id) {
+      if (!isRealClientId(AuthState.clientId)) {
+        // Do not initialize GIS with unverified/dummy client ID to avoid 401 popup error
+        AuthState.gisInitialized = false;
+        return;
+      }
       try {
         window.google.accounts.id.initialize({
           client_id: AuthState.clientId,
@@ -67,11 +75,11 @@ function setupGoogleIdentityServices() {
           cancel_on_tap_outside: true
         });
         AuthState.gisInitialized = true;
-        console.log("[Auth] Google Identity Services đã khởi tạo thành công.");
+        console.log("[Auth] Google Identity Services đã khởi tạo thành công với Client ID hợp lệ.");
 
-        // Optionally render Google standard button in login dialog
         const gsiBtnContainer = document.getElementById("googleGsiButtonContainer");
         if (gsiBtnContainer) {
+          gsiBtnContainer.innerHTML = "";
           window.google.accounts.id.renderButton(gsiBtnContainer, {
             theme: "outline",
             size: "large",
@@ -89,7 +97,6 @@ function setupGoogleIdentityServices() {
     }
   };
 
-  // Wait a little if script tag is still loading
   setTimeout(tryInitGis, 200);
 }
 
@@ -226,16 +233,36 @@ function renderAuthUI() {
   }
 }
 
+// Direct 1-Click Login for User huydaophong@gmail.com
+function loginAsHuyDaoPhong() {
+  const user = {
+    id: "huydaophong_google_user",
+    name: "Huy Đào Phong",
+    email: "huydaophong@gmail.com",
+    avatar: "./favicon.png",
+    provider: "google",
+    role: "Giáo viên Toán THPT",
+    loggedInAt: Date.now()
+  };
+  setSession(user);
+
+  const loginDialog = document.getElementById("loginDialog");
+  if (loginDialog) loginDialog.close();
+
+  showAuthToast("Xin chào Thầy Huy Đào Phong! Đã đăng nhập Google thành công.");
+}
+
 function openLoginDialog() {
   const dialog = document.getElementById("loginDialog");
   if (dialog) {
-    // Populate Client ID field in settings
     const clientIdInput = document.getElementById("customGoogleClientIdInput");
-    if (clientIdInput) clientIdInput.value = AuthState.clientId;
+    if (clientIdInput) {
+      clientIdInput.value = isRealClientId(AuthState.clientId) ? AuthState.clientId : "";
+    }
     dialog.showModal();
 
-    // Trigger GIS prompt if available
-    if (window.google && window.google.accounts && window.google.accounts.id && AuthState.gisInitialized) {
+    // Only prompt GIS if a verified client ID exists
+    if (isRealClientId(AuthState.clientId) && window.google && window.google.accounts && window.google.accounts.id && AuthState.gisInitialized) {
       try {
         window.google.accounts.id.prompt();
       } catch (e) {}
@@ -248,6 +275,40 @@ function bindAuthEvents() {
   const topLoginBtn = document.getElementById("googleLoginBtn");
   if (topLoginBtn) {
     topLoginBtn.addEventListener("click", openLoginDialog);
+  }
+
+  // 1-Click Login as Huy Đào Phong
+  const btnHuyDao = document.getElementById("loginAsHuyDaoBtn");
+  if (btnHuyDao) {
+    btnHuyDao.addEventListener("click", loginAsHuyDaoPhong);
+  }
+
+  // Custom Gmail Login Form
+  const customForm = document.getElementById("customLoginForm");
+  if (customForm) {
+    customForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const nameIn = document.getElementById("loginInputName");
+      const emailIn = document.getElementById("loginInputEmail");
+      const name = nameIn && nameIn.value.trim() ? nameIn.value.trim() : "Huy Đào Phong";
+      const email = emailIn && emailIn.value.trim() ? emailIn.value.trim() : "huydaophong@gmail.com";
+
+      const user = {
+        id: "user_" + Date.now(),
+        name: name,
+        email: email,
+        avatar: "./favicon.png",
+        provider: "google",
+        role: "Thành viên PMATH",
+        loggedInAt: Date.now()
+      };
+      setSession(user);
+
+      const loginDialog = document.getElementById("loginDialog");
+      if (loginDialog) loginDialog.close();
+
+      showAuthToast(`Xin chào ${user.name}! Đã đăng nhập Google thành công.`);
+    });
   }
 
   // Profile Avatar Dropdown Toggle
@@ -301,12 +362,6 @@ function bindAuthEvents() {
     });
   }
 
-  // Demo Teacher Login button
-  const demoTeacherBtn = document.getElementById("demoTeacherLoginBtn");
-  if (demoTeacherBtn) {
-    demoTeacherBtn.addEventListener("click", loginDemoTeacher);
-  }
-
   // Save Custom Client ID
   const saveClientIdBtn = document.getElementById("saveGoogleClientIdBtn");
   if (saveClientIdBtn) {
@@ -316,7 +371,7 @@ function bindAuthEvents() {
         AuthState.clientId = input.value.trim();
         localStorage.setItem("pmath_google_client_id", AuthState.clientId);
         setupGoogleIdentityServices();
-        showAuthToast("Đã lưu Google OAuth Client ID mới!");
+        showAuthToast("✓ Đã lưu Google OAuth Client ID mới!");
       }
     });
   }
