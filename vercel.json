@@ -35,7 +35,7 @@
       ]
     },
     {
-      "source": "/index.html",
+      "source": "/(.*).html",
       "headers": [
         {
           "key": "Cache-Control",
@@ -46,7 +46,15 @@
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
+    },
+    {
+      "source": "/((?!assets|fonts|privacy|terms|favicon|manifest|sw|pmath-logo).*)",
       "destination": "/index.html"
     }
   ]
