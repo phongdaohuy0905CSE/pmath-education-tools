@@ -3,14 +3,16 @@
 // Hỗ trợ Google Identity Services (GIS), OAuth 2.0 & Cloud Sync
 // ============================================================================
 
+const OFFICIAL_GOOGLE_CLIENT_ID = "822575661977-978n9qm7u51e929goe2avddq721mrdvc.apps.googleusercontent.com";
+
 const AuthState = {
   user: null,
   isLoggedIn: false,
-  clientId: localStorage.getItem("pmath_google_client_id") || "",
+  clientId: localStorage.getItem("pmath_google_client_id") || OFFICIAL_GOOGLE_CLIENT_ID,
   gisInitialized: false
 };
 
-// Check if a real Client ID has been configured by the user
+// Check if a real Client ID has been configured
 function isRealClientId(id) {
   return id && id.length > 20 && id.includes(".apps.googleusercontent.com") && !id.includes("88pm4theducation01toolshuy");
 }

@@ -2,6 +2,11 @@
 .DS_Store
 Thumbs.db
 
+# Secrets & Credentials
+client_secret*.json
+*.secret
+credentials*.json
+
 # Logs & temp
 *.log
 npm-debug.log*
