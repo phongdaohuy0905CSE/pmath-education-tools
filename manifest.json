@@ -1,0 +1,41 @@
+{
+  "name": "PMATH EDUCATION TOOLS",
+  "short_name": "PMATH Tools",
+  "description": "Nền tảng Hình học động 2D/3D, Đồ thị giải tích, Mô phỏng Oxyz & Sổ tay Toán học THPT",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1e64b4",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./pmath-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "math", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Sổ Tay Hình Học",
+      "short_name": "Sổ Tay",
+      "description": "Mở Sổ Tay Hình Học Động & Máy Tính Casio",
+      "url": "./index.html?mode=nr",
+      "icons": [{ "src": "./favicon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Studio 2D/3D Oxyz",
+      "short_name": "Studio Oxyz",
+      "description": "Mở Phòng Thí Nghiệm Không Gian Oxyz & Vectơ Vận Tốc",
+      "url": "./index.html?mode=geolab",
+      "icons": [{ "src": "./favicon.png", "sizes": "192x192" }]
+    }
+  ]
+}
