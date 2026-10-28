@@ -1,0 +1,8 @@
+.git
+.firebaserc
+firebase.json
+netlify.toml
+DEPLOYMENT.md
+run_local.bat
+push_to_github_vercel.bat
+*.log
