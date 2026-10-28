@@ -145,8 +145,16 @@ function getActiveSceneList() {
   return state.spaceMode === "2d" ? state.objects2D : state.objects3D;
 }
 
-function initDefaultScenes() {
-  // Default 2D Scene: A Triangle ABC + A Circle (C1) + A Secant Line d intersecting both! (PMATH Signature Colors)
+function initDefaultScenes(loadDemo = false) {
+  if (!loadDemo) {
+    // Blank, clean canvas ready for user drawing without pre-drawn clutter
+    state.objects2D = [];
+    state.objects3D = [];
+    state.selectedIds = [];
+    return;
+  }
+
+  // Demo 2D Scene: A Triangle ABC + A Circle (C1) + A Secant Line d1
   state.objects2D = [
     {
       id: genId("tri"),
@@ -199,7 +207,7 @@ function initDefaultScenes() {
     }
   ];
 
-  // Default 3D Scene: Sphere (S) intersected by a Plane (α) and a 3D Line (Δ)!
+  // Demo 3D Scene: Sphere (S) intersected by a Plane (α) and a 3D Line (Δ)
   state.objects3D = [
     {
       id: genId("sph"),
@@ -260,8 +268,14 @@ function initDefaultScenes() {
     }
   ];
 
-  state.selectedIds = [state.objects2D[0].id];
+  state.selectedIds = state.objects2D.length > 0 ? [state.objects2D[0].id] : [];
 }
+
+window.loadDefaultDemoScenes = function() {
+  saveHistory();
+  initDefaultScenes(true);
+  refreshAllUI();
+};
 
 function initApp() {
   initDefaultScenes();
@@ -890,7 +904,7 @@ window.applyEquationPreset = function(presetName) {
     loadInteractionCombo("sphere_plane_line");
   } else if (presetName === "triangle_euler_line") {
     state.spaceMode = "2d";
-    initDefaultScenes();
+    initDefaultScenes(true);
     syncSpaceModeUI();
     refreshAllUI();
   } else if (presetName === "cubic_extrema" || presetName === "cubic_secant") {
@@ -1909,7 +1923,11 @@ function renderSceneObjectsTree() {
   listEl.innerHTML = "";
 
   if (list.length === 0) {
-    listEl.innerHTML = `<li style="padding:0.75rem; font-size:0.8rem; color:var(--text-muted); text-align:center;">Chưa có đối tượng nào.<br>Hãy bấm "+ Điểm", chọn từ "Kho hình học", hoặc nhập phương trình phía trên!</li>`;
+    listEl.innerHTML = `<li style="padding:1rem 0.5rem; font-size:0.8rem; color:var(--text-muted); text-align:center; line-height:1.5;">
+      Bảng vẽ trống.<br>
+      Nhập phương trình phía trên hoặc chọn từ <strong>Kho hình học</strong>!<br>
+      <button type="button" class="cad-btn mini" style="margin-top:8px; display:inline-block;" onclick="window.loadDefaultDemoScenes()">⚡ Nạp hình mẫu (Demo)</button>
+    </li>`;
     return;
   }
 
@@ -4215,10 +4233,10 @@ function restoreStudioWorkspace() {
     const raw = localStorage.getItem("pmath_studio_workspace");
     if (!raw) return;
     const data = JSON.parse(raw);
-    if (data.objects2D && Array.isArray(data.objects2D) && data.objects2D.length > 0) {
+    if (data.objects2D && Array.isArray(data.objects2D)) {
       state.objects2D = data.objects2D;
     }
-    if (data.objects3D && Array.isArray(data.objects3D) && data.objects3D.length > 0) {
+    if (data.objects3D && Array.isArray(data.objects3D)) {
       state.objects3D = data.objects3D;
     }
     if (data.cam3D) state.cam3D = { ...state.cam3D, ...data.cam3D };
