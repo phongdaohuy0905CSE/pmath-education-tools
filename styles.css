@@ -107,12 +107,76 @@ body.in-canvas-mode,
 html.in-canvas-mode {
   height: 100% !important;
   overflow: hidden !important;
+  overscroll-behavior: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 body.in-canvas-mode #root,
 body.in-canvas-mode #geolabView {
   height: calc(100vh - 54px) !important;
+  height: calc(100dvh - 54px) !important;
   overflow: hidden;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* Prevent Apple Pencil Scribble & accidental text selection across all UI Chrome, Toolbars, Headers, Sidebars & Canvases */
+.pmath-global-bar,
+.pmath-global-bar *,
+.geolab-wrapper,
+.geolab-wrapper *:not(input):not(textarea):not([contenteditable="true"]),
+#root,
+#root *:not(input):not(textarea):not(.text-box):not([contenteditable="true"]),
+.board,
+.board *,
+.board-scroller,
+.board-canvas,
+#geoCanvas,
+#hero3dCanvas,
+button,
+label,
+.cad-toolbar,
+.style-toolbar,
+.tab-bar,
+.sheet-bar,
+.toolbar,
+.pages-panel,
+.selection-bar {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-drag: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Explicitly allow text selection inside Inputs, Textareas, Note text-boxes, and Formula/Knowledge reading cards */
+input,
+textarea,
+[contenteditable="true"],
+.text-box,
+.fh-math-box,
+.fh-card-note,
+.kh-box p,
+.kh-prop-list {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  -webkit-touch-callout: default !important;
+}
+
+/* Strict touch-action on drawing & interactive canvases so iPad Safari never triggers selection loupe or browser gestures */
+#geoCanvas,
+.board,
+.board-scroller,
+.board-canvas,
+.canvas-viewport {
+  touch-action: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
 }
 
 .pmath-global-bar,
@@ -4308,5 +4372,54 @@ dialog.login-dialog {
   }
   .fh-editor-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   IPAD / APPLE PENCIL MODE PILL & COARSE POINTERERGONOMICS
+   ========================================================================== */
+.btn-ipad-pencil-mode {
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(20, 130, 80, 0.45);
+  background: var(--defbg);
+  color: var(--defcolor);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.btn-ipad-pencil-mode.active {
+  background: linear-gradient(135deg, #148250, #008c96);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 3px 10px rgba(20, 130, 80, 0.3);
+}
+
+.btn-ipad-pencil-mode:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(20, 130, 80, 0.25);
+}
+
+/* Touch & iPad Ergonomics: Larger hit targets and zero 300ms tap delay */
+@media (pointer: coarse) {
+  .cad-btn {
+    padding: 0.45rem 0.78rem;
+    font-size: 0.85rem;
+    min-height: 38px;
+  }
+  .color-swatch {
+    width: 26px;
+    height: 26px;
+  }
+  .pmath-nav-tab,
+  .btn-top-action {
+    min-height: 38px;
+    touch-action: manipulation;
   }
 }

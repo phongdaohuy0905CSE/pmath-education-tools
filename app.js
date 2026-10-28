@@ -280,6 +280,7 @@ window.loadDefaultDemoScenes = function() {
 function initApp() {
   initDefaultScenes();
   restoreStudioWorkspace();
+  initApplePencilAndTouchGuard();
   bindUIEvents();
   bindCanvasEvents();
   bindKeyboardShortcuts();
@@ -1593,10 +1594,17 @@ function bindCanvasEvents() {
     };
   };
 
-  // Prevent middle click autoscroll
+  // Prevent middle click autoscroll & iOS Safari long-press context menu
   canvas.addEventListener("mousedown", (e) => {
     if (e.button === 1) e.preventDefault();
   });
+  canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  // Track active pointers for 2-finger pinch-to-zoom & pan on iPad / touch screens
+  const activeTouches = new Map();
+  let lastPinchDist = null;
+  let lastPinchMid = null;
+  let lastPenTimestamp = 0;
 
   canvas.addEventListener("dblclick", (e) => {
     const pos = getLocalCenterCoords(e);
@@ -1615,6 +1623,39 @@ function bindCanvasEvents() {
 
   canvas.addEventListener("pointerdown", (e) => {
     const pos = getLocalCenterCoords(e);
+    const isCoarse = e.pointerType === "touch" || e.pointerType === "pen";
+
+    if (e.pointerType === "pen") {
+      lastPenTimestamp = performance.now();
+      activeTouches.clear();
+      lastPinchDist = null;
+      lastPinchMid = null;
+      try {
+        const sel = window.getSelection && window.getSelection();
+        if (sel && sel.rangeCount > 0) sel.removeAllRanges();
+      } catch {}
+    }
+
+    // Palm Rejection: ignore touch if Apple Pencil is active or was used within 850ms
+    if (e.pointerType === "touch") {
+      if (window.pmathPencilGuardActive && performance.now() - lastPenTimestamp < 850) {
+        e.preventDefault();
+        return;
+      }
+      activeTouches.set(e.pointerId, pos);
+      canvas.setPointerCapture(e.pointerId);
+
+      // 2-Finger Pinch-to-Zoom & Pan on iPad
+      if (activeTouches.size === 2) {
+        const pts = Array.from(activeTouches.values());
+        lastPinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        lastPinchMid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+        state.interaction.mode = "pinch_zoom";
+        state.interaction.marqueeRect = null;
+        return;
+      }
+    }
+
     state.interaction.startX = pos.x;
     state.interaction.startY = pos.y;
     state.interaction.lastX = pos.x;
@@ -1635,8 +1676,8 @@ function bindCanvasEvents() {
       return;
     }
 
-    // 2D Mode Hit-Testing
-    const hit = hitTest2D(pos.x, pos.y);
+    // 2D Mode Hit-Testing (expanded hit radius on iPad / Apple Pencil for effortless vertex grabbing)
+    const hit = hitTest2D(pos.x, pos.y, isCoarse ? 22 : 13);
     if (hit) {
       if (e.shiftKey) {
         if (state.selectedIds.includes(hit.objId)) {
@@ -1659,8 +1700,12 @@ function bindCanvasEvents() {
       }
       canvas.setPointerCapture(e.pointerId);
       refreshAllUI();
+    } else if (e.pointerType === "touch") {
+      // Single-finger drag on empty space pans the 2D canvas smoothly on iPad
+      state.interaction.mode = "pan";
+      canvas.setPointerCapture(e.pointerId);
     } else {
-      // Clicked on empty space -> Start Marquee Box Selection!
+      // Clicked on empty space with Mouse / Apple Pencil -> Start Marquee Box Selection!
       if (!e.shiftKey) state.selectedIds = [];
       state.interaction.mode = "marquee";
       state.interaction.marqueeRect = { x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y };
@@ -1671,6 +1716,41 @@ function bindCanvasEvents() {
 
   canvas.addEventListener("pointermove", (e) => {
     const pos = getLocalCenterCoords(e);
+    if (e.pointerType === "pen") {
+      lastPenTimestamp = performance.now();
+    }
+
+    if (e.pointerType === "touch" && activeTouches.has(e.pointerId)) {
+      activeTouches.set(e.pointerId, pos);
+      if (activeTouches.size === 2 && state.interaction.mode === "pinch_zoom") {
+        const pts = Array.from(activeTouches.values());
+        const dist = Math.max(10, Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y));
+        const mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+
+        if (lastPinchDist && lastPinchMid) {
+          const factor = dist / lastPinchDist;
+          const dx = mid.x - lastPinchMid.x;
+          const dy = mid.y - lastPinchMid.y;
+
+          if (state.spaceMode === "2d") {
+            const beforeMath = screenToMath2D(mid.x, mid.y);
+            state.view2D.scale = Math.max(10, Math.min(180, state.view2D.scale * factor));
+            state.view2D.offsetX = mid.x - beforeMath.x * state.view2D.scale + dx;
+            state.view2D.offsetY = mid.y + beforeMath.y * state.view2D.scale + dy;
+          } else {
+            state.cam3D.zoom = Math.max(0.4, Math.min(2.6, state.cam3D.zoom * factor));
+            state.cam3D.panX += dx;
+            state.cam3D.panY += dy;
+          }
+          updateCursorStatusPill();
+          drawScene();
+        }
+        lastPinchDist = dist;
+        lastPinchMid = mid;
+        return;
+      }
+    }
+
     const mPos = screenToMath2D(pos.x, pos.y);
     state.cursorMathPos = mPos;
     updateCursorStatusPill();
@@ -1754,16 +1834,28 @@ function bindCanvasEvents() {
     }
   });
 
-  canvas.addEventListener("pointerup", () => {
+  const finishCanvasPointer = (e) => {
+    if (e && e.pointerType === "touch") {
+      activeTouches.delete(e.pointerId);
+      if (activeTouches.size < 2) {
+        lastPinchDist = null;
+        lastPinchMid = null;
+      }
+    }
     if (state.interaction.mode === "marquee") {
       state.interaction.marqueeRect = null;
       refreshAllUI();
     } else if (state.interaction.mode === "drag_vertex" || state.interaction.mode === "drag_object") {
       refreshAllUI();
     }
-    state.interaction.mode = "none";
-    canvas.style.cursor = "default";
-  });
+    if (activeTouches.size === 0) {
+      state.interaction.mode = "none";
+      canvas.style.cursor = "default";
+    }
+  };
+
+  canvas.addEventListener("pointerup", finishCanvasPointer);
+  canvas.addEventListener("pointercancel", finishCanvasPointer);
 
   // Mouse Wheel Zoom (Zoom centered at cursor in 2D!)
   canvas.addEventListener(
@@ -1799,27 +1891,27 @@ function updateCursorStatusPill() {
   }
 }
 
-function hitTest2D(sx, sy) {
+function hitTest2D(sx, sy, vertexTol = 13) {
   const vis = state.objects2D.filter((o) => o.visible !== false);
 
-  // 1. Check vertices first (radius 12px)
+  // 1. Check vertices first (radius 13px on desktop, 22px on iPad/touch)
   for (let i = vis.length - 1; i >= 0; i--) {
     const o = vis[i];
     if (o.pts) {
       for (let v = 0; v < o.pts.length; v++) {
         const sp = mathToScreen2D(o.pts[v].x, o.pts[v].y);
-        if (Math.hypot(sp.x - sx, sp.y - sy) <= 13) {
+        if (Math.hypot(sp.x - sx, sp.y - sy) <= vertexTol) {
           return { objId: o.id, vertexIdx: v };
         }
       }
     } else if (o.type === "point2d") {
       const sp = mathToScreen2D(o.x, o.y);
-      if (Math.hypot(sp.x - sx, sp.y - sy) <= 13) {
+      if (Math.hypot(sp.x - sx, sp.y - sy) <= vertexTol) {
         return { objId: o.id, vertexIdx: -1 };
       }
     } else if (o.type === "circle2d") {
       const sp = mathToScreen2D(o.cx, o.cy);
-      if (Math.hypot(sp.x - sx, sp.y - sy) <= 12) {
+      if (Math.hypot(sp.x - sx, sp.y - sy) <= vertexTol) {
         return { objId: o.id, vertexIdx: -1 };
       }
     }
@@ -4447,6 +4539,217 @@ async function importDataFromDisk(file) {
       msgEl.textContent = `Lỗi khi nhập dữ liệu: ${err.message}`;
     }
   }
+}
+
+// ============================================================================
+// IPAD & APPLE PENCIL GUARD (PALM REJECTION, ANTI-SELECTION & LOW-LATENCY INK)
+// ============================================================================
+
+function initApplePencilAndTouchGuard() {
+  // Default Apple Pencil Guard to ON (or restore user's choice)
+  const savedGuard = localStorage.getItem("pmath_pencil_guard_v1");
+  window.pmathPencilGuardActive = savedGuard !== "off";
+
+  const syncNoteRendererPenPrefs = (penOnly) => {
+    try {
+      const raw = localStorage.getItem("prefs");
+      const prefs = raw ? JSON.parse(raw) : {};
+      if (penOnly) {
+        // On iPad/Apple Pencil mode: finger scrolls/pans, only stylus draws (unless user explicitly turns off guard)
+        prefs.fingerDraw = false;
+        prefs.inputMode = "auto";
+      } else {
+        prefs.fingerDraw = true;
+        prefs.inputMode = "both";
+      }
+      localStorage.setItem("prefs", JSON.stringify(prefs));
+    } catch {}
+  };
+
+  // Pre-seed NoteRenderer prefs if not explicitly set yet so first load on iPad has palm rejection ready
+  try {
+    const raw = localStorage.getItem("prefs");
+    const prefs = raw ? JSON.parse(raw) : {};
+    if (window.pmathPencilGuardActive && prefs.fingerDraw === undefined) {
+      prefs.fingerDraw = false;
+      prefs.inputMode = "auto";
+      localStorage.setItem("prefs", JSON.stringify(prefs));
+    }
+  } catch {}
+
+  const guardBtn = document.getElementById("togglePencilGuardBtn");
+  const updateGuardBtnUI = () => {
+    if (!guardBtn) return;
+    if (window.pmathPencilGuardActive) {
+      guardBtn.classList.add("active");
+      guardBtn.textContent = "✏️ Chế độ Bút: BẬT";
+      guardBtn.title = "Đang BẬT chống tỳ tay & khóa bôi đen chữ khi viết bằng Apple Pencil (Nhấn để chuyển sang vẽ bằng cả ngón tay)";
+    } else {
+      guardBtn.classList.remove("active");
+      guardBtn.textContent = "👆 Vẽ Tay + Bút";
+      guardBtn.title = "Đang cho phép vẽ bằng cả ngón tay và bút (Nhấn để BẬT lại Chế độ Chống tỳ tay Apple Pencil)";
+    }
+  };
+  updateGuardBtnUI();
+
+  if (guardBtn) {
+    guardBtn.addEventListener("click", () => {
+      window.pmathPencilGuardActive = !window.pmathPencilGuardActive;
+      localStorage.setItem("pmath_pencil_guard_v1", window.pmathPencilGuardActive ? "on" : "off");
+      syncNoteRendererPenPrefs(window.pmathPencilGuardActive);
+      updateGuardBtnUI();
+      if (typeof showToast === "function") {
+        showToast(
+          window.pmathPencilGuardActive
+            ? "✏️ Đã BẬT Chế độ Apple Pencil: Chống tỳ tay, khóa bôi đen chữ & dùng ngón tay để cuộn!"
+            : "👆 Đã chuyển sang chế độ Vẽ bằng cả Ngón tay & Bút!"
+        );
+      }
+    });
+  }
+
+  let isPenCurrentlyDown = false;
+  let lastPenActiveTime = 0;
+
+  const isEditableElement = (el) => {
+    if (!el || typeof el.closest !== "function") return false;
+    return Boolean(
+      el.closest('input, textarea, select, [contenteditable="true"], .text-box, .ML__content, .fh-editor-panel, .kh-editor-card')
+    );
+  };
+
+  const isInsideDrawingWorkspace = (el) => {
+    if (!el || typeof el.closest !== "function") return false;
+    return Boolean(
+      el.closest("#root, #geolabView, .board, .board-scroller, #geoCanvas, .canvas-viewport, .pmath-global-bar")
+    );
+  };
+
+  // 1. Capture pointerdown/move/up to track Apple Pencil state & clear any stray text selection immediately
+  window.addEventListener(
+    "pointerdown",
+    (e) => {
+      if (e.pointerType === "pen") {
+        isPenCurrentlyDown = true;
+        lastPenActiveTime = performance.now();
+
+        if (!isEditableElement(e.target)) {
+          // Blur any active text input if user starts writing on canvas with Apple Pencil
+          if (
+            document.activeElement &&
+            (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") &&
+            isInsideDrawingWorkspace(e.target)
+          ) {
+            document.activeElement.blur();
+          }
+          // Clear any existing DOM text highlight immediately
+          try {
+            const sel = window.getSelection && window.getSelection();
+            if (sel && sel.rangeCount > 0) sel.removeAllRanges();
+          } catch {}
+        }
+      } else if (e.pointerType === "touch" && window.pmathPencilGuardActive) {
+        // Palm Rejection: If palm touches screen while Apple Pencil is down or within 750ms of lifting pen
+        if (isPenCurrentlyDown || performance.now() - lastPenActiveTime < 750) {
+          if (e.target && e.target.closest && e.target.closest(".board-scroller, #geoCanvas, .canvas-viewport")) {
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
+          }
+        }
+      }
+    },
+    { capture: true, passive: false }
+  );
+
+  window.addEventListener(
+    "pointermove",
+    (e) => {
+      if (e.pointerType === "pen") {
+        lastPenActiveTime = performance.now();
+        if (isPenCurrentlyDown && !isEditableElement(e.target)) {
+          try {
+            const sel = window.getSelection && window.getSelection();
+            if (sel && sel.rangeCount > 0) sel.removeAllRanges();
+          } catch {}
+        }
+      }
+    },
+    { capture: true, passive: true }
+  );
+
+  const handlePointerEnd = (e) => {
+    if (e.pointerType === "pen") {
+      isPenCurrentlyDown = false;
+      lastPenActiveTime = performance.now();
+    }
+  };
+  window.addEventListener("pointerup", handlePointerEnd, { capture: true, passive: true });
+  window.addEventListener("pointercancel", handlePointerEnd, { capture: true, passive: true });
+
+  // 2. Block 'selectstart' (the root cause of text highlighting when dragging Apple Pencil on iPad Safari)
+  document.addEventListener(
+    "selectstart",
+    (e) => {
+      if (isEditableElement(e.target)) return;
+      if (
+        document.body.classList.contains("in-canvas-mode") ||
+        isPenCurrentlyDown ||
+        performance.now() - lastPenActiveTime < 1200 ||
+        isInsideDrawingWorkspace(e.target)
+      ) {
+        e.preventDefault();
+      }
+    },
+    { capture: true, passive: false }
+  );
+
+  // 3. Secondary defense on 'selectionchange': if Safari still creates a selection range while writing on canvas, wipe it
+  document.addEventListener("selectionchange", () => {
+    if (!isPenCurrentlyDown && performance.now() - lastPenActiveTime > 900) return;
+    const active = document.activeElement;
+    if (isEditableElement(active)) return;
+    if (document.body.classList.contains("in-canvas-mode")) {
+      try {
+        const sel = window.getSelection && window.getSelection();
+        if (sel && sel.rangeCount > 0) sel.removeAllRanges();
+      } catch {}
+    }
+  });
+
+  // 4. Block native HTML dragstart & iOS long-press contextmenu callout on canvas/toolbars
+  document.addEventListener(
+    "dragstart",
+    (e) => {
+      if (!isEditableElement(e.target) && isInsideDrawingWorkspace(e.target)) {
+        e.preventDefault();
+      }
+    },
+    { capture: true }
+  );
+
+  document.addEventListener(
+    "contextmenu",
+    (e) => {
+      if (
+        !isEditableElement(e.target) &&
+        (document.body.classList.contains("in-canvas-mode") || isPenCurrentlyDown)
+      ) {
+        e.preventDefault();
+      }
+    },
+    { capture: true }
+  );
+
+  // 5. Prevent accidental iOS Safari whole-page pinch zoom when inside full-screen Canvas modes
+  document.addEventListener(
+    "gesturestart",
+    (e) => {
+      if (document.body.classList.contains("in-canvas-mode")) {
+        e.preventDefault();
+      }
+    },
+    { passive: false }
+  );
 }
 
 window.addEventListener("DOMContentLoaded", initApp);
