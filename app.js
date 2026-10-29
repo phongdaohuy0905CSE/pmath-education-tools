@@ -67,7 +67,14 @@ const state = {
   },
   hoverTarget: null, // { objId, vertexIdx }
   cursorMathPos: { x: 0, y: 0 },
-  quiz: null
+  quiz: null,
+
+  // m-parameter horizontal line for equation root analysis
+  mParam: {
+    show: true,
+    val: 0.0
+  },
+  currentSurveyAnalysis: null
 };
 
 const canvas = document.getElementById("geoCanvas");
@@ -565,6 +572,126 @@ function bindUIEvents() {
     });
   }
 
+  // 3D Camera Viewpoint Presets
+  const camPresetIsoBtn = document.getElementById("camPresetIsoBtn");
+  if (camPresetIsoBtn) {
+    camPresetIsoBtn.addEventListener("click", () => {
+      state.cam3D.yaw = -0.65;
+      state.cam3D.pitch = 0.42;
+      drawScene();
+      showToast("Góc nhìn 3D: Phối cảnh chuẩn (Isometric 35°/45°)");
+    });
+  }
+
+  const camPresetTopBtn = document.getElementById("camPresetTopBtn");
+  if (camPresetTopBtn) {
+    camPresetTopBtn.addEventListener("click", () => {
+      state.cam3D.yaw = 0;
+      state.cam3D.pitch = 1.35;
+      drawScene();
+      showToast("Góc nhìn 3D: Nhìn từ trên xuống mặt phẳng Oxy");
+    });
+  }
+
+  const camPresetFrontBtn = document.getElementById("camPresetFrontBtn");
+  if (camPresetFrontBtn) {
+    camPresetFrontBtn.addEventListener("click", () => {
+      state.cam3D.yaw = 0;
+      state.cam3D.pitch = 0;
+      drawScene();
+      showToast("Góc nhìn 3D: Nhìn chính diện mặt phẳng Oxz");
+    });
+  }
+
+  const camPresetSideBtn = document.getElementById("camPresetSideBtn");
+  if (camPresetSideBtn) {
+    camPresetSideBtn.addEventListener("click", () => {
+      state.cam3D.yaw = Math.PI / 2;
+      state.cam3D.pitch = 0;
+      drawScene();
+      showToast("Góc nhìn 3D: Nhìn từ cạnh bên mặt phẳng Oyz");
+    });
+  }
+
+  const camResetBtn = document.getElementById("camResetBtn");
+  if (camResetBtn) {
+    camResetBtn.addEventListener("click", () => {
+      state.cam3D = { yaw: -0.65, pitch: 0.42, zoom: 1.0, panX: 0, panY: 0 };
+      drawScene();
+      showToast("Đã đặt lại góc nhìn và phóng to ban đầu");
+    });
+  }
+
+  // 2D Parameter m Slider & Line
+  const mSlider = document.getElementById("mParamSlider");
+  const mCheck = document.getElementById("toggleMLineCheck");
+  const mValDisp = document.getElementById("mSliderValueDisp");
+
+  if (mSlider) {
+    mSlider.addEventListener("input", (e) => {
+      const val = parseFloat(e.target.value);
+      state.mParam.val = val;
+      if (mValDisp) mValDisp.textContent = val.toFixed(1).replace(".", ",");
+      drawScene();
+    });
+  }
+
+  if (mCheck) {
+    mCheck.addEventListener("change", (e) => {
+      state.mParam.show = e.target.checked;
+      drawScene();
+    });
+  }
+
+  // Survey Dialog Triggers
+  const openSurveyBtn = document.getElementById("openSurveyDialogBtn");
+  if (openSurveyBtn) {
+    openSurveyBtn.addEventListener("click", () => openSurveyDialog());
+  }
+
+  const closeSurveyBtn = document.getElementById("closeSurveyDialogBtn");
+  const surveyDialog = document.getElementById("surveyDialog");
+  if (closeSurveyBtn && surveyDialog) {
+    closeSurveyBtn.addEventListener("click", () => surveyDialog.close());
+  }
+  const closeSurveyBottomBtn = document.getElementById("closeSurveyDialogBottomBtn");
+  if (closeSurveyBottomBtn && surveyDialog) {
+    closeSurveyBottomBtn.addEventListener("click", () => surveyDialog.close());
+  }
+
+  // LaTeX Export Buttons
+  const copyTkzTabBtn = document.getElementById("copyTkzTabBtn");
+  if (copyTkzTabBtn) {
+    copyTkzTabBtn.addEventListener("click", () => {
+      if (!state.currentSurveyAnalysis || !window.MathSurveyEngine) {
+        showToast("Chưa có dữ liệu khảo sát hàm số để xuất tkz-tab!");
+        return;
+      }
+      const code = window.MathSurveyEngine.generateTkzTabLaTeX(state.currentSurveyAnalysis);
+      navigator.clipboard.writeText(code).then(() => {
+        showToast("Đã sao chép mã LaTeX (tkz-tab) vào bộ nhớ tạm!");
+      }).catch(() => {
+        showToast("Không thể sao chép vào bộ nhớ tạm");
+      });
+    });
+  }
+
+  const copyTikzPlotBtn = document.getElementById("copyTikzPlotBtn");
+  if (copyTikzPlotBtn) {
+    copyTikzPlotBtn.addEventListener("click", () => {
+      if (!state.currentSurveyAnalysis || !window.MathSurveyEngine) {
+        showToast("Chưa có dữ liệu khảo sát để xuất TikZ!");
+        return;
+      }
+      const code = window.MathSurveyEngine.generateTikzPlotLaTeX(state.currentSurveyAnalysis);
+      navigator.clipboard.writeText(code).then(() => {
+        showToast("Đã sao chép mã TikZ (pgfplots) vào bộ nhớ tạm!");
+      }).catch(() => {
+        showToast("Không thể sao chép vào bộ nhớ tạm");
+      });
+    });
+  }
+
   startMotionLoop();
 }
 
@@ -625,6 +752,12 @@ function syncSpaceModeUI() {
     state.spaceMode === "2d" ? "ƒ(x,y) 2D" : "ƒ(x,y,z) 3D";
   document.getElementById("specialOverlayBar").style.display =
     state.spaceMode === "2d" ? "flex" : "none";
+
+  const g2dBar = document.getElementById("graph2dToolbar");
+  if (g2dBar) g2dBar.style.display = state.spaceMode === "2d" ? "flex" : "none";
+
+  const c3dBar = document.getElementById("camera3dToolbar");
+  if (c3dBar) c3dBar.style.display = state.spaceMode === "3d" ? "flex" : "none";
 
   const motBar = document.getElementById("motionQuickBar");
   if (motBar) {
@@ -3211,6 +3344,450 @@ function drawAll2DObjects(w, h, theme) {
       5
     );
   });
+
+  // Draw Parametric m Line and Intersections (GDPT 2018 calculus tool)
+  drawMLineAndIntersections(w, h, theme);
+}
+
+// ============================================================================
+// VIETNAMESE GDPT 2018 CALCULUS SURVEY, BBT & PARAMETRIC m ENGINE
+// ============================================================================
+
+function showToast(msg, duration = 2500) {
+  let toast = document.getElementById("pmathAppToast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "pmathAppToast";
+    toast.style.cssText =
+      "position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);" +
+      "background:rgba(15,23,42,0.92);color:#ffffff;padding:10px 22px;border-radius:999px;" +
+      "font-size:0.88rem;font-weight:600;box-shadow:0 10px 28px rgba(0,0,0,0.35);" +
+      "backdrop-filter:blur(8px);z-index:9999999;opacity:0;pointer-events:none;" +
+      "transition:all 0.25s cubic-bezier(0.16,1,0.3,1);";
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = "1";
+  toast.style.transform = "translateX(-50%) translateY(0)";
+
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(-50%) translateY(20px)";
+  }, duration);
+}
+window.showToast = showToast;
+
+function drawMLineAndIntersections(w, h, theme) {
+  if (!state.mParam || !state.mParam.show || state.spaceMode !== "2d") return;
+  const mVal = state.mParam.val || 0;
+
+  // 1. Draw horizontal line y = m
+  const pLeft = mathToScreen2D((-w / 2 - state.view2D.offsetX) / state.view2D.scale, mVal);
+  const pRight = mathToScreen2D((w / 2 - state.view2D.offsetX) / state.view2D.scale, mVal);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.strokeStyle = "#8b5cf6"; // Purple accent
+  ctx.lineWidth = 2.4;
+  ctx.setLineDash([7, 4]);
+  ctx.moveTo(-w / 2, pLeft.y);
+  ctx.lineTo(w / 2, pRight.y);
+  ctx.stroke();
+
+  // Draw pill label at the right margin
+  const mLabel = `y = m (${mVal.toFixed(1).replace(".", ",")})`;
+  ctx.font = 'bold 12px "Segoe UI", system-ui, sans-serif';
+  ctx.fillStyle = "#8b5cf6";
+  ctx.fillText(mLabel, w / 2 - 130, pLeft.y - 8);
+  ctx.restore();
+
+  // 2. Find real roots / intersections with the active 2D curve
+  const activeFunc = state.objects2D.find(
+    (o) => (o.type === "func2d" || o.type === "parabola2d") && o.visible !== false
+  );
+  if (!activeFunc) {
+    const rootCountEl = document.getElementById("mRootCountDisp");
+    if (rootCountEl) rootCountEl.textContent = "Chưa có hàm số";
+    return;
+  }
+
+  const xMin = (-w / 2 - state.view2D.offsetX) / state.view2D.scale;
+  const xMax = (w / 2 - state.view2D.offsetX) / state.view2D.scale;
+  const numSamples = 400;
+  const step = (xMax - xMin) / numSamples;
+
+  const roots = [];
+  let prevX = xMin;
+  let prevDiff = GeoEquations.evalFunc2D(activeFunc, prevX) - mVal;
+
+  for (let i = 1; i <= numSamples; i++) {
+    const currX = xMin + i * step;
+    const currY = GeoEquations.evalFunc2D(activeFunc, currX);
+    if (!Number.isFinite(currY) || Math.abs(currY) > 1e4) {
+      prevX = currX;
+      prevDiff = NaN;
+      continue;
+    }
+    const currDiff = currY - mVal;
+
+    if (Number.isFinite(prevDiff) && prevDiff * currDiff <= 0) {
+      // Discard asymptote jump: check if |f(currX) - f(prevX)| is too large
+      const yPrev = prevDiff + mVal;
+      if (Math.abs(currY - yPrev) < 20) {
+        // Bisection to refine root accurate to 1e-4
+        let lo = prevX, hi = currX;
+        let root = (lo + hi) / 2;
+        for (let it = 0; it < 14; it++) {
+          const mid = (lo + hi) / 2;
+          const midDiff = GeoEquations.evalFunc2D(activeFunc, mid) - mVal;
+          if (Math.abs(midDiff) < 1e-6) {
+            root = mid;
+            break;
+          }
+          if (prevDiff * midDiff <= 0) {
+            hi = mid;
+          } else {
+            lo = mid;
+          }
+          root = mid;
+        }
+
+        // Avoid duplicate within 0.04
+        if (!roots.some((r) => Math.abs(r - root) < 0.04)) {
+          roots.push(root);
+        }
+      }
+    }
+    prevX = currX;
+    prevDiff = currDiff;
+  }
+
+  // 3. Draw intersection markers for each root
+  roots.forEach((rx) => {
+    const sp = mathToScreen2D(rx, mVal);
+    ctx.save();
+    // Halo ring
+    ctx.beginPath();
+    ctx.arc(sp.x, sp.y, 9, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(139, 92, 246, 0.25)";
+    ctx.fill();
+
+    // Solid dot
+    ctx.beginPath();
+    ctx.arc(sp.x, sp.y, 4.5, 0, Math.PI * 2);
+    ctx.fillStyle = "#7c3aed";
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
+
+    // Coordinate tag: (x_0; m)
+    const rootTag = `(${rx.toFixed(2).replace(".", ",")}; ${mVal.toFixed(1).replace(".", ",")})`;
+    ctx.font = 'bold 11px "Segoe UI", system-ui, sans-serif';
+    ctx.fillStyle = "#7c3aed";
+    ctx.fillText(rootTag, sp.x + 8, sp.y - 8);
+    ctx.restore();
+  });
+
+  // 4. Update mRootCountDisp badge
+  const rootCountEl = document.getElementById("mRootCountDisp");
+  if (rootCountEl) {
+    const countText = roots.length === 0 ? "Vô nghiệm" : `${roots.length} nghiệm`;
+    rootCountEl.textContent = countText;
+    rootCountEl.style.color = roots.length === 0 ? "var(--text-muted)" : "#7c3aed";
+    rootCountEl.style.background = roots.length === 0 ? "rgba(148, 163, 184, 0.2)" : "rgba(139, 92, 246, 0.15)";
+  }
+}
+
+function openSurveyDialog(targetExpr) {
+  const dialog = document.getElementById("surveyDialog");
+  if (!dialog) return;
+
+  let expr = targetExpr;
+  if (!expr) {
+    const sel = getSelectedObjects().find((o) => o.type === "func2d" || o.type === "parabola2d");
+    if (sel && (sel.equationText || sel.expr)) {
+      expr = sel.equationText || sel.expr;
+    } else {
+      const anyFunc = state.objects2D.find((o) => (o.type === "func2d" || o.type === "parabola2d") && o.visible !== false);
+      if (anyFunc && (anyFunc.equationText || anyFunc.expr)) {
+        expr = anyFunc.equationText || anyFunc.expr;
+      } else {
+        expr = "y = x^3 - 3x + 1";
+      }
+    }
+  }
+
+  if (window.MathSurveyEngine && typeof window.MathSurveyEngine.analyze === "function") {
+    state.currentSurveyAnalysis = window.MathSurveyEngine.analyze(expr);
+  }
+
+  renderGoldTestChips(expr);
+  renderSurveyContent(state.currentSurveyAnalysis, expr);
+
+  if (typeof dialog.showModal === "function") {
+    dialog.showModal();
+  } else {
+    dialog.setAttribute("open", "true");
+  }
+}
+
+function renderGoldTestChips(currentExpr) {
+  const container = document.getElementById("goldTestChipsRow");
+  if (!container || !window.MathSurveyEngine || !window.MathSurveyEngine.GOLD_TEST_SUITE) return;
+
+  container.innerHTML = "";
+  window.MathSurveyEngine.GOLD_TEST_SUITE.forEach((item) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "gold-chip-btn";
+    const isAct = currentExpr && currentExpr.replace(/\s+/g, "").includes(item.expr.replace(/\s+/g, ""));
+    if (isAct) btn.classList.add("active");
+    btn.title = item.desc;
+    btn.innerHTML = `<strong>#${item.id}</strong> ${item.label}`;
+    btn.addEventListener("click", () => {
+      openSurveyDialog(item.expr);
+      handleAddEquation(item.expr);
+    });
+    container.appendChild(btn);
+  });
+}
+
+function renderExtremaText(analysis) {
+  if (!analysis) return "Không có dữ liệu";
+  if (analysis.extrema && analysis.extrema.length > 0) {
+    return analysis.extrema
+      .map((e) => `<strong style="color:var(--primary);">${e.type}</strong> tại (${e.exactX || e.x}; ${e.exactY || e.y})`)
+      .join("<br>");
+  }
+  if (analysis.type === "poly3") {
+    return "<em style='color:var(--text-muted);'>Hàm số không có cực trị (y' = 0 có nghiệm kép hoặc vô nghiệm, y' không đổi dấu).</em>";
+  }
+  if (analysis.type === "rational1_1" || analysis.type === "rational_hole") {
+    return "<em style='color:var(--text-muted);'>Hàm số không có cực trị (y' luôn đồng dấu trên từng khoảng xác định).</em>";
+  }
+  return "<em style='color:var(--text-muted);'>Hàm số không có điểm cực trị.</em>";
+}
+
+function renderBBTTableHTML(bbt, analysis) {
+  if (!bbt || !bbt.xPoints || bbt.xPoints.length === 0) {
+    return `<div style="padding:10px; color:var(--text-muted); font-style:italic;">Không thể khởi tạo bảng biến thiên cho dạng hàm này.</div>`;
+  }
+
+  let xCells = `<th class="bbt-header-col">x</th>`;
+  bbt.xPoints.forEach((pt, i) => {
+    if (i > 0) {
+      xCells += `<td style="color:var(--text-muted); min-width:30px;"></td>`;
+    }
+    const isDouble = pt.isDoubleBar;
+    xCells += `<td class="${isDouble ? "bbt-double-bar" : ""}" style="font-weight:700;">${pt.label}</td>`;
+  });
+
+  let yPrimeCells = `<th class="bbt-header-col">y'</th>`;
+  bbt.xPoints.forEach((pt, i) => {
+    if (i > 0) {
+      const sign = (bbt.yPrimeSigns && bbt.yPrimeSigns[i - 1]) || "+";
+      const signColor = sign === "+" ? "#16a34a" : "#dc2626";
+      yPrimeCells += `<td style="font-weight:800; color:${signColor}; font-size:1.1rem;">${sign}</td>`;
+    }
+    if (pt.val === -Infinity || pt.val === Infinity) {
+      yPrimeCells += `<td></td>`;
+    } else if (pt.isDoubleBar) {
+      yPrimeCells += `<td class="bbt-double-bar" style="font-weight:700;">||</td>`;
+    } else {
+      yPrimeCells += `<td style="font-weight:700; color:var(--text-muted);">0</td>`;
+    }
+  });
+
+  let yCells = `<th class="bbt-header-col">y</th>`;
+  bbt.xPoints.forEach((pt, i) => {
+    if (i > 0) {
+      const sign = (bbt.yPrimeSigns && bbt.yPrimeSigns[i - 1]) || "+";
+      const isUp = sign === "+";
+      const arrowChar = isUp ? "↗" : "↘";
+      const arrowClass = isUp ? "bbt-arrow-up" : "bbt-arrow-down";
+      yCells += `<td><span class="${arrowClass}" style="font-size:1.35rem; font-weight:800;">${arrowChar}</span></td>`;
+    }
+    const yValObj = bbt.yValues ? bbt.yValues[i] : null;
+    const valText = yValObj ? yValObj.text : "";
+    const isDouble = pt.isDoubleBar;
+    if (isDouble) {
+      yCells += `<td class="bbt-double-bar" style="font-weight:700;">||</td>`;
+    } else {
+      const isPeak = yValObj && yValObj.pos === "top";
+      const valClass = isPeak ? "bbt-peak-val" : "bbt-bottom-val";
+      yCells += `<td class="${valClass}" style="vertical-align:${isPeak ? "top" : "bottom"}; padding:6px 4px;">${valText}</td>`;
+    }
+  });
+
+  return `
+    <div class="bbt-wrapper">
+      <table class="bbt-table">
+        <tbody>
+          <tr>${xCells}</tr>
+          <tr>${yPrimeCells}</tr>
+          <tr style="height:56px;">${yCells}</tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderMConclusionTableHTML(mParametric) {
+  if (!mParametric || !mParametric.conclusions || mParametric.conclusions.length === 0) {
+    return `<div style="padding:8px; color:var(--text-muted);">Không có dữ liệu biện luận cho hàm số này.</div>`;
+  }
+
+  let rows = "";
+  mParametric.conclusions.forEach((c) => {
+    const badgeClass = `m-badge-${Math.min(4, c.count)}`;
+    rows += `
+      <tr>
+        <td style="font-weight:700; color:var(--primary); font-family:monospace; font-size:0.95rem;">${c.cond}</td>
+        <td><span class="m-badge-count ${badgeClass}">${c.count} nghiệm</span></td>
+        <td style="color:var(--text-main);">${c.text}</td>
+      </tr>
+    `;
+  });
+
+  return `
+    <table class="m-concl-table">
+      <thead>
+        <tr>
+          <th>Điều kiện tham số m</th>
+          <th>Số nghiệm</th>
+          <th>Kết luận</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderSurveyContent(analysis, expr) {
+  const body = document.getElementById("surveyDialogBody");
+  if (!body) return;
+
+  if (!analysis) {
+    body.innerHTML = `
+      <div class="survey-card" style="text-align:center; padding:24px;">
+        <p style="color:var(--warncolor); font-weight:700; margin-bottom:8px;">Chưa thể phân tích tự động hàm số: ${expr}</p>
+        <p style="color:var(--text-muted); font-size:0.88rem;">Hãy chọn một trong 10 bài toán mẫu của Bộ Test Vàng phía trên để xem khảo sát mẫu chuẩn GDPT 2018.</p>
+      </div>
+    `;
+    return;
+  }
+
+  let asymptotesHTML = "";
+  const hasVertical = analysis.asymptotes && analysis.asymptotes.vertical && analysis.asymptotes.vertical.length > 0;
+  const hasHorizontal = analysis.asymptotes && analysis.asymptotes.horizontal && analysis.asymptotes.horizontal.length > 0;
+  const hasSlant = analysis.asymptotes && analysis.asymptotes.slant && analysis.asymptotes.slant.length > 0;
+  const hasHoles = analysis.removableDiscontinuities && analysis.removableDiscontinuities.length > 0;
+
+  if (hasVertical || hasHorizontal || hasSlant || hasHoles) {
+    let details = "";
+    if (hasHoles) {
+      details += `<div class="survey-detail-row" style="background:rgba(239,68,68,0.1); padding:6px 10px; border-radius:6px; border:1px solid rgba(239,68,68,0.3);">
+        <strong style="color:#dc2626;">⚠️ KHỬ NHÂN TỬ CHUNG:</strong> Đồ thị có lỗ thủng tại ${analysis.removableDiscontinuities.map(h => `(${h.exactX}; ${h.exactY})`).join(", ")}. <strong>KHÔNG CÓ TIỆM CẬN ĐỨNG</strong>!
+      </div>`;
+    }
+    if (hasVertical) {
+      details += `<div class="survey-detail-row"><span class="survey-detail-label">Tiệm cận đứng (TCĐ):</span> <span class="survey-detail-value" style="font-weight:700; color:#dc2626;">${analysis.asymptotes.vertical.map(v => typeof v === "object" ? v.label || v.val : v).join(", ")}</span></div>`;
+    }
+    if (hasHorizontal) {
+      details += `<div class="survey-detail-row"><span class="survey-detail-label">Tiệm cận ngang (TCN):</span> <span class="survey-detail-value" style="font-weight:700; color:#2563eb;">${analysis.asymptotes.horizontal.map(h => typeof h === "object" ? h.label || h.val : h).join(", ")}</span></div>`;
+    }
+    if (hasSlant) {
+      details += `<div class="survey-detail-row"><span class="survey-detail-label">Tiệm cận xiên (TCX):</span> <span class="survey-detail-value" style="font-weight:700; color:#d97706;">${analysis.asymptotes.slant.map(s => typeof s === "object" ? s.label || s.val : s).join(", ")}</span></div>`;
+    }
+    asymptotesHTML = `
+      <div class="survey-card">
+        <div class="survey-card-title">📐 Đường tiệm cận &amp; Gián đoạn</div>
+        ${details}
+      </div>
+    `;
+  }
+
+  body.innerHTML = `
+    <!-- Card 1: Dạng hàm & TXD -->
+    <div class="survey-card">
+      <div class="survey-card-title">📌 Dạng hàm: ${analysis.name}</div>
+      <div class="survey-detail-row">
+        <span class="survey-detail-label">Công thức:</span>
+        <span class="survey-detail-value" style="font-weight:800; color:var(--primary); font-size:1.05rem;">${analysis.originalExpr}</span>
+      </div>
+      <div class="survey-detail-row">
+        <span class="survey-detail-label">Tập xác định:</span>
+        <span class="survey-detail-value" style="font-weight:700;">${analysis.domain || "D = ℝ"}</span>
+      </div>
+    </div>
+
+    <!-- Card 2: Đạo hàm & Cực trị -->
+    <div class="survey-card">
+      <div class="survey-card-title">⚡ Đạo hàm &amp; Điểm cực trị</div>
+      <div class="survey-detail-row">
+        <span class="survey-detail-label">Đạo hàm y':</span>
+        <span class="survey-detail-value" style="font-family:monospace; font-weight:700;">${analysis.derivativeExpr || "y'"}</span>
+      </div>
+      <div class="survey-detail-row">
+        <span class="survey-detail-label">Nghiệm của y' = 0:</span>
+        <span class="survey-detail-value">${analysis.derivativeRoots && analysis.derivativeRoots.length ? analysis.derivativeRoots.map(r => `x = ${r.exactX || r.x}`).join(", ") : "Vô nghiệm hoặc không đổi dấu"}</span>
+      </div>
+      <div class="survey-detail-row">
+        <span class="survey-detail-label">Điểm cực trị:</span>
+        <span class="survey-detail-value">${renderExtremaText(analysis)}</span>
+      </div>
+      ${analysis.inflections && analysis.inflections.length ? `
+        <div class="survey-detail-row">
+          <span class="survey-detail-label">Tâm đối xứng / Điểm uốn:</span>
+          <span class="survey-detail-value" style="font-weight:700; color:#059669;">${analysis.inflections.map(p => `I(${p.exactX}; ${p.exactY})`).join(", ")}</span>
+        </div>` : (analysis.type === "poly4" || analysis.type === "poly4_biquad" ? `
+        <div class="survey-detail-row">
+          <span class="survey-detail-label">Điểm uốn:</span>
+          <span class="survey-detail-value" style="color:var(--text-muted); font-style:italic;">Hàm số y = x⁴ hoặc trùng phương có y'' không đổi dấu nên KHÔNG CÓ điểm uốn.</span>
+        </div>` : "")}
+    </div>
+
+    <!-- Card 3: Tiệm cận -->
+    ${asymptotesHTML}
+
+    <!-- Card 4: Bảng Biến Thiên -->
+    <div class="survey-card">
+      <div class="survey-card-title">📊 Bảng biến thiên (Chuẩn SGK &amp; Đề thi THPT)</div>
+      ${renderBBTTableHTML(analysis.bbt, analysis)}
+    </div>
+
+    <!-- Card 5: Biện luận theo m -->
+    <div class="survey-card">
+      <div class="survey-card-title">🎚️ Biện luận số nghiệm phương trình f(x) = m theo tham số m</div>
+      <div style="font-size:0.86rem; color:var(--text-muted); margin-bottom:8px;">
+        Số nghiệm thực của phương trình f(x) = m là số giao điểm của đồ thị (C) và đường thẳng y = m:
+      </div>
+      ${renderMConclusionTableHTML(analysis.mParametric)}
+      <div style="margin-top:12px; display:flex; gap:8px;">
+        <button type="button" class="btn-primary" id="surveySyncMBtn" style="font-size:0.85rem;">
+          🎛️ Bật &amp; xem đường y = m trên Studio
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Wire sync m button
+  const syncBtn = document.getElementById("surveySyncMBtn");
+  if (syncBtn) {
+    syncBtn.addEventListener("click", () => {
+      state.mParam.show = true;
+      const chk = document.getElementById("toggleMLineCheck");
+      if (chk) chk.checked = true;
+      drawScene();
+      const dlg = document.getElementById("surveyDialog");
+      if (dlg) dlg.close();
+      showToast("Đã kích hoạt đường tham số y = m trên bảng vẽ 2D");
+    });
+  }
 }
 
 function drawTriangleSpecialOverlays(A, B, C, ov) {
@@ -3346,28 +3923,109 @@ function drawScreenSegment(p1, p2, color, width = 2, dashed = false) {
 // ============================================================================
 
 function draw3DGridAndAxes(theme) {
+  // 1. Oxy Floor Grid (z = 0 plane)
   if (state.showGrid) {
-    for (let i = -5; i <= 5; i++) {
-      const p1 = project3D({ x: i, y: -5, z: 0 });
-      const p2 = project3D({ x: i, y: 5, z: 0 });
-      const q1 = project3D({ x: -5, y: i, z: 0 });
-      const q2 = project3D({ x: 5, y: i, z: 0 });
-      drawScreenSegment(p1, p2, theme.grid, 1, false);
-      drawScreenSegment(q1, q2, theme.grid, 1, false);
+    const gridRange = 6;
+    for (let i = -gridRange; i <= gridRange; i++) {
+      const p1 = project3D({ x: i, y: -gridRange, z: 0 });
+      const p2 = project3D({ x: i, y: gridRange, z: 0 });
+      const q1 = project3D({ x: -gridRange, y: i, z: 0 });
+      const q2 = project3D({ x: gridRange, y: i, z: 0 });
+      const isSubtle = i !== 0;
+      drawScreenSegment(p1, p2, isSubtle ? theme.grid : "rgba(30, 100, 180, 0.4)", isSubtle ? 1 : 1.5, false);
+      drawScreenSegment(q1, q2, isSubtle ? theme.grid : "rgba(30, 100, 180, 0.4)", isSubtle ? 1 : 1.5, false);
     }
   }
 
+  // 2. Clear Education-Grade 3D Axes Oxyz with Unit Ticks & Labels
   if (state.showAxes) {
     const O = project3D({ x: 0, y: 0, z: 0 });
-    const X = project3D({ x: 6, y: 0, z: 0 });
-    const Y = project3D({ x: 0, y: 6, z: 0 });
-    const Z = project3D({ x: 0, y: 0, z: 5.5 });
-    drawScreenSegment(O, X, "#b45a14", 2, false);
-    drawScreenSegment(O, Y, "#148250", 2, false);
-    drawScreenSegment(O, Z, "#1e64b4", 2, false);
-    drawScreenPoint(X.x, X.y, "x", "#b45a14", 3.8);
-    drawScreenPoint(Y.x, Y.y, "y", "#148250", 3.8);
-    drawScreenPoint(Z.x, Z.y, "z", "#1e64b4", 3.8);
+
+    // Positive Axes Endpoints
+    const X_pos = project3D({ x: 6.8, y: 0, z: 0 });
+    const Y_pos = project3D({ x: 0, y: 6.8, z: 0 });
+    const Z_pos = project3D({ x: 0, y: 0, z: 6.2 });
+
+    // Negative Axes Endpoints
+    const X_neg = project3D({ x: -4.5, y: 0, z: 0 });
+    const Y_neg = project3D({ x: 0, y: -4.5, z: 0 });
+    const Z_neg = project3D({ x: 0, y: 0, z: -3.5 });
+
+    // Negative Dashed Axes
+    drawScreenSegment(O, X_neg, "rgba(220, 38, 38, 0.4)", 1.4, true);
+    drawScreenSegment(O, Y_neg, "rgba(22, 163, 74, 0.4)", 1.4, true);
+    drawScreenSegment(O, Z_neg, "rgba(37, 99, 235, 0.4)", 1.4, true);
+
+    // Positive Solid Axes
+    drawScreenSegment(O, X_pos, "#dc2626", 2.4, false); // Ox in Red
+    drawScreenSegment(O, Y_pos, "#16a34a", 2.4, false); // Oy in Green
+    drawScreenSegment(O, Z_pos, "#2563eb", 2.4, false); // Oz in Blue
+
+    // 3D Arrowhead drawing helper
+    const drawAxisArrow = (pTo, fromPt, color) => {
+      const angle = Math.atan2(pTo.y - fromPt.y, pTo.x - fromPt.x);
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(pTo.x, pTo.y);
+      ctx.lineTo(pTo.x - 12 * Math.cos(angle - Math.PI / 7), pTo.y - 12 * Math.sin(angle - Math.PI / 7));
+      ctx.lineTo(pTo.x - 12 * Math.cos(angle + Math.PI / 7), pTo.y - 12 * Math.sin(angle + Math.PI / 7));
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+
+    drawAxisArrow(X_pos, project3D({ x: 6.2, y: 0, z: 0 }), "#dc2626");
+    drawAxisArrow(Y_pos, project3D({ x: 0, y: 6.2, z: 0 }), "#16a34a");
+    drawAxisArrow(Z_pos, project3D({ x: 0, y: 0, z: 5.6 }), "#2563eb");
+
+    // Unit Ticks & Numeric Labels for 1, 2, 3, 4, 5 and -1, -2
+    ctx.save();
+    ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
+    ctx.fillStyle = theme.isLight ? "#334155" : "#cbd5e1";
+
+    for (let u = -4; u <= 6; u++) {
+      if (u === 0) continue;
+      // Ox Ticks
+      const ptX = project3D({ x: u, y: 0, z: 0 });
+      const tickX1 = project3D({ x: u, y: 0, z: -0.15 });
+      const tickX2 = project3D({ x: u, y: 0, z: 0.15 });
+      drawScreenSegment(tickX1, tickX2, "#dc2626", 1.5, false);
+      if (Math.abs(u) <= 5) ctx.fillText(String(u), ptX.x + 4, ptX.y + 13);
+
+      // Oy Ticks
+      const ptY = project3D({ x: 0, y: u, z: 0 });
+      const tickY1 = project3D({ x: 0, y: u, z: -0.15 });
+      const tickY2 = project3D({ x: 0, y: u, z: 0.15 });
+      drawScreenSegment(tickY1, tickY2, "#16a34a", 1.5, false);
+      if (Math.abs(u) <= 5) ctx.fillText(String(u), ptY.x + 5, ptY.y + 11);
+
+      // Oz Ticks
+      if (u >= -3 && u <= 5) {
+        const ptZ = project3D({ x: 0, y: 0, z: u });
+        const tickZ1 = project3D({ x: -0.15, y: 0, z: u });
+        const tickZ2 = project3D({ x: 0.15, y: 0, z: u });
+        drawScreenSegment(tickZ1, tickZ2, "#2563eb", 1.5, false);
+        ctx.fillText(String(u), ptZ.x + 7, ptZ.y + 4);
+      }
+    }
+
+    // Bold Axis Labels
+    ctx.font = 'italic bold 16px "Cambria Math", Georgia, serif';
+    ctx.fillStyle = "#dc2626";
+    ctx.fillText("x", X_pos.x + 10, X_pos.y + 4);
+    ctx.fillStyle = "#16a34a";
+    ctx.fillText("y", Y_pos.x + 10, Y_pos.y + 4);
+    ctx.fillStyle = "#2563eb";
+    ctx.fillText("z", Z_pos.x + 6, Z_pos.y - 8);
+
+    // Origin Mark O(0,0,0)
+    ctx.fillStyle = theme.isLight ? "#0f172a" : "#f8fafc";
+    ctx.fillText("O", O.x - 16, O.y + 16);
+    ctx.beginPath();
+    ctx.arc(O.x, O.y, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
 }
 

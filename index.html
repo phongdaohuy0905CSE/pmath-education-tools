@@ -12,8 +12,8 @@
   <title>PMATH EDUCATION TOOLS — Không Gian Oxyz, Vectơ Vận Tốc 3D &amp; Hình Học Động THPT</title>
   <!-- Core Styles & Fonts (AxMath + KaTeX + Times New Roman) -->
   <link rel="stylesheet" href="./assets/index-B5VXrJpN.css" />
-  <!-- PMATH Education Signature Styles -->
-  <link rel="stylesheet" href="./styles.css" />
+  <!-- PMATH Education Signature Styles (Cache Busted v3.0) -->
+  <link rel="stylesheet" href="./styles.css?v=3.0" />
 </head>
 <body>
   <!-- ===================================================================== -->
@@ -48,10 +48,10 @@
 
       <!-- Mục thứ 4: Tra cứu (Gộp Bảng công thức & 24 chuyên đề vào 1 menu thả xuống) -->
       <div class="top-dropdown-wrap" id="referenceDropdownWrap">
-        <button type="button" class="pmath-nav-tab" id="topReferenceMenuBtn" title="Tra cứu Bảng công thức &amp; Tài liệu 24 chuyên đề">
+        <button type="button" class="pmath-nav-tab" id="topReferenceMenuBtn" aria-expanded="false" title="Tra cứu Bảng công thức &amp; Tài liệu 24 chuyên đề">
           <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Tra cứu ▾
         </button>
-        <div class="top-dropdown-menu" id="referenceDropdownMenu">
+        <div class="top-dropdown-menu" id="referenceDropdownMenu" style="display: none;">
           <button type="button" class="top-dropdown-item" id="topOpenFormulaSheetBtn">
             <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="13" y2="16"/></svg>
             <div>
@@ -78,10 +78,10 @@
 
       <!-- Menu Tệp & Tùy chọn (Gom Sao lưu .json, Chống tỳ tay iPad, Phím tắt và Trạng thái lưu) -->
       <div class="top-dropdown-wrap" id="moreOptionsDropdownWrap">
-        <button type="button" class="btn-top-action" id="topMoreOptionsBtn" title="Sao lưu tệp .json, chế độ bút iPad &amp; phím tắt">
+        <button type="button" class="btn-top-action" id="topMoreOptionsBtn" aria-expanded="false" title="Sao lưu tệp .json, chế độ bút iPad &amp; phím tắt">
           <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Tệp &amp; Tùy chọn ▾
         </button>
-        <div class="top-dropdown-menu right" id="moreOptionsDropdownMenu">
+        <div class="top-dropdown-menu right top-dropdown-right" id="moreOptionsDropdownMenu" style="display: none;">
           <div class="top-dropdown-status" id="autoSaveBadge">
             <span class="autosave-indicator"></span>
             <span id="autoSaveText">Đã lưu vào trình duyệt</span>
@@ -422,6 +422,32 @@
         <button class="space-btn" id="mode3DBtn" data-space="3d">Không gian 3D (Oxyz)</button>
       </div>
 
+      <!-- 2D Graphing Mode Tools: Khảo sát hàm số chuẩn đề thi & Slider m -->
+      <div class="graph-2d-toolbar" id="graph2dToolbar" style="display:flex; align-items:center; gap:8px;">
+        <button type="button" class="btn-primary" id="openSurveyDialogBtn" title="Khảo sát chi tiết hàm số, vẽ Bảng biến thiên SGK và Biện luận m">
+          📊 Khảo sát hàm số &amp; BBT
+        </button>
+        <div class="m-slider-pill" id="mSliderPill" style="display:inline-flex; align-items:center; gap:6px; background:var(--defbg); padding:3px 10px; border-radius:6px; border:1px solid var(--border-color); font-size:0.82rem;">
+          <label style="display:inline-flex; align-items:center; gap:4px; font-weight:700; color:var(--defcolor); cursor:pointer;">
+            <input type="checkbox" id="toggleMLineCheck" checked />
+            Đường y = m:
+          </label>
+          <input type="range" id="mParamSlider" min="-6" max="6" step="0.1" value="0" style="width:90px; cursor:pointer;" />
+          <strong id="mSliderValueDisp" style="min-width:38px; color:var(--defcolor);">0,0</strong>
+          <span id="mRootCountDisp" style="font-weight:700; color:var(--excolor); padding:1px 6px; background:var(--exbg); border-radius:4px;">1 nghiệm</span>
+        </div>
+      </div>
+
+      <!-- 3D Oxyz Preset Viewpoints & Camera Controls -->
+      <div class="camera-3d-toolbar" id="camera3dToolbar" style="display:none; align-items:center; gap:6px;">
+        <span style="font-size:0.82rem; font-weight:700; color:var(--defcolor);">Góc nhìn 3D:</span>
+        <button type="button" class="cad-btn" id="camPresetIsoBtn" title="Góc phối cảnh chuẩn (35°/45°)">Phối cảnh</button>
+        <button type="button" class="cad-btn" id="camPresetTopBtn" title="Nhìn từ trên xuống mặt phẳng Oxy">Mặt Oxy</button>
+        <button type="button" class="cad-btn" id="camPresetFrontBtn" title="Nhìn chính diện mặt phẳng Oxz">Mặt Oxz</button>
+        <button type="button" class="cad-btn" id="camPresetSideBtn" title="Nhìn từ cạnh bên mặt phẳng Oyz">Mặt Oyz</button>
+        <button type="button" class="cad-btn" id="camResetBtn" title="Đặt lại góc xoay ban đầu">↺ Đặt lại góc</button>
+      </div>
+
       <!-- Quick Motion Simulation Button for 3D Velocity -->
       <div class="motion-quick-bar" id="motionQuickBar" style="display:none;">
         <span style="font-size:0.82rem; font-weight:700; color:var(--warncolor);">Chuyển động Oxyz:</span>
@@ -627,6 +653,45 @@
       <div class="footer-right"><span>Chương trình GDPT 2018</span></div>
     </footer>
   </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: KHẢO SÁT HÀM SỐ, BẢNG BIẾN THIÊN & BIỆN LUẬN m (GDPT 2018)     -->
+  <!-- ===================================================================== -->
+  <dialog class="app-dialog survey-dialog" id="surveyDialog" style="max-width: 820px; width: 94vw;">
+    <div class="dialog-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="fh-badge-pill">CHUẨN GDPT 2018 &amp; ĐỀ THI THPT</span>
+        <h3 id="surveyDialogTitle" style="margin:0; font-size:1.1rem; color:var(--text-main);">Khảo sát hàm số &amp; Bảng biến thiên</h3>
+      </div>
+      <button type="button" class="dialog-close-btn" id="closeSurveyDialogBtn">✕</button>
+    </div>
+
+    <!-- Gold Test Suite Quick Chips for Instant Verification -->
+    <div class="survey-gold-suite" style="padding: 8px 16px; background: var(--defbg); border-bottom: 1px solid var(--border-color); display:flex; flex-direction:column; gap:5px;">
+      <div style="font-size:0.78rem; font-weight:700; color:var(--defcolor);">
+        Bộ test vàng chuẩn đề thi (Bấm để khảo sát &amp; vẽ ngay):
+      </div>
+      <div class="gold-chips-scroll" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;" id="goldTestChipsRow">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <div class="dialog-body" id="surveyDialogBody" style="padding:16px; display:flex; flex-direction:column; gap:16px; max-height:calc(85vh - 120px); overflow-y:auto;">
+      <!-- Injected dynamically by renderSurveyContent() -->
+    </div>
+
+    <div class="dialog-footer" style="display:flex; justify-content:space-between; align-items:center; padding:10px 16px; border-top:1px solid var(--border-color); background:var(--bg-card);">
+      <div style="display:flex; gap:6px;">
+        <button type="button" class="cad-btn" id="copyTkzTabBtn" title="Sao chép mã LaTeX tkz-tab để dán vào tài liệu Word/LaTeX">
+          📋 Xuất LaTeX (tkz-tab)
+        </button>
+        <button type="button" class="cad-btn" id="copyTikzPlotBtn" title="Sao chép mã LaTeX TikZ / pgfplots để vẽ đồ thị">
+          📈 Xuất TikZ (pgfplots)
+        </button>
+      </div>
+      <button type="button" class="btn-primary" id="closeSurveyDialogBottomBtn">Đóng</button>
+    </div>
+  </dialog>
 
   <!-- ===================================================================== -->
   <!-- MODAL: SỬA ĐỐI TƯỢNG, ĐỔI TÊN & TỌA ĐỘ HỢP NHẤT                      -->
@@ -1073,19 +1138,26 @@
       const moreMenu = document.getElementById("moreOptionsDropdownMenu");
 
       function closeAllTopDropdowns() {
-        if (refMenu) refMenu.classList.remove("open");
+        if (refMenu) {
+          refMenu.classList.remove("open");
+          refMenu.style.display = "none";
+        }
         if (refBtn) refBtn.setAttribute("aria-expanded", "false");
-        if (moreMenu) moreMenu.classList.remove("open");
+        if (moreMenu) {
+          moreMenu.classList.remove("open");
+          moreMenu.style.display = "none";
+        }
         if (moreBtn) moreBtn.setAttribute("aria-expanded", "false");
       }
 
       if (refBtn && refMenu) {
         refBtn.addEventListener("click", (e) => {
           e.stopPropagation();
-          const isOpen = refMenu.classList.contains("open");
+          const isOpen = refMenu.style.display === "flex" || refMenu.classList.contains("open");
           closeAllTopDropdowns();
           if (!isOpen) {
             refMenu.classList.add("open");
+            refMenu.style.display = "flex";
             refBtn.setAttribute("aria-expanded", "true");
           }
         });
@@ -1094,10 +1166,11 @@
       if (moreBtn && moreMenu) {
         moreBtn.addEventListener("click", (e) => {
           e.stopPropagation();
-          const isOpen = moreMenu.classList.contains("open");
+          const isOpen = moreMenu.style.display === "flex" || moreMenu.classList.contains("open");
           closeAllTopDropdowns();
           if (!isOpen) {
             moreMenu.classList.add("open");
+            moreMenu.style.display = "flex";
             moreBtn.setAttribute("aria-expanded", "true");
           }
         });
@@ -1480,6 +1553,7 @@
   <script defer src="./data.js"></script>
   <script defer src="./formulas-data.js"></script>
   <script defer src="./equations.js"></script>
+  <script defer src="./analysis-engine.js"></script>
   <script defer src="./app.js"></script>
   <script defer src="./knowledge-handbook.js"></script>
 </body>

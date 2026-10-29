@@ -341,29 +341,30 @@ dialog.app-dialog * {
 }
 
 .top-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 7px);
-  left: 0;
+  position: absolute !important;
+  top: calc(100% + 7px) !important;
+  left: 0 !important;
   min-width: 280px;
   background: var(--bg-card, #ffffff);
   border: 1.5px solid var(--border-strong, #bdd3eb);
   border-radius: 10px;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.22);
   padding: 6px;
   display: none;
   flex-direction: column;
   gap: 3px;
-  z-index: 2000;
+  z-index: 999999 !important;
 }
 
-.top-dropdown-menu.top-dropdown-right {
-  left: auto;
-  right: 0;
+.top-dropdown-menu.top-dropdown-right,
+.top-dropdown-menu.right {
+  left: auto !important;
+  right: 0 !important;
   min-width: 300px;
 }
 
 .top-dropdown-menu.open {
-  display: flex;
+  display: flex !important;
 }
 
 .top-dropdown-item {
@@ -4512,3 +4513,203 @@ dialog.login-dialog {
     touch-action: manipulation;
   }
 }
+
+/* ==========================================================================
+   VIETNAMESE CALCULUS SURVEY & BẢNG BIẾN THIÊN (GDPT 2018 THPT)
+   ========================================================================== */
+
+dialog.survey-dialog {
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border-color);
+  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.32);
+}
+
+.gold-chips-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.gold-chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.gold-chip-btn:hover {
+  background: var(--primary-light, #e0f2fe);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.gold-chip-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+}
+
+.survey-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.survey-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--defcolor);
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 6px;
+}
+
+.survey-detail-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 7px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.survey-detail-label {
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.survey-detail-value {
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+/* Bảng Biến Thiên SGK Việt Nam */
+.bbt-wrapper {
+  overflow-x: auto;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+}
+
+.bbt-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-family: var(--pmath-font);
+  font-size: 0.9rem;
+}
+
+.bbt-table th,
+.bbt-table td {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+}
+
+.bbt-header-col {
+  width: 70px;
+  background: var(--defbg);
+  font-weight: 700;
+  color: var(--defcolor);
+  border-right: 2.5px solid var(--border-color) !important;
+}
+
+.bbt-double-bar {
+  border-left: 2px solid var(--border-color) !important;
+  border-right: 2px solid var(--border-color) !important;
+  padding: 0 3px !important;
+}
+
+.bbt-arrow-cell {
+  position: relative;
+  height: 64px;
+  vertical-align: middle;
+}
+
+.bbt-arrow-up {
+  color: #16a34a;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bbt-arrow-down {
+  color: #dc2626;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bbt-peak-val {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.bbt-bottom-val {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+/* Biện luận số nghiệm theo tham số m */
+.m-concl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.m-concl-table th {
+  background: var(--defbg);
+  color: var(--defcolor);
+  padding: 7px 12px;
+  font-weight: 700;
+  border: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.m-concl-table td {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+}
+
+.m-concl-table tr.active-interval {
+  background: rgba(37, 99, 235, 0.12);
+  border-left: 3px solid var(--primary);
+  font-weight: 700;
+}
+
+.m-badge-count {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.m-badge-0 { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
+.m-badge-1 { background: rgba(59, 130, 246, 0.18); color: #2563eb; }
+.m-badge-2 { background: rgba(22, 163, 74, 0.18); color: #16a34a; }
+.m-badge-3 { background: rgba(217, 119, 6, 0.18); color: #d97706; }
+.m-badge-4 { background: rgba(220, 38, 38, 0.18); color: #dc2626; }
+
