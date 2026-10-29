@@ -311,6 +311,7 @@ const GeoEquations = {
           type: "point3d",
           name,
           x, y, z,
+          dropline: true,
           equationText: `${name}(${x}, ${y}, ${z})`
         };
       }
@@ -320,6 +321,56 @@ const GeoEquations = {
         name,
         x, y,
         equationText: `${name}(${x}, ${y})`
+      };
+    }
+
+    // 1b. Check 3D Vector: e.g. u = (1, 2, 3), v = (3, -1, 2), vec(1, 2, 3)
+    const mNamedVec = raw.match(
+      /^([A-Za-z_]\w*)\s*=\s*\(\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*\)$/i
+    );
+    const mAnonVec = raw.match(
+      /^vec(?:tor)?\s*\(\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*\)$/i
+    );
+    if (mNamedVec || mAnonVec) {
+      let vName = "u⃗";
+      let vx = 0, vy = 0, vz = 0;
+      if (mNamedVec) {
+        vName = `${mNamedVec[1]}⃗`;
+        vx = parseFloat(mNamedVec[2]);
+        vy = parseFloat(mNamedVec[3]);
+        vz = parseFloat(mNamedVec[4]);
+      } else {
+        vx = parseFloat(mAnonVec[1]);
+        vy = parseFloat(mAnonVec[2]);
+        vz = parseFloat(mAnonVec[3]);
+      }
+      return {
+        space: "3d",
+        type: "vector3d",
+        name: vName,
+        x: vx,
+        y: vy,
+        z: vz,
+        x0: 0,
+        y0: 0,
+        z0: 0,
+        equationText: `${vName} = (${vx}, ${vy}, ${vz})`
+      };
+    }
+
+    // 1c. Check 3D Parametric Space Curve: e.g. (cos(t), sin(t), 0.25*t)
+    const curveMatch = raw.match(/^\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^)]+)\s*\)$/);
+    if (curveMatch && (/t/i.test(raw) || /cos|sin|tan/i.test(raw))) {
+      return {
+        space: "3d",
+        type: "curve3d",
+        name: "γ(t)",
+        fxExpr: curveMatch[1].trim(),
+        fyExpr: curveMatch[2].trim(),
+        fzExpr: curveMatch[3].trim(),
+        tMin: -8,
+        tMax: 8,
+        equationText: raw
       };
     }
 

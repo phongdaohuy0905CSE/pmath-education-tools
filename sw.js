@@ -1,10 +1,10 @@
-// PMATH EDUCATION TOOLS — Service Worker (Offline & Cache Optimization v3.0)
-const CACHE_NAME = "pmath-cache-v3.0";
+// PMATH EDUCATION TOOLS — Service Worker (Offline & Cache Optimization v3.1)
+const CACHE_NAME = "pmath-cache-v3.1";
 
 const STATIC_ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=3.0",
+  "./styles.css?v=3.1",
   "./app.js",
   "./data.js",
   "./formulas-data.js",

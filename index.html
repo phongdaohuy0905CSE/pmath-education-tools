@@ -438,14 +438,76 @@
         </div>
       </div>
 
-      <!-- 3D Oxyz Preset Viewpoints & Camera Controls -->
+      <!-- 3D Oxyz Preset Viewpoints & Camera Controls (Desmos 3D Engine) -->
       <div class="camera-3d-toolbar" id="camera3dToolbar" style="display:none; align-items:center; gap:6px;">
-        <span style="font-size:0.82rem; font-weight:700; color:var(--defcolor);">Góc nhìn 3D:</span>
+        <!-- Desmos 3D Presets Dropdown -->
+        <div class="top-nav-dropdown" style="position:relative;">
+          <button type="button" class="btn-primary" id="desmos3DPresetsBtn" title="Thư viện các hình mẫu không gian chuẩn Desmos 3D &amp; SGK GDPT 2018">
+            ✨ Mẫu 3D Desmos ▾
+          </button>
+          <div class="top-dropdown-menu" id="desmos3DPresetsMenu" style="display:none; position:absolute; top:calc(100% + 7px); left:0; min-width:320px; z-index:999999;">
+            <div style="padding:6px 12px; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Mặt cong &amp; Paraboloid (Desmos 3D)</div>
+            <button type="button" class="top-dropdown-item desmos-preset-item" data-preset="paraboloid_elliptic">
+              <span class="top-item-title">🥣 Paraboloid eliptic (Cái chén)</span>
+              <span class="top-item-desc">z = x² + y² (Mặt cong đối xứng)</span>
+            </button>
+            <button type="button" class="top-dropdown-item desmos-preset-item" data-preset="paraboloid_saddle">
+              <span class="top-item-title">🐎 Yên ngựa (Hyperbolic paraboloid)</span>
+              <span class="top-item-desc">z = x² - y² (Điểm yên ngựa tại O)</span>
+            </button>
+            <button type="button" class="top-dropdown-item desmos-preset-item" data-preset="surface_wave">
+              <span class="top-item-title">🌊 Mặt sóng nước lượng giác</span>
+              <span class="top-item-desc">z = sin(x) · cos(y)</span>
+            </button>
+            <button type="button" class="top-dropdown-item desmos-preset-item" data-preset="cone_surface">
+              <span class="top-item-title">🔺 Mặt nón tròn xoay</span>
+              <span class="top-item-desc">z = √(x² + y²)</span>
+            </button>
+            <div style="border-top:1px solid var(--border-color); margin:4px 0;"></div>
+            <div style="padding:6px 12px; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Hình học giải tích Oxyz (SGK Lớp 12)</div>
+            <button type="button" class="top-dropdown-item desmos-preset-item" data-preset="sphere_std">
+              <span class="top-item-title">🌐 Mặt cầu tâm O, R = 3</span>
+              <span class="top-item-desc">x² + y² + z² = 9</span>
+            </button>
+            <button type="button" class="top-dropdown-item desmos-preset-item" data-preset="plane_std">
+              <span class="top-item-title">📐 Mặt phẳng trong hộp 3D</span>
+              <span class="top-item-desc">2x - y + 2z - 4 = 0</span>
+            </button>
+            <button type="button" class="top-dropdown-item desmos-preset-item" data-preset="sphere_plane_intersect">
+              <span class="top-item-title">⭕ Giao tuyến Mặt cầu &amp; Mặt phẳng</span>
+              <span class="top-item-desc">Mặt cầu x²+y²+z²=9 cắt mặt phẳng z=1</span>
+            </button>
+            <button type="button" class="top-dropdown-item desmos-preset-item" data-preset="point_dropline">
+              <span class="top-item-title">📍 Điểm M(2; 3; 4) &amp; Gióng hình chiếu</span>
+              <span class="top-item-desc">Chiếu vuông góc xuống 3 trục và sàn Oxy</span>
+            </button>
+            <button type="button" class="top-dropdown-item desmos-preset-item" data-preset="vectors_angle">
+              <span class="top-item-title">↗ Cặp vectơ &amp; Góc trong không gian</span>
+              <span class="top-item-desc">u⃗(2, 3, 2), v⃗(3, -1, 2) &amp; Tích có hướng</span>
+            </button>
+            <button type="button" class="top-dropdown-item desmos-preset-item" data-preset="helix_curve">
+              <span class="top-item-title">🌀 Đường xoắn ốc Helix</span>
+              <span class="top-item-desc">x = cos(t), y = sin(t), z = 0.25t</span>
+            </button>
+          </div>
+        </div>
+
+        <span style="font-size:0.82rem; font-weight:700; color:var(--defcolor);">Góc nhìn:</span>
         <button type="button" class="cad-btn" id="camPresetIsoBtn" title="Góc phối cảnh chuẩn (35°/45°)">Phối cảnh</button>
         <button type="button" class="cad-btn" id="camPresetTopBtn" title="Nhìn từ trên xuống mặt phẳng Oxy">Mặt Oxy</button>
         <button type="button" class="cad-btn" id="camPresetFrontBtn" title="Nhìn chính diện mặt phẳng Oxz">Mặt Oxz</button>
         <button type="button" class="cad-btn" id="camPresetSideBtn" title="Nhìn từ cạnh bên mặt phẳng Oyz">Mặt Oyz</button>
-        <button type="button" class="cad-btn" id="camResetBtn" title="Đặt lại góc xoay ban đầu">↺ Đặt lại góc</button>
+        <button type="button" class="cad-btn" id="camResetBtn" title="Đặt lại góc xoay ban đầu">↺ Đặt lại</button>
+
+        <!-- Desmos 3D Bounding Box & Floor Toggles -->
+        <label style="display:inline-flex; align-items:center; gap:4px; font-size:0.8rem; font-weight:600; cursor:pointer; color:var(--text-main); margin-left:4px;">
+          <input type="checkbox" id="toggle3DBoxCheck" checked />
+          Hộp 3D
+        </label>
+        <label style="display:inline-flex; align-items:center; gap:4px; font-size:0.8rem; font-weight:600; cursor:pointer; color:var(--text-main);">
+          <input type="checkbox" id="toggle3DFloorCheck" checked />
+          Lưới sàn
+        </label>
       </div>
 
       <!-- Quick Motion Simulation Button for 3D Velocity -->
@@ -1131,11 +1193,13 @@
       if (topBtnNR) topBtnNR.addEventListener("click", activateNR);
       if (topBtnGL) topBtnGL.addEventListener("click", () => activateGeoLab());
 
-      // Top bar dropdown menus ("Tra cứu ▾" & "Tệp & Tùy chọn ▾")
+      // Top bar dropdown menus ("Tra cứu ▾", "Tệp & Tùy chọn ▾", "Mẫu 3D Desmos ▾")
       const refBtn = document.getElementById("topReferenceMenuBtn");
       const refMenu = document.getElementById("referenceDropdownMenu");
       const moreBtn = document.getElementById("topMoreOptionsBtn");
       const moreMenu = document.getElementById("moreOptionsDropdownMenu");
+      const d3dBtn = document.getElementById("desmos3DPresetsBtn");
+      const d3dMenu = document.getElementById("desmos3DPresetsMenu");
 
       function closeAllTopDropdowns() {
         if (refMenu) {
@@ -1148,6 +1212,11 @@
           moreMenu.style.display = "none";
         }
         if (moreBtn) moreBtn.setAttribute("aria-expanded", "false");
+        if (d3dMenu) {
+          d3dMenu.classList.remove("open");
+          d3dMenu.style.display = "none";
+        }
+        if (d3dBtn) d3dBtn.setAttribute("aria-expanded", "false");
       }
 
       if (refBtn && refMenu) {
@@ -1176,8 +1245,21 @@
         });
       }
 
+      if (d3dBtn && d3dMenu) {
+        d3dBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = d3dMenu.style.display === "flex" || d3dMenu.classList.contains("open");
+          closeAllTopDropdowns();
+          if (!isOpen) {
+            d3dMenu.classList.add("open");
+            d3dMenu.style.display = "flex";
+            d3dBtn.setAttribute("aria-expanded", "true");
+          }
+        });
+      }
+
       document.addEventListener("click", () => closeAllTopDropdowns());
-      [refMenu, moreMenu].forEach((menu) => {
+      [refMenu, moreMenu, d3dMenu].forEach((menu) => {
         if (!menu) return;
         menu.addEventListener("click", (e) => {
           if (e.target.closest(".top-dropdown-item")) {

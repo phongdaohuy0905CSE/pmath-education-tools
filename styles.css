@@ -388,13 +388,15 @@ dialog.app-dialog * {
   border-color: var(--border-color, #cbd5e1);
 }
 
-.td-item-title {
+.td-item-title,
+.top-item-title {
   font-size: 0.86rem;
   font-weight: 700;
   color: var(--defcolor, #1e64b4);
 }
 
-.td-item-desc {
+.td-item-desc,
+.top-item-desc {
   font-size: 0.75rem;
   color: var(--text-muted, #64748b);
   line-height: 1.35;
