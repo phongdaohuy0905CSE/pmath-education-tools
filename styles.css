@@ -324,8 +324,97 @@ dialog.app-dialog * {
 }
 
 .btn-top-action.theme-action-btn {
-  padding: 5px 9px;
-  font-size: 1rem;
+  padding: 5px 11px;
+  font-size: 0.84rem;
+}
+
+/* Top Bar Dropdown Menus ("Tra cứu ▾" & "Tệp & Tùy chọn ▾") */
+.top-dropdown-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.top-dropdown-caret {
+  font-size: 0.72rem;
+  margin-left: 3px;
+  opacity: 0.85;
+}
+
+.top-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 0;
+  min-width: 280px;
+  background: var(--bg-card, #ffffff);
+  border: 1.5px solid var(--border-strong, #bdd3eb);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+  padding: 6px;
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 2000;
+}
+
+.top-dropdown-menu.top-dropdown-right {
+  left: auto;
+  right: 0;
+  min-width: 300px;
+}
+
+.top-dropdown-menu.open {
+  display: flex;
+}
+
+.top-dropdown-item {
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-main, #1e293b);
+  padding: 8px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  transition: background 0.14s ease, border-color 0.14s ease;
+}
+
+.top-dropdown-item:hover {
+  background: var(--defbg, #f0f8ff);
+  border-color: var(--border-color, #cbd5e1);
+}
+
+.td-item-title {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--defcolor, #1e64b4);
+}
+
+.td-item-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+  line-height: 1.35;
+}
+
+.top-dropdown-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--excolor, #148250);
+  background: var(--exbg, #ebf9f2);
+  border-radius: 6px;
+}
+
+.top-dropdown-divider {
+  height: 1px;
+  background: var(--border-color, #e2e8f0);
+  margin: 3px 4px;
 }
 
 .motion-quick-bar {

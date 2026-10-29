@@ -277,8 +277,8 @@
     hubState.editingFormulaId = existing ? existing.id : null;
 
     document.getElementById("feModalTitle").textContent = existing
-      ? `✏️ Cập Nhật Công Thức: ${existing.title}`
-      : "➕ Thêm Công Thức Mới Vào Bảng Công Thức";
+      ? `Cập nhật công thức: ${existing.title}`
+      : "+ Thêm công thức mới vào Bảng công thức";
 
     document.getElementById("feTitleInput").value = existing ? existing.title : "";
     document.getElementById("feCategorySelect").value = existing
@@ -440,12 +440,12 @@
         const isActive = item.id === hubState.activeTopicId;
         const catBadge =
           item.category === "2d"
-            ? "2D Phẳng"
+            ? "Hình phẳng 2D"
             : item.category === "3d"
-            ? "3D Không gian"
+            ? "Khối không gian 3D"
             : item.category === "motion"
-            ? "🚀 Vận tốc Oxyz"
-            : "Đường & Điểm";
+            ? "Chuyển động Oxyz"
+            : "Đường & Điểm đặc biệt";
         return `
           <li class="kh-topic-item ${isActive ? "active" : ""}" data-tid="${item.id}">
             <div class="kh-topic-icon">${item.icon || "📘"}</div>
@@ -501,7 +501,7 @@
           <div>
             <div class="kh-detail-badges">
               <span class="kh-badge-group">${escapeHtml(topic.group || "Chuyên đề Toán THPT")}</span>
-              <span class="kh-badge-cat">${topic.category === "3d" || topic.category === "motion" ? "Không Gian 3D / Oxyz" : "Hình Học Phẳng 2D"}</span>
+              <span class="kh-badge-cat">${topic.category === "3d" || topic.category === "motion" ? "Không gian 3D / Oxyz" : "Hình học phẳng 2D"}</span>
             </div>
             <h2 class="kh-detail-title">${escapeHtml(topic.name)}</h2>
             <p class="kh-detail-subtitle">${escapeHtml(topic.subtitle)}</p>
@@ -510,13 +510,13 @@
 
         <div class="kh-detail-actions">
           <button type="button" class="btn-secondary kh-action-btn" id="khEditTopicBtn" title="Chỉnh sửa lý thuyết hoặc thêm ghi chú cá nhân cho chuyên đề này">
-            ✏️ Sửa &amp; Ghi Chú
+            Sửa và ghi chú
           </button>
-          <button type="button" class="btn-secondary kh-action-btn" id="khOpenFormulasBtn" title="Mở Bảng Công Thức Toán Học">
-            📋 Bảng Công Thức
+          <button type="button" class="btn-secondary kh-action-btn" id="khOpenFormulasBtn" title="Mở Bảng công thức">
+            Mở Bảng công thức
           </button>
-          <button type="button" class="btn-primary kh-action-btn" id="khLaunchStudioBtn" title="Đưa hình vẽ của chuyên đề này vào Bảng vẽ Studio">
-            🚀 Mở Hình Trên Studio
+          <button type="button" class="btn-primary kh-action-btn" id="khLaunchStudioBtn" title="Đưa hình vẽ của chuyên đề này vào Không gian Oxyz & Đồ thị">
+            Đưa hình vào khung vẽ
           </button>
         </div>
       </div>
@@ -531,13 +531,13 @@
 
       <!-- Section 1: Định nghĩa chuẩn SGK (tcolorbox def) -->
       <section class="kh-box kh-box-def">
-        <div class="kh-box-badge def">📗 I. ĐỊNH NGHĨA &amp; KHÁI NIỆM CỐT LÕI</div>
+        <div class="kh-box-badge def">I. Định nghĩa và khái niệm cốt lõi</div>
         <p class="kh-def-text">${escapeHtml(topic.definition)}</p>
       </section>
 
       <!-- Section 2: Định lý & Tính chất trọng tâm (tcolorbox ex) -->
       <section class="kh-box kh-box-ex">
-        <div class="kh-box-badge ex">📘 II. ĐỊNH LÝ, TÍNH CHẤT &amp; HỆ QUẢ TRỌNG TÂM</div>
+        <div class="kh-box-badge ex">II. Định lý, tính chất và hệ quả trọng tâm</div>
         <ul class="kh-prop-list">
           ${(topic.properties || []).map((p) => `<li>${escapeHtml(p)}</li>`).join("")}
         </ul>
@@ -547,7 +547,7 @@
       ${
         topic.tips && topic.tips.length > 0
           ? `<section class="kh-box kh-box-warn">
-              <div class="kh-box-badge warn">📙 III. PHƯƠNG PHÁP GIẢI &amp; LƯU Ý SAI LẦM THƯỜNG GẶP</div>
+              <div class="kh-box-badge warn">III. Phương pháp giải và lưu ý sai lầm thường gặp</div>
               <ul class="kh-tip-list">
                 ${topic.tips.map((t) => `<li>${escapeHtml(t)}</li>`).join("")}
               </ul>
@@ -559,7 +559,7 @@
       ${
         topic.customNote
           ? `<section class="kh-box kh-box-note">
-              <div class="kh-box-badge note">📝 GHI CHÚ BÀI GIẢNG &amp; BỔ SUNG CÁ NHÂN</div>
+              <div class="kh-box-badge note">Ghi chú bài giảng và bổ sung cá nhân</div>
               <div class="kh-custom-note-body">${escapeHtml(topic.customNote).replace(/\n/g, "<br/>")}</div>
             </section>`
           : ""
@@ -570,8 +570,8 @@
         topic.formulas && topic.formulas.length > 0
           ? `<section class="kh-box kh-box-formulas">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.65rem;">
-                <div class="kh-box-badge tf" style="margin-bottom:0;">📐 IV. CÔNG THỨC ĐẶC TRƯNG CỦA CHUYÊN ĐỀ</div>
-                <button type="button" class="cad-btn mini" id="khJumpAllFormulasBtn">Xem toàn bộ Bảng Công Thức ➔</button>
+                <div class="kh-box-badge tf" style="margin-bottom:0;">IV. Công thức đặc trưng của chuyên đề</div>
+                <button type="button" class="cad-btn mini" id="khJumpAllFormulasBtn">Mở Bảng công thức →</button>
               </div>
               <div class="kh-mini-formulas-grid">
                 ${topic.formulas
@@ -592,13 +592,13 @@
 
       <!-- Section 6: Bài tập Vận dụng tương tác trực tiếp -->
       <section class="kh-box kh-box-quiz">
-        <div class="kh-box-badge ex">🎯 V. BÀI TẬP VẬN DỤNG TƯƠNG TÁC (${escapeHtml(topic.name)})</div>
+        <div class="kh-box-badge ex">V. Bài tập vận dụng tương tác (${escapeHtml(topic.name)})</div>
         <p class="kh-quiz-question">${escapeHtml(q.question)}</p>
         <div class="kh-quiz-controls">
           <input type="number" step="0.01" id="khQuizInput" class="eq-input" placeholder="Nhập đáp số (làm tròn 2 chữ số thập phân)..." style="max-width:280px;" />
-          <button type="button" class="btn-primary" id="khCheckQuizBtn">✓ Kiểm tra đáp án</button>
-          <button type="button" class="btn-secondary" id="khShowSolBtn">💡 Xem lời giải</button>
-          <button type="button" class="btn-secondary" id="khNewQuizBtn">🔄 Đổi số liệu mới</button>
+          <button type="button" class="btn-primary" id="khCheckQuizBtn">Kiểm tra đáp án</button>
+          <button type="button" class="btn-secondary" id="khShowSolBtn">Xem lời giải</button>
+          <button type="button" class="btn-secondary" id="khNewQuizBtn">Đổi số liệu mới</button>
         </div>
         <div id="khQuizFeedback" class="quiz-feedback" style="margin-top:0.65rem;"></div>
       </section>
@@ -682,38 +682,38 @@
       <div class="kh-editor-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-color);">
           <div>
-            <span class="kh-badge-group">CHẾ ĐỘ CẬP NHẬT SỔ TAY KIẾN THỨC</span>
-            <h3 style="margin:0.25rem 0 0; color:var(--text-main);">✏️ Chỉnh Sửa Chuyên Đề: ${escapeHtml(topic.name)}</h3>
+            <span class="kh-badge-group">Cập nhật Tài liệu 24 chuyên đề</span>
+            <h3 style="margin:0.25rem 0 0; color:var(--text-main);">Chỉnh sửa chuyên đề: ${escapeHtml(topic.name)}</h3>
           </div>
           <button type="button" class="btn-secondary" id="khCancelEditBtn">✕ Hủy</button>
         </div>
 
         <form id="khTopicEditForm" class="kh-edit-form">
           <div class="kh-form-group">
-            <label>📗 1. Định nghĩa &amp; Khái niệm cốt lõi:</label>
+            <label>1. Định nghĩa và khái niệm cốt lõi:</label>
             <textarea id="khEditDef" rows="3" class="kh-textarea" required>${escapeHtml(topic.definition)}</textarea>
           </div>
 
           <div class="kh-form-group">
-            <label>📘 2. Các Định lý &amp; Tính chất trọng tâm (Mỗi dòng 1 tính chất):</label>
+            <label>2. Các định lý và tính chất trọng tâm (mỗi dòng 1 tính chất):</label>
             <textarea id="khEditProps" rows="6" class="kh-textarea" required>${escapeHtml((topic.properties || []).join("\n"))}</textarea>
           </div>
 
           <div class="kh-form-group">
-            <label>📙 3. Phương pháp giải &amp; Lưu ý sai lầm thường gặp (Mỗi dòng 1 ý):</label>
+            <label>3. Phương pháp giải và lưu ý sai lầm thường gặp (mỗi dòng 1 ý):</label>
             <textarea id="khEditTips" rows="4" class="kh-textarea">${escapeHtml((topic.tips || []).join("\n"))}</textarea>
           </div>
 
           <div class="kh-form-group">
-            <label>📝 4. Ghi chú bài giảng / Ví dụ bổ sung của riêng bạn:</label>
+            <label>4. Ghi chú bài giảng / Ví dụ bổ sung của riêng bạn:</label>
             <textarea id="khEditCustomNote" rows="4" class="kh-textarea" placeholder="Nhập ghi chú cá nhân, bài tập mẫu hoặc lưu ý giảng dạy cho chuyên đề này...">${escapeHtml(topic.customNote || "")}</textarea>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem; pt:0.75rem;">
-            <button type="button" class="cad-btn danger" id="khResetTopicDefaultBtn">↺ Khôi phục chuyên đề này về gốc</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
+            <button type="button" class="cad-btn danger" id="khResetTopicDefaultBtn">Khôi phục chuyên đề này về gốc</button>
             <div style="display:flex; gap:0.6rem;">
               <button type="button" class="btn-secondary" id="khCancelEditBtn2">Hủy bỏ</button>
-              <button type="submit" class="btn-primary">💾 Lưu Cập Nhật Chuyên Đề</button>
+              <button type="submit" class="btn-primary">Lưu cập nhật chuyên đề</button>
             </div>
           </div>
         </form>

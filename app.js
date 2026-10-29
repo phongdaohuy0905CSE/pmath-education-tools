@@ -370,13 +370,29 @@ function bindUIEvents() {
   // CAD Toolbar Buttons
   document.getElementById("undoBtn").addEventListener("click", undo);
   document.getElementById("redoBtn").addEventListener("click", redo);
-  document.getElementById("copyBtn").addEventListener("click", copySelected);
-  document.getElementById("pasteBtn").addEventListener("click", pasteClipboard);
+  const copyBtnEl = document.getElementById("copyBtn");
+  if (copyBtnEl) copyBtnEl.addEventListener("click", copySelected);
+  const pasteBtnEl = document.getElementById("pasteBtn");
+  if (pasteBtnEl) pasteBtnEl.addEventListener("click", pasteClipboard);
   document.getElementById("editObjBtn").addEventListener("click", () => openEditModal());
-  document.getElementById("renameBtn").addEventListener("click", openRenameModal);
-  document.getElementById("toggleVisBtn").addEventListener("click", toggleSelectedVisibility);
+  const renameBtnEl = document.getElementById("renameBtn");
+  if (renameBtnEl) renameBtnEl.addEventListener("click", openRenameModal);
+  const toggleVisBtnEl = document.getElementById("toggleVisBtn");
+  if (toggleVisBtnEl) toggleVisBtnEl.addEventListener("click", toggleSelectedVisibility);
   document.getElementById("deleteBtn").addEventListener("click", deleteSelected);
   document.getElementById("zoomFitBtn").addEventListener("click", zoomToFit);
+
+  // Progressive disclosure toggle for advanced style & overlay toolbar
+  const advStyleBtn = document.getElementById("toggleAdvancedStyleBtn");
+  const advStyleBar = document.getElementById("advancedStyleToolbar");
+  if (advStyleBtn && advStyleBar) {
+    advStyleBtn.addEventListener("click", () => {
+      const isHidden = advStyleBar.style.display === "none" || !advStyleBar.style.display;
+      advStyleBar.style.display = isHidden ? "flex" : "none";
+      advStyleBtn.classList.toggle("active", isHidden);
+      advStyleBtn.textContent = isHidden ? "Tùy chỉnh hiển thị ▴" : "Tùy chỉnh hiển thị ▾";
+    });
+  }
 
   // Sidebar Tab Switcher (Scene Objects vs Geometry Library)
   document.querySelectorAll(".sidebar-tab-btn").forEach((btn) => {
@@ -506,17 +522,22 @@ function bindUIEvents() {
 
   // Theme Toggle (Default is data-theme="light" matching Template_PMATH.tex)
   const themeBtn = document.getElementById("themeToggleBtn");
-  themeBtn.addEventListener("click", () => {
-    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-    if (isDark) {
-      document.documentElement.setAttribute("data-theme", "light");
-      themeBtn.textContent = "🌙 Giao diện Tối";
-    } else {
-      document.documentElement.setAttribute("data-theme", "dark");
-      themeBtn.textContent = "☀️ Giao diện Sáng";
-    }
-    drawScene();
-  });
+  const themeLabel = document.getElementById("themeToggleLabel");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      if (isDark) {
+        document.documentElement.setAttribute("data-theme", "light");
+        if (themeLabel) themeLabel.textContent = "Giao diện Tối";
+        else themeBtn.textContent = "Giao diện Tối";
+      } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+        if (themeLabel) themeLabel.textContent = "Giao diện Sáng";
+        else themeBtn.textContent = "Giao diện Sáng";
+      }
+      drawScene();
+    });
+  }
 
   // Modals (Shortcuts, Rename, Edit Object; Formula Hub & Knowledge Handbook are managed by knowledge-handbook.js)
   bindModal("openShortcutsBtn", "closeShortcutsBtn", "shortcutsDialog");
@@ -637,7 +658,7 @@ function renderQuickAddToolbar() {
     });
   } else {
     const tools3D = [
-      { label: "+ Vận tốc v⃗ Oxyz", action: () => quickAddShape("line3d_velocity") },
+      { label: "+ Chuyển động Oxyz", action: () => quickAddShape("line3d_velocity") },
       { label: "+ Mặt cầu", action: () => quickAddShape("sphere") },
       { label: "+ Mặt phẳng", action: () => quickAddShape("plane3d") },
       { label: "+ Đường 3D", action: () => quickAddShape("line3d") },
@@ -656,7 +677,7 @@ function renderQuickAddToolbar() {
 
 function renderEquationPresets() {
   const row = document.getElementById("eqPresetsRow");
-  row.innerHTML = `<span style="color:var(--text-muted); font-weight:600;">⚡ Mẫu hàm số &amp; Phương trình:</span>`;
+  row.innerHTML = `<span style="color:var(--text-muted); font-weight:600;">Mẫu hàm số và phương trình:</span>`;
 
   const presets =
     state.spaceMode === "2d"
@@ -668,16 +689,16 @@ function renderEquationPresets() {
           { label: "Trị tuyệt đối: y = |x^2 - 4|", eq: "y = |x^2 - 4|" },
           { label: "Đường tròn: (x-1)^2 + (y+1)^2 = 16", eq: "(x-1)^2 + (y+1)^2 = 16" },
           { label: "Elip: x^2/25 + y^2/9 = 1", eq: "x^2/25 + y^2/9 = 1" },
-          { label: "🔥 Combo: Bậc 3 & Cát tuyến", combo: "cubic_secant" },
-          { label: "🔥 Combo: 2 Đường tròn cắt nhau", combo: "circles_secant" }
+          { label: "Tổ hợp: Bậc 3 & Cát tuyến", combo: "cubic_secant" },
+          { label: "Tổ hợp: 2 Đường tròn cắt nhau", combo: "circles_secant" }
         ]
       : [
-          { label: "🚀 Combo: 2 Máy bay & Khoảng cách tiếp cận Oxyz", combo: "airplanes_motion" },
+          { label: "Tổ hợp: 2 Máy bay & Khoảng cách tiếp cận Oxyz", combo: "airplanes_motion" },
           { label: "Mặt phẳng: x + y + z - 3 = 0", eq: "x + y + z - 3 = 0" },
           { label: "Mặt cầu: (x-1)^2 + (y-1)^2 + (z-1)^2 = 16", eq: "(x-1)^2 + (y-1)^2 + (z-1)^2 = 16" },
           { label: "Đường 3D: (x-1)/2 = (y+1)/1 = z/3", eq: "(x-1)/2 = (y+1)/1 = z/3" },
           { label: "Mặt bậc 2: z = 0.25*(x^2 - y^2)", eq: "z = 0.25*(x^2 - y^2)" },
-          { label: "🔥 Combo: Mặt phẳng cắt Mặt cầu & Đường 3D", combo: "sphere_plane_line" }
+          { label: "Tổ hợp: Mặt phẳng cắt Mặt cầu & Đường 3D", combo: "sphere_plane_line" }
         ];
 
   presets.forEach((p) => {
@@ -1882,12 +1903,15 @@ function bindCanvasEvents() {
 
 function updateCursorStatusPill() {
   const pill = document.getElementById("cursorCoordPill");
+  if (!pill) return;
   if (state.spaceMode === "2d") {
     const zoomPct = Math.round((state.view2D.scale / 38) * 100);
-    pill.textContent = `x: ${state.cursorMathPos.x.toFixed(2)}, y: ${state.cursorMathPos.y.toFixed(2)} | Zoom: ${zoomPct}%`;
+    const xStr = state.cursorMathPos.x.toFixed(2).replace(".", ",");
+    const yStr = state.cursorMathPos.y.toFixed(2).replace(".", ",");
+    pill.textContent = `x: ${xStr}; y: ${yStr} | Tỉ lệ: ${zoomPct}%`;
   } else {
     const zoomPct = Math.round(state.cam3D.zoom * 100);
-    pill.textContent = `Không gian Oxyz | Zoom: ${zoomPct}%`;
+    pill.textContent = `Không gian Oxyz | Tỉ lệ: ${zoomPct}%`;
   }
 }
 
@@ -2014,9 +2038,9 @@ function renderSceneObjectsTree() {
 
   if (list.length === 0) {
     listEl.innerHTML = `<li style="padding:1rem 0.5rem; font-size:0.8rem; color:var(--text-muted); text-align:center; line-height:1.5;">
-      Bảng vẽ trống.<br>
-      Nhập phương trình phía trên hoặc chọn từ <strong>Kho hình học</strong>!<br>
-      <button type="button" class="cad-btn mini" style="margin-top:8px; display:inline-block;" onclick="window.loadDefaultDemoScenes()">⚡ Nạp hình mẫu (Demo)</button>
+      Khung vẽ đang trống.<br>
+      Nhập phương trình phía trên hoặc chọn từ tab <strong>Hình mẫu dựng sẵn</strong>!<br>
+      <button type="button" class="cad-btn mini" style="margin-top:8px; display:inline-block;" onclick="window.loadDefaultDemoScenes()">Nạp hình mẫu</button>
     </li>`;
     return;
   }
@@ -2027,7 +2051,7 @@ function renderSceneObjectsTree() {
     li.className = `scene-obj-item ${isSel ? "selected" : ""} ${obj.visible === false ? "hidden-obj" : ""}`;
 
     const subText = obj.hasVelocity
-      ? `🚀 v = ${Math.hypot(obj.vx || obj.ux, obj.vy || obj.uy, obj.vz || obj.uz).toFixed(1)} m/s`
+      ? `v = ${Math.hypot(obj.vx || obj.ux, obj.vy || obj.uy, obj.vz || obj.uz).toFixed(1).replace(".", ",")} m/s`
       : obj.equationText
       ? obj.equationText
       : obj.pts
@@ -2043,8 +2067,8 @@ function renderSceneObjectsTree() {
         </div>
       </div>
       <div class="obj-actions">
-        <button class="icon-mini-btn edit-obj-btn" title="Tùy chỉnh & Sửa chi tiết">⚙️ Sửa</button>
-        <button class="icon-mini-btn vis-obj-btn" title="Ẩn/Hiện">${obj.visible === false ? "🚫" : "👁️"}</button>
+        <button class="icon-mini-btn edit-obj-btn" title="Sửa đối tượng">Sửa</button>
+        <button class="icon-mini-btn vis-obj-btn" title="Ẩn/Hiện">${obj.visible === false ? "Hiện" : "Ẩn"}</button>
         <button class="icon-mini-btn del-obj-btn" title="Xóa">✕</button>
       </div>
     `;
@@ -2466,7 +2490,7 @@ function computePolygonMetrics(pts) {
 
 function renderLiveMetrics() {
   const grid = document.getElementById("metricsGrid");
-  const fmt = (v) => Number(v).toFixed(2);
+  const fmt = (v) => Number(v).toFixed(2).replace(".", ",");
   const sel = getSelectedObjects();
 
   let items = [];
@@ -2479,7 +2503,7 @@ function renderLiveMetrics() {
         items.push({
           name: `Chu vi P (${obj.name})`,
           val: `${fmt(perim)} đv`,
-          sub: `Các cạnh: ${sides.map((s) => s.toFixed(1)).join(", ")}`
+          sub: `Các cạnh: ${sides.map((s) => s.toFixed(1).replace(".", ",")).join("; ")}`
         });
         items.push({
           name: `Diện tích S (${obj.name})`,
@@ -3854,7 +3878,7 @@ function openEditModal(objId) {
   const title = document.getElementById("editDialogTitle");
   const body = document.getElementById("editDialogBody");
 
-  if (title) title.innerHTML = `⚙️ Tùy Chỉnh: <strong>${targetObj.name}</strong> (${targetObj.type})`;
+  if (title) title.innerHTML = `Sửa đối tượng: <strong>${targetObj.name}</strong>`;
   if (body) body.innerHTML = renderEditDialogContent(targetObj);
 
   bindEditDialogDynamicEvents(targetObj);
@@ -3862,31 +3886,44 @@ function openEditModal(objId) {
 }
 
 function renderEditDialogContent(obj) {
+  const vertexNamesVal =
+    obj.pts && obj.pts.length > 0 ? obj.pts.map((p) => p.label || p.name || "").join(", ") : "";
   let html = `
     <div class="edit-form-group">
-      <label>Tên &amp; Ký hiệu đối tượng:</label>
+      <label>Tên và ký hiệu đối tượng:</label>
       <div class="edit-input-row">
         <input type="text" id="editObjName" class="edit-input-text" value="${obj.name || ""}" placeholder="VD: A, B, d, (S), (α)..." />
       </div>
     </div>
+    ${
+      obj.pts && obj.pts.length > 0
+        ? `
+    <div class="edit-form-group">
+      <label>Tên các đỉnh (cách nhau bằng dấu phẩy, VD: A, B, C):</label>
+      <div class="edit-input-row">
+        <input type="text" id="editVerticesInput" class="edit-input-text" value="${vertexNamesVal}" placeholder="VD: A, B, C" />
+      </div>
+    </div>`
+        : ""
+    }
 
     <div class="edit-form-group">
-      <label>Màu sắc &amp; Kiểu nét:</label>
+      <label>Màu sắc và kiểu nét:</label>
       <div class="edit-style-row">
         <div class="edit-color-picker-wrap">
           <input type="color" id="editObjColor" class="edit-color-input" value="${obj.color || "#1e64b4"}" />
           <span style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">Màu nét</span>
         </div>
         <select id="editObjLineWidth" class="edit-select">
-          <option value="1.5" ${obj.lineWidth == 1.5 ? "selected" : ""}>Nét mảnh (1.5pt)</option>
-          <option value="2.2" ${!obj.lineWidth || obj.lineWidth == 2.2 ? "selected" : ""}>Nét chuẩn (2.2pt)</option>
-          <option value="3.0" ${obj.lineWidth == 3.0 ? "selected" : ""}>Nét đậm (3.0pt)</option>
-          <option value="4.0" ${obj.lineWidth == 4.0 ? "selected" : ""}>Nét rất đậm (4.0pt)</option>
+          <option value="1.5" ${obj.lineWidth == 1.5 ? "selected" : ""}>Nét mảnh (1,5 pt)</option>
+          <option value="2.2" ${!obj.lineWidth || obj.lineWidth == 2.2 ? "selected" : ""}>Nét chuẩn (2,2 pt)</option>
+          <option value="3.0" ${obj.lineWidth == 3.0 ? "selected" : ""}>Nét đậm (3,0 pt)</option>
+          <option value="4.0" ${obj.lineWidth == 4.0 ? "selected" : ""}>Nét rất đậm (4,0 pt)</option>
         </select>
         <select id="editObjDash" class="edit-select">
-          <option value="solid" ${obj.dash !== "dashed" && obj.dash !== "dotted" ? "selected" : ""}>Nét liền (solid)</option>
-          <option value="dashed" ${obj.dash === "dashed" ? "selected" : ""}>Nét đứt (dashed)</option>
-          <option value="dotted" ${obj.dash === "dotted" ? "selected" : ""}>Nét chấm (dotted)</option>
+          <option value="solid" ${obj.dash !== "dashed" && obj.dash !== "dotted" ? "selected" : ""}>Nét liền</option>
+          <option value="dashed" ${obj.dash === "dashed" ? "selected" : ""}>Nét đứt</option>
+          <option value="dotted" ${obj.dash === "dotted" ? "selected" : ""}>Nét chấm</option>
         </select>
       </div>
     </div>
@@ -4085,6 +4122,20 @@ function saveEditModalChanges() {
   const nameIn = document.getElementById("editObjName");
   if (nameIn && nameIn.value.trim()) obj.name = nameIn.value.trim();
 
+  const vertIn = document.getElementById("editVerticesInput");
+  if (vertIn && obj.pts && obj.pts.length > 0) {
+    const newNames = vertIn.value
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    obj.pts.forEach((pt, idx) => {
+      if (newNames[idx]) {
+        pt.label = newNames[idx];
+        pt.name = newNames[idx];
+      }
+    });
+  }
+
   const colorIn = document.getElementById("editObjColor");
   if (colorIn) obj.color = colorIn.value;
 
@@ -4257,12 +4308,12 @@ function runAutoSaveCycle() {
 
   // 3. Update top indicator badge
   const now = new Date();
-  const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+  const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
   state.lastAutoSavedAt = timeStr;
 
   const text = document.getElementById("autoSaveText");
   const badge = document.getElementById("autoSaveBadge");
-  if (text) text.textContent = `Lưu trình duyệt: 10s • ${timeStr}`;
+  if (text) text.textContent = `Đã lưu lúc ${timeStr}`;
   if (badge) {
     badge.classList.add("saving");
     setTimeout(() => badge.classList.remove("saving"), 1400);
@@ -4578,16 +4629,19 @@ function initApplePencilAndTouchGuard() {
   } catch {}
 
   const guardBtn = document.getElementById("togglePencilGuardBtn");
+  const guardTitleEl = document.getElementById("pencilGuardMenuTitle");
   const updateGuardBtnUI = () => {
     if (!guardBtn) return;
     if (window.pmathPencilGuardActive) {
       guardBtn.classList.add("active");
-      guardBtn.textContent = "✏️ Chế độ Bút: BẬT";
-      guardBtn.title = "Đang BẬT chống tỳ tay & khóa bôi đen chữ khi viết bằng Apple Pencil (Nhấn để chuyển sang vẽ bằng cả ngón tay)";
+      if (guardTitleEl) guardTitleEl.textContent = "Chống tỳ tay khi viết bút: Đang bật";
+      else guardBtn.textContent = "Chống tỳ tay khi viết bút: Đang bật";
+      guardBtn.title = "Đang bật chống tỳ tay và khóa bôi đen chữ khi viết bằng Apple Pencil (Bấm để chuyển sang vẽ bằng cả ngón tay)";
     } else {
       guardBtn.classList.remove("active");
-      guardBtn.textContent = "👆 Vẽ Tay + Bút";
-      guardBtn.title = "Đang cho phép vẽ bằng cả ngón tay và bút (Nhấn để BẬT lại Chế độ Chống tỳ tay Apple Pencil)";
+      if (guardTitleEl) guardTitleEl.textContent = "Chống tỳ tay khi viết bút: Đang tắt";
+      else guardBtn.textContent = "Chống tỳ tay khi viết bút: Đang tắt";
+      guardBtn.title = "Đang cho phép vẽ bằng cả ngón tay và bút (Bấm để bật lại chế độ chống tỳ tay Apple Pencil)";
     }
   };
   updateGuardBtnUI();
@@ -4601,8 +4655,8 @@ function initApplePencilAndTouchGuard() {
       if (typeof showToast === "function") {
         showToast(
           window.pmathPencilGuardActive
-            ? "✏️ Đã BẬT Chế độ Apple Pencil: Chống tỳ tay, khóa bôi đen chữ & dùng ngón tay để cuộn!"
-            : "👆 Đã chuyển sang chế độ Vẽ bằng cả Ngón tay & Bút!"
+            ? "Đã bật chế độ chống tỳ tay Apple Pencil: Khóa bôi đen chữ và dùng ngón tay để cuộn!"
+            : "Đã chuyển sang chế độ vẽ bằng cả ngón tay và bút!"
         );
       }
     });
