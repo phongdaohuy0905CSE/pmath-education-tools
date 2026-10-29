@@ -100,6 +100,7 @@ const state = {
   },
   currentSurveyAnalysis: null
 };
+window.state = state;
 
 const canvas = document.getElementById("geoCanvas");
 const ctx = canvas.getContext("2d");
@@ -665,9 +666,10 @@ function bindUIEvents() {
   const camResetBtn = document.getElementById("camResetBtn");
   if (camResetBtn) {
     camResetBtn.addEventListener("click", () => {
-      state.cam3D = { yaw: -0.65, pitch: 0.42, zoom: 1.0, panX: 0, panY: 0 };
+      state.cam3D = { yaw: -0.65, pitch: 0.42, zoom: 1.0, panX: 0, panY: 0, target: { x: 0, y: 0, z: 0 }, unitScale: 1.0 };
       drawScene();
-      showToast("Đã đặt lại góc nhìn và phóng to ban đầu");
+      updateCursorStatusPill();
+      showToast("Đã đặt lại góc nhìn và phóng to ban đầu (100%)");
     });
   }
 
@@ -1769,13 +1771,13 @@ function zoomToFit() {
       if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
     };
     vis.forEach((o) => {
-      if (o.type === "line3d") {
+      if (o.type === "line3d" || o.type === "motion3d") {
         include(o.x0, o.y0, o.z0);
-        if (o.hasVelocity) {
+        if (o.hasVelocity || o.vx || o.vy || o.vz) {
           const tMax = Math.max(25, o.tMinCpa ? o.tMinCpa * 1.5 : 50);
-          include(o.x0 + (o.vx || 0) * tMax, o.y0 + (o.vy || 0) * tMax, o.z0 + (o.vz || 0) * tMax);
+          include((o.x0 || 0) + (o.vx || 0) * tMax, (o.y0 || 0) + (o.vy || 0) * tMax, (o.z0 || 0) + (o.vz || 0) * tMax);
         } else {
-          include(o.x0 + (o.ux || 1) * 3, o.y0 + (o.uy || 0) * 3, o.z0 + (o.uz || 0) * 3);
+          include((o.x0 || 0) + (o.ux || 1) * 3, (o.y0 || 0) + (o.uy || 0) * 3, (o.z0 || 0) + (o.uz || 0) * 3);
         }
       } else if (o.type === "point3d") {
         include(o.x, o.y, o.z);
@@ -1785,9 +1787,14 @@ function zoomToFit() {
       } else if (o.type === "vector3d") {
         include(o.x0 || 0, o.y0 || 0, o.z0 || 0);
         include((o.x0 || 0) + o.x, (o.y0 || 0) + o.y, (o.z0 || 0) + o.z);
+      } else if (o.type === "solid3d") {
+        const r = o.r || 3;
+        const h = o.h || 4;
+        include(-r, -r, -h / 2);
+        include(r, r, h / 2);
       } else {
-        include(-4.5, -4.5, -4.5);
-        include(4.5, 4.5, 4.5);
+        include(-5, -5, -5);
+        include(5, 5, 5);
       }
     });
     const spanX = maxX - minX;
@@ -1799,11 +1806,16 @@ function zoomToFit() {
       y: (minY + maxY) / 2,
       z: (minZ + maxZ) / 2
     };
-    state.cam3D.unitScale = Math.max(1.0, maxSpan / 8.5);
-    state.cam3D.zoom = 1.0;
+    state.cam3D.unitScale = 1.0;
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.width / dpr || 800;
+    const h = canvas.height / dpr || 600;
+    const minDim = Math.min(w, h);
+    state.cam3D.zoom = Math.max(0.05, Math.min(10.0, (minDim * 0.42) / (maxSpan * 34)));
     state.cam3D.panX = 0;
     state.cam3D.panY = 0;
     drawScene();
+    updateCursorStatusPill();
     showToast("Đã khớp toàn bộ đối tượng 3D vào khung nhìn!");
     return;
   }
@@ -2125,11 +2137,11 @@ function bindCanvasEvents() {
 
           if (state.spaceMode === "2d") {
             const beforeMath = screenToMath2D(mid.x, mid.y);
-            state.view2D.scale = Math.max(10, Math.min(180, state.view2D.scale * factor));
+            state.view2D.scale = Math.max(1.5, Math.min(3000, state.view2D.scale * factor));
             state.view2D.offsetX = mid.x - beforeMath.x * state.view2D.scale + dx;
             state.view2D.offsetY = mid.y + beforeMath.y * state.view2D.scale + dy;
           } else {
-            state.cam3D.zoom = Math.max(0.4, Math.min(2.6, state.cam3D.zoom * factor));
+            state.cam3D.zoom = Math.max(0.01, Math.min(100.0, state.cam3D.zoom * factor));
             state.cam3D.panX += dx;
             state.cam3D.panY += dy;
           }
@@ -2269,11 +2281,11 @@ function bindCanvasEvents() {
 
       if (state.spaceMode === "2d") {
         const beforeMath = screenToMath2D(pos.x, pos.y);
-        state.view2D.scale = Math.max(10, Math.min(180, state.view2D.scale * factor));
+        state.view2D.scale = Math.max(1.5, Math.min(3000, state.view2D.scale * factor));
         state.view2D.offsetX = pos.x - beforeMath.x * state.view2D.scale;
         state.view2D.offsetY = pos.y + beforeMath.y * state.view2D.scale;
       } else {
-        state.cam3D.zoom = Math.max(0.4, Math.min(2.6, state.cam3D.zoom * factor));
+        state.cam3D.zoom = Math.max(0.01, Math.min(100.0, state.cam3D.zoom * factor));
       }
       updateCursorStatusPill();
       drawScene();
@@ -2292,9 +2304,12 @@ function updateCursorStatusPill() {
     pill.textContent = `x: ${xStr}; y: ${yStr} | Tỉ lệ: ${zoomPct}%`;
   } else {
     const zoomPct = Math.round(state.cam3D.zoom * 100);
-    pill.textContent = `Không gian Oxyz | Tỉ lệ: ${zoomPct}%`;
+    const stepVal = typeof getAdaptiveStep3D === "function" ? getAdaptiveStep3D(34 * state.cam3D.zoom) : 2;
+    const stepStr = (stepVal < 1 ? stepVal.toFixed(1) : stepVal.toString()).replace(".", ",");
+    pill.textContent = `Không gian Oxyz | Tỉ lệ: ${zoomPct}% (Bước: ${stepStr})`;
   }
 }
+window.updateCursorStatusPill = updateCursorStatusPill;
 
 function hitTest2D(sx, sy, vertexTol = 13) {
   const vis = state.objects2D.filter((o) => o.visible !== false);
@@ -3334,7 +3349,7 @@ function drawScene() {
     draw2DGridAndAxes(w, h, theme);
     drawAll2DObjects(w, h, theme);
   } else {
-    draw3DGridAndAxes(theme);
+    draw3DGridAndAxes(w, h, theme);
     drawAll3DObjects(w, h, theme);
     draw3DOrientationTriad(w, h, theme);
   }
@@ -3354,6 +3369,7 @@ function drawScene() {
 
   ctx.restore();
 }
+window.drawScene = drawScene;
 
 function draw2DGridAndAxes(w, h, theme) {
   const { offsetX, offsetY, scale } = state.view2D;
@@ -4537,11 +4553,60 @@ function drawScreenSegment(p1, p2, color, width = 2, dashed = false) {
 // 3D SCENE RENDERER (PLANES, SPHERES, 3D LINES, SOLIDS & 3D INTERSECTIONS)
 // ============================================================================
 
-function draw3DGridAndAxes(theme) {
-  const B = 4.5; // Desmos 3D bounding box half-extent [-B, B]^3
+// Adaptive grid step calculation for Infinite Oxyz Space
+function getAdaptiveStep3D(scale) {
+  const targetPx = 60;
+  const rawStep = targetPx / Math.max(0.0001, scale);
+  const exponent = Math.floor(Math.log10(rawStep));
+  const fraction = rawStep / Math.pow(10, exponent);
+  let stepMult = 1;
+  if (fraction < 1.6) stepMult = 1;
+  else if (fraction < 3.8) stepMult = 2;
+  else if (fraction < 7.5) stepMult = 5;
+  else stepMult = 10;
+  return stepMult * Math.pow(10, exponent);
+}
 
-  // 1. Desmos 3D Bounding Box Frame (12 Edges)
+// Compute infinite viewport extent (in 3D math units) based on canvas size, pan, and objects
+function get3DViewportExtent(w, h) {
+  const { zoom, panX, panY } = state.cam3D;
+  const scale = 34 * (zoom || 1.0);
+  const halfDiag = Math.hypot((w || 800) / 2, (h || 600) / 2) + Math.hypot(panX || 0, panY || 0);
+  const mathRadius = (halfDiag / Math.max(0.01, scale)) * 1.15;
+
+  let maxObjDist = 0;
+  if (state.objects3D && state.objects3D.length > 0) {
+    state.objects3D.forEach((o) => {
+      if (o.visible === false) return;
+      if (o.type === "point3d") {
+        maxObjDist = Math.max(maxObjDist, Math.abs(o.x || 0), Math.abs(o.y || 0), Math.abs(o.z || 0));
+      } else if (o.type === "sphere3d") {
+        const r = o.r || 1;
+        maxObjDist = Math.max(maxObjDist, Math.abs(o.cx || 0) + r, Math.abs(o.cy || 0) + r, Math.abs(o.cz || 0) + r);
+      } else if (o.type === "line3d" || o.type === "motion3d") {
+        maxObjDist = Math.max(maxObjDist, Math.abs(o.x0 || 0), Math.abs(o.y0 || 0), Math.abs(o.z0 || 0));
+        if (o.vx || o.vy || o.vz) {
+          const t = o.t || 5;
+          maxObjDist = Math.max(maxObjDist, Math.abs((o.x0 || 0) + (o.vx || 0) * t), Math.abs((o.y0 || 0) + (o.vy || 0) * t), Math.abs((o.z0 || 0) + (o.vz || 0) * t));
+        }
+      } else if (o.type === "vector3d") {
+        maxObjDist = Math.max(maxObjDist, Math.abs((o.x0 || 0) + (o.x || 0)), Math.abs((o.y0 || 0) + (o.y || 0)), Math.abs((o.z0 || 0) + (o.z || 0)));
+      }
+    });
+  }
+
+  const step = getAdaptiveStep3D(scale);
+  const minUnits = Math.max(6, maxObjDist + step, mathRadius);
+  const extent = Math.ceil(minUnits / step) * step;
+  return { extent, step, scale };
+}
+
+function draw3DGridAndAxes(w, h, theme) {
+  const { extent, step } = get3DViewportExtent(w, h);
+
+  // 1. Desmos 3D Adaptive Bounding Box Frame (12 Edges)
   if (state.show3DBox !== false) {
+    const B = Math.max(4.5, Math.min(extent * 0.65, 15));
     const boxCorners = [
       { x: -B, y: -B, z: -B }, // 0
       { x: B, y: -B, z: -B },  // 1
@@ -4569,11 +4634,11 @@ function draw3DGridAndAxes(theme) {
       ctx.save();
       if (isBackEdge) {
         ctx.setLineDash([4, 4]);
-        ctx.strokeStyle = theme.isLight ? "rgba(148, 163, 184, 0.35)" : "rgba(100, 116, 139, 0.3)";
+        ctx.strokeStyle = theme.isLight ? "rgba(100, 116, 139, 0.35)" : "rgba(148, 163, 184, 0.3)";
         ctx.lineWidth = 1;
       } else {
         ctx.setLineDash([]);
-        ctx.strokeStyle = theme.isLight ? "rgba(100, 116, 139, 0.6)" : "rgba(148, 163, 184, 0.55)";
+        ctx.strokeStyle = theme.isLight ? "rgba(71, 85, 105, 0.55)" : "rgba(203, 213, 225, 0.5)";
         ctx.lineWidth = 1.35;
       }
       ctx.beginPath();
@@ -4584,42 +4649,56 @@ function draw3DGridAndAxes(theme) {
     });
   }
 
-  // 2. Desmos 3D Oxy Floor Grid (z = 0 plane)
+  // 2. Infinite Adaptive Oxy Floor Grid (z = 0 plane)
   if (state.show3DFloor !== false && state.showGrid) {
-    const gridRange = 4;
-    for (let i = -gridRange; i <= gridRange; i++) {
-      const p1 = project3D({ x: i, y: -B, z: 0 });
-      const p2 = project3D({ x: i, y: B, z: 0 });
-      const q1 = project3D({ x: -B, y: i, z: 0 });
-      const q2 = project3D({ x: B, y: i, z: 0 });
-      const isAxis = i === 0;
-      if (!isAxis) {
-        drawScreenSegment(p1, p2, theme.grid, 0.9, false);
-        drawScreenSegment(q1, q2, theme.grid, 0.9, false);
-      }
+    const numSteps = Math.round(extent / step);
+    const clampedSteps = Math.min(numSteps, 40);
+
+    for (let k = -clampedSteps; k <= clampedSteps; k++) {
+      if (k === 0) continue;
+      const coord = Math.round(k * step * 1000) / 1000;
+      const isMajor = (k % 5 === 0);
+      const gridColor = isMajor
+        ? (theme.isLight ? "rgba(30, 100, 180, 0.28)" : "rgba(148, 163, 184, 0.26)")
+        : (theme.isLight ? "rgba(30, 100, 180, 0.14)" : "rgba(148, 163, 184, 0.12)");
+      const gridLw = isMajor ? 1.2 : 0.8;
+
+      const p1 = project3D({ x: coord, y: -extent, z: 0 });
+      const p2 = project3D({ x: coord, y: extent, z: 0 });
+      const q1 = project3D({ x: -extent, y: coord, z: 0 });
+      const q2 = project3D({ x: extent, y: coord, z: 0 });
+
+      drawScreenSegment(p1, p2, gridColor, gridLw, false);
+      drawScreenSegment(q1, q2, gridColor, gridLw, false);
     }
 
-    // Desmos 3D Signature Floor Circular Coordinate Radar Rings
-    draw3DCircleInSpace(0, 0, 0, 0, 0, 1, 2, "rgba(30, 100, 180, 0.18)", 1, false);
-    draw3DCircleInSpace(0, 0, 0, 0, 0, 1, 4, "rgba(30, 100, 180, 0.22)", 1.2, false);
+    // Adaptive Floor Circular Coordinate Radar Rings
+    const ringMultipliers = [2, 5, 10, 20, 50, 100];
+    ringMultipliers.forEach((m) => {
+      const rVal = m * step;
+      if (rVal <= extent * 0.95) {
+        draw3DCircleInSpace(0, 0, 0, 0, 0, 1, rVal, theme.isLight ? "rgba(30, 100, 180, 0.16)" : "rgba(148, 163, 184, 0.16)", 1.1, false);
+      }
+    });
   }
 
-  // 3. Clear Education-Grade 3D Axes Oxyz with Unit Ticks & Labels
+  // 3. Clear Education-Grade 3D Axes Oxyz with Unit Ticks & Labels (Infinite Extension)
   if (state.showAxes) {
     const O = project3D({ x: 0, y: 0, z: 0 });
 
-    const X_pos = project3D({ x: B + 0.8, y: 0, z: 0 });
-    const Y_pos = project3D({ x: 0, y: B + 0.8, z: 0 });
-    const Z_pos = project3D({ x: 0, y: 0, z: B + 0.8 });
+    const axisPosLen = extent + 1.2 * step;
+    const X_pos = project3D({ x: axisPosLen, y: 0, z: 0 });
+    const Y_pos = project3D({ x: 0, y: axisPosLen, z: 0 });
+    const Z_pos = project3D({ x: 0, y: 0, z: axisPosLen });
 
-    const X_neg = project3D({ x: -B, y: 0, z: 0 });
-    const Y_neg = project3D({ x: 0, y: -B, z: 0 });
-    const Z_neg = project3D({ x: 0, y: 0, z: -B });
+    const X_neg = project3D({ x: -extent, y: 0, z: 0 });
+    const Y_neg = project3D({ x: 0, y: -extent, z: 0 });
+    const Z_neg = project3D({ x: 0, y: 0, z: -extent });
 
     // Negative Dashed Axes
-    drawScreenSegment(O, X_neg, "rgba(220, 38, 38, 0.35)", 1.3, true);
-    drawScreenSegment(O, Y_neg, "rgba(22, 163, 74, 0.35)", 1.3, true);
-    drawScreenSegment(O, Z_neg, "rgba(37, 99, 235, 0.35)", 1.3, true);
+    drawScreenSegment(O, X_neg, "rgba(220, 38, 38, 0.38)", 1.3, true);
+    drawScreenSegment(O, Y_neg, "rgba(22, 163, 74, 0.38)", 1.3, true);
+    drawScreenSegment(O, Z_neg, "rgba(37, 99, 235, 0.38)", 1.3, true);
 
     // Positive Solid Axes
     drawScreenSegment(O, X_pos, "#dc2626", 2.4, false); // Ox in Red
@@ -4640,53 +4719,79 @@ function draw3DGridAndAxes(theme) {
       ctx.restore();
     };
 
-    drawAxisArrow(X_pos, project3D({ x: B + 0.3, y: 0, z: 0 }), "#dc2626");
-    drawAxisArrow(Y_pos, project3D({ x: 0, y: B + 0.3, z: 0 }), "#16a34a");
-    drawAxisArrow(Z_pos, project3D({ x: 0, y: 0, z: B + 0.3 }), "#2563eb");
+    drawAxisArrow(X_pos, project3D({ x: axisPosLen - 0.5 * step, y: 0, z: 0 }), "#dc2626");
+    drawAxisArrow(Y_pos, project3D({ x: 0, y: axisPosLen - 0.5 * step, z: 0 }), "#16a34a");
+    drawAxisArrow(Z_pos, project3D({ x: 0, y: 0, z: axisPosLen - 0.5 * step }), "#2563eb");
 
-    // Unit Ticks & Numeric Labels for -4, -2, 2, 4
-    ctx.save();
-    ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-    ctx.fillStyle = theme.isLight ? "#334155" : "#cbd5e1";
+    // Unit Ticks & Numeric Labels along each axis
+    const tickLen = 0.12 * step;
+    const numTicks = Math.round(extent / step);
+    const clampedTicks = Math.min(numTicks, 35);
 
-    const tickVals = [-4, -2, 2, 4];
-    tickVals.forEach((u) => {
+    const drawTickWithHalo = (text, sx, sy, color) => {
+      ctx.save();
+      ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
+      ctx.strokeStyle = theme.isLight ? "rgba(255, 255, 255, 0.92)" : "rgba(15, 23, 42, 0.92)";
+      ctx.lineWidth = 3;
+      ctx.strokeText(text, sx, sy);
+      ctx.fillStyle = color || (theme.isLight ? "#334155" : "#cbd5e1");
+      ctx.fillText(text, sx, sy);
+      ctx.restore();
+    };
+
+    for (let k = -clampedTicks; k <= clampedTicks; k++) {
+      if (k === 0) continue;
+      const u = Math.round(k * step * 1000) / 1000;
+      const uStr = (step < 1 ? u.toFixed(1) : u.toString()).replace(".", ",");
+
       // Ox Ticks
       const ptX = project3D({ x: u, y: 0, z: 0 });
-      const tickX1 = project3D({ x: u, y: 0, z: -0.15 });
-      const tickX2 = project3D({ x: u, y: 0, z: 0.15 });
+      const tickX1 = project3D({ x: u, y: 0, z: -tickLen });
+      const tickX2 = project3D({ x: u, y: 0, z: tickLen });
       drawScreenSegment(tickX1, tickX2, "#dc2626", 1.5, false);
-      ctx.fillText(String(u), ptX.x + 4, ptX.y + 13);
+      drawTickWithHalo(uStr, ptX.x + 4, ptX.y + 13, theme.isLight ? "#991b1b" : "#fca5a5");
 
       // Oy Ticks
       const ptY = project3D({ x: 0, y: u, z: 0 });
-      const tickY1 = project3D({ x: 0, y: u, z: -0.15 });
-      const tickY2 = project3D({ x: 0, y: u, z: 0.15 });
+      const tickY1 = project3D({ x: 0, y: u, z: -tickLen });
+      const tickY2 = project3D({ x: 0, y: u, z: tickLen });
       drawScreenSegment(tickY1, tickY2, "#16a34a", 1.5, false);
-      ctx.fillText(String(u), ptY.x + 5, ptY.y + 11);
+      drawTickWithHalo(uStr, ptY.x + 5, ptY.y + 11, theme.isLight ? "#166534" : "#86efac");
 
       // Oz Ticks
       const ptZ = project3D({ x: 0, y: 0, z: u });
-      const tickZ1 = project3D({ x: -0.15, y: 0, z: u });
-      const tickZ2 = project3D({ x: 0.15, y: 0, z: u });
+      const tickZ1 = project3D({ x: -tickLen, y: 0, z: u });
+      const tickZ2 = project3D({ x: tickLen, y: 0, z: u });
       drawScreenSegment(tickZ1, tickZ2, "#2563eb", 1.5, false);
-      ctx.fillText(String(u), ptZ.x + 7, ptZ.y + 4);
-    });
+      drawTickWithHalo(uStr, ptZ.x + 7, ptZ.y + 4, theme.isLight ? "#1e40af" : "#93c5fd");
+    }
 
-    // Bold Axis Labels
-    ctx.font = 'italic bold 16px "Cambria Math", Georgia, serif';
-    ctx.fillStyle = "#dc2626";
-    ctx.fillText("x", X_pos.x + 10, X_pos.y + 4);
-    ctx.fillStyle = "#16a34a";
-    ctx.fillText("y", Y_pos.x + 10, Y_pos.y + 4);
-    ctx.fillStyle = "#2563eb";
-    ctx.fillText("z", Z_pos.x + 6, Z_pos.y - 8);
+    // Bold Axis Labels with Halo
+    const drawAxisLabelWithHalo = (text, sx, sy, color) => {
+      ctx.save();
+      ctx.font = 'italic bold 17px "Cambria Math", Georgia, serif';
+      ctx.strokeStyle = theme.isLight ? "rgba(255, 255, 255, 0.95)" : "rgba(15, 23, 42, 0.95)";
+      ctx.lineWidth = 3.5;
+      ctx.strokeText(text, sx, sy);
+      ctx.fillStyle = color;
+      ctx.fillText(text, sx, sy);
+      ctx.restore();
+    };
+
+    drawAxisLabelWithHalo("x", X_pos.x + 10, X_pos.y + 4, "#dc2626");
+    drawAxisLabelWithHalo("y", Y_pos.x + 10, Y_pos.y + 4, "#16a34a");
+    drawAxisLabelWithHalo("z", Z_pos.x + 6, Z_pos.y - 8, "#2563eb");
 
     // Origin Mark O(0,0,0)
+    ctx.save();
+    ctx.font = 'italic bold 17px "Cambria Math", Georgia, serif';
+    ctx.strokeStyle = theme.isLight ? "rgba(255, 255, 255, 0.95)" : "rgba(15, 23, 42, 0.95)";
+    ctx.lineWidth = 3.5;
+    ctx.strokeText("O", O.x - 17, O.y + 17);
     ctx.fillStyle = theme.isLight ? "#0f172a" : "#f8fafc";
-    ctx.fillText("O", O.x - 16, O.y + 16);
+    ctx.fillText("O", O.x - 17, O.y + 17);
     ctx.beginPath();
-    ctx.arc(O.x, O.y, 4, 0, Math.PI * 2);
+    ctx.arc(O.x, O.y, 4.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
@@ -4711,7 +4816,8 @@ function getOrthonormalBasis3D(nx, ny, nz) {
 
 function drawAll3DObjects(w, h, theme) {
   const vis = state.objects3D.filter((o) => o.visible !== false);
-  const scale = 34 * state.cam3D.zoom;
+  const scale = 34 * (state.cam3D.zoom || 1.0);
+  const { extent } = get3DViewportExtent(w, h);
 
   vis.forEach((obj) => {
     const isSel = state.selectedIds.includes(obj.id);
@@ -4743,9 +4849,9 @@ function drawAll3DObjects(w, h, theme) {
       draw3DCircleInSpace(obj.cx, obj.cy, obj.cz, 1, 0, 0, obj.r, color + "77", 1.1, true);
       drawScreenPoint(C.x, C.y, `${obj.centerLabel || "I"}(${obj.cx},${obj.cy},${obj.cz})`, color, 4.5);
     } else if (obj.type === "plane3d") {
-      drawDesmos3DPlane(obj, theme);
+      drawDesmos3DPlane(obj, theme, extent);
     } else if (obj.type === "surface3d") {
-      drawDesmos3DSurface(obj, theme);
+      drawDesmos3DSurface(obj, theme, extent);
     } else if (obj.type === "point3d") {
       drawPointWith3DDroplines(obj, theme);
     } else if (obj.type === "vector3d") {
@@ -4753,15 +4859,16 @@ function drawAll3DObjects(w, h, theme) {
     } else if (obj.type === "curve3d") {
       draw3DCurve(obj, theme);
     } else if (obj.type === "line3d") {
+      const lineLen = Math.max(12, extent);
       const p1 = project3D({
-        x: obj.x0 - obj.ux * 5,
-        y: obj.y0 - obj.uy * 5,
-        z: obj.z0 - obj.uz * 5
+        x: obj.x0 - obj.ux * lineLen,
+        y: obj.y0 - obj.uy * lineLen,
+        z: obj.z0 - obj.uz * lineLen
       });
       const p2 = project3D({
-        x: obj.x0 + obj.ux * 5,
-        y: obj.y0 + obj.uy * 5,
-        z: obj.z0 + obj.uz * 5
+        x: obj.x0 + obj.ux * lineLen,
+        y: obj.y0 + obj.uy * lineLen,
+        z: obj.z0 + obj.uz * lineLen
       });
       drawScreenSegment(p1, p2, color, isSel ? 3.2 : 2.3, obj.dash === "dashed");
       const pMid = project3D({ x: obj.x0, y: obj.y0, z: obj.z0 });
@@ -5045,12 +5152,12 @@ function drawConeUnfolding(obj, w, h, theme) {
 // DESMOS 3D ADVANCED GRAPHING & SHADING ENGINES
 // ============================================================================
 
-function drawDesmos3DSurface(obj, theme) {
+function drawDesmos3DSurface(obj, theme, extent) {
   const fn = GeoEquations.compileExpr(obj.expr);
   if (!fn) return;
 
-  const B = 4.0;
-  const N = 24; // 24x24 quads = 576 quads = 1152 triangles
+  const B = Math.min(extent || 6.0, 25.0);
+  const N = 26; // 26x26 quads
   const step = (2 * B) / N;
 
   const cosY = Math.cos(state.cam3D.yaw);
@@ -5171,8 +5278,8 @@ function drawDesmos3DSurface(obj, theme) {
   ctx.restore();
 }
 
-function drawDesmos3DPlane(obj, theme) {
-  const B = 4.5;
+function drawDesmos3DPlane(obj, theme, extent) {
+  const B = Math.max(5.0, extent || 10.0);
   const a = obj.a, b = obj.b, c = obj.c, d = obj.d;
   const normLen = Math.hypot(a, b, c) || 1;
 
