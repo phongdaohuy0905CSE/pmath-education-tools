@@ -2418,6 +2418,7 @@ function refreshAllUI() {
   renderSelectedObjectSliders();
   updateMetricsAndKnowledgeOnly();
   drawScene();
+  updateCursorStatusPill();
 }
 
 function updateMetricsAndKnowledgeOnly() {
@@ -3368,6 +3369,7 @@ function drawScene() {
   }
 
   ctx.restore();
+  updateCursorStatusPill();
 }
 window.drawScene = drawScene;
 
