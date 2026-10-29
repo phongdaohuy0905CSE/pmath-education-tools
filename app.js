@@ -16,6 +16,8 @@ window.escapeHtml = escapeHtml;
 
 const COLORS_PALETTE = ["#1e64b4", "#148250", "#008c96", "#b45a14", "#6a1b9a", "#c62828"];
 
+const ENABLE_3D_OXYZ = false; // Feature flag: temporarily disable 3D Oxyz
+
 const state = {
   spaceMode: "2d", // "2d" | "3d"
   searchQuery: "",
@@ -389,6 +391,10 @@ function bindUIEvents() {
   // Space Switcher (2D vs 3D)
   document.querySelectorAll(".space-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
+      if (!ENABLE_3D_OXYZ && btn.dataset.space === "3d") {
+        showToast("Tính năng không gian 3D (Oxyz) đang tạm thời tắt để bảo trì nâng cấp.");
+        return;
+      }
       state.spaceMode = btn.dataset.space;
       const list = getActiveSceneList();
       state.selectedIds = list.length > 0 ? [list[0].id] : [];
@@ -828,22 +834,33 @@ function bindModal(openId, closeId, dialogId) {
 }
 
 function syncSpaceModeUI() {
-  document.getElementById("mode2DBtn").classList.toggle("active", state.spaceMode === "2d");
-  document.getElementById("mode3DBtn").classList.toggle("active", state.spaceMode === "3d");
-  document.getElementById("eqModeBadge").textContent =
-    state.spaceMode === "2d" ? "ƒ(x,y) 2D" : "ƒ(x,y,z) 3D";
-  document.getElementById("specialOverlayBar").style.display =
-    state.spaceMode === "2d" ? "flex" : "none";
+  if (!ENABLE_3D_OXYZ) {
+    state.spaceMode = "2d";
+  }
+  const mode2DBtn = document.getElementById("mode2DBtn");
+  const mode3DBtn = document.getElementById("mode3DBtn");
+  if (mode2DBtn) mode2DBtn.classList.toggle("active", state.spaceMode === "2d");
+  if (mode3DBtn) {
+    if (!ENABLE_3D_OXYZ) {
+      mode3DBtn.style.display = "none";
+    } else {
+      mode3DBtn.classList.toggle("active", state.spaceMode === "3d");
+    }
+  }
+  const eqModeEl = document.getElementById("eqModeBadge");
+  if (eqModeEl) eqModeEl.textContent = "ƒ(x) Oxy";
+  const ovBar = document.getElementById("specialOverlayBar");
+  if (ovBar) ovBar.style.display = state.spaceMode === "2d" ? "flex" : "none";
 
   const g2dBar = document.getElementById("graph2dToolbar");
-  if (g2dBar) g2dBar.style.display = state.spaceMode === "2d" ? "flex" : "none";
+  if (g2dBar) g2dBar.style.display = "flex";
 
   const c3dBar = document.getElementById("camera3dToolbar");
-  if (c3dBar) c3dBar.style.display = state.spaceMode === "3d" ? "flex" : "none";
+  if (c3dBar) c3dBar.style.display = (!ENABLE_3D_OXYZ || state.spaceMode !== "3d") ? "none" : "flex";
 
   const motBar = document.getElementById("motionQuickBar");
   if (motBar) {
-    const hasMot = state.spaceMode === "3d" && state.objects3D.some((o) => o.type === "line3d" && o.hasVelocity);
+    const hasMot = ENABLE_3D_OXYZ && state.spaceMode === "3d" && state.objects3D.some((o) => o.type === "line3d" && o.hasVelocity);
     motBar.style.display = (state.spaceMode === "3d" && hasMot) ? "flex" : "none";
   }
 
@@ -938,6 +955,12 @@ function renderEquationPresets() {
 
 function loadInteractionCombo(comboName) {
   saveHistory();
+  if (!ENABLE_3D_OXYZ && (comboName === "airplanes_motion" || comboName === "sphere_plane_line")) {
+    state.spaceMode = "2d";
+    showToast("Tính năng 3D Oxyz tạm thời tắt để bảo trì. Đang mở Khảo sát đồ thị bậc ba.");
+    loadInteractionCombo("cubic_secant");
+    return;
+  }
   if (comboName === "airplanes_motion") {
     state.spaceMode = "3d";
     state.objects3D = [
@@ -1214,6 +1237,12 @@ window.applyEquationPreset = function(presetName) {
 function handleAddEquation(rawText) {
   const errEl = document.getElementById("eqErrorMsg");
   errEl.style.display = "none";
+
+  if (!ENABLE_3D_OXYZ && (/z\b/i.test(rawText) || /3d/i.test(rawText))) {
+    errEl.textContent = "⚠️ Tính năng vẽ đồ thị và phương trình không gian 3D (Oxyz) đang tạm thời tắt để bảo trì. Vui lòng nhập hàm số 2D (VD: y = x^3 - 3x + 1) hoặc phương trình Oxy.";
+    errEl.style.display = "block";
+    return;
+  }
 
   const parsed = GeoEquations.parse(rawText, state.spaceMode);
   if (parsed.error) {
@@ -5613,6 +5642,10 @@ function handle3DTriadClick(relX, relY) {
 }
 
 function loadDesmos3DPreset(presetKey) {
+  if (!ENABLE_3D_OXYZ) {
+    showToast("Tính năng đồ thị 3D Oxyz tạm thời tắt để bảo trì.");
+    return;
+  }
   saveHistory();
   state.spaceMode = "3d";
   syncSpaceModeUI();

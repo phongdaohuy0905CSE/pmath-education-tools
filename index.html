@@ -13,7 +13,7 @@
   <!-- Core Styles & Fonts (AxMath + KaTeX + Times New Roman) -->
   <link rel="stylesheet" href="./assets/index-B5VXrJpN.css" />
   <!-- PMATH Education Signature Styles (Cache Busted v3.2) -->
-  <link rel="stylesheet" href="./styles.css?v=3.2" />
+  <link rel="stylesheet" href="./styles.css?v=3.3" />
   <script>
     if (!localStorage.getItem("lang")) {
       localStorage.setItem("lang", "vi");
@@ -49,8 +49,8 @@
       <button class="pmath-nav-tab active" id="topSwitchToHomeBtn" title="Trang chủ giới thiệu &amp; chọn mô hình mẫu">
         <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1V9.5z"/></svg>Trang chủ
       </button>
-      <button class="pmath-nav-tab" id="topSwitchToGeoLabBtn" title="Vẽ hình học 2D/3D, đồ thị hàm số &amp; mô phỏng tọa độ Oxyz">
-        <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Không gian Oxyz &amp; Đồ thị
+      <button class="pmath-nav-tab" id="topSwitchToGeoLabBtn" title="Khảo sát hàm số, vẽ đồ thị &amp; hình học phẳng chuẩn GDPT 2018">
+        <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>Khảo sát Đồ thị &amp; Hình học (Oxy)
       </button>
       <button class="pmath-nav-tab" id="topSwitchToNRBtn" title="Bảng viết bài giảng tự do, hình khai triển 3D &amp; máy tính khoa học">
         <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Bảng viết bài giảng
@@ -232,7 +232,7 @@
             </button>
           </div>
           <button type="button" class="btn-console-launch" id="heroLaunchStudioBtn">
-            Mở mô hình này trong Không gian Oxyz →
+            Mở Khảo sát Đồ thị &amp; Hình học Oxy →
           </button>
         </div>
       </div>
@@ -246,24 +246,24 @@
       </div>
 
       <div class="bioforge-bento-grid">
-        <!-- Module Bento 1: Không gian Oxyz & Đồ thị -->
+        <!-- Module Bento 1: Khảo sát đồ thị & Hình học Oxy -->
         <div class="bento-card wide highlight">
-          <div class="card-badge-top">Trọng tâm Toán 12</div>
+          <div class="card-badge-top">Trọng tâm Toán 10-11-12</div>
           <div class="bento-icon-wrap red" aria-hidden="true">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
           </div>
-          <span class="card-category">Hình học giải tích Oxyz &amp; bài toán thực tế</span>
-          <h3 class="card-title">Không gian Oxyz &amp; mô phỏng vectơ vận tốc 3D</h3>
+          <span class="card-category">Giải tích hàm số &amp; Hình học phẳng</span>
+          <h3 class="card-title">Khảo sát hàm số, Bảng biến thiên &amp; Hình học phẳng Oxy</h3>
           <p class="card-desc">
-            Biểu diễn trực quan mặt phẳng (P): Ax + By + Cz + D = 0, mặt cầu (S), đường thẳng tham số và bài toán chuyển động thẳng đều <strong>r</strong>(t) = <strong>r</strong>₀ + <strong>v</strong>t trong không gian 3 chiều.
+            Vẽ chính xác đồ thị đa thức bậc ba, hàm trùng phương, phân thức bậc 1/1, phân thức bậc 2/1 với tiệm cận đứng, tiệm cận xiên, tìm cực trị, tâm đối xứng và biện luận số nghiệm với đường thẳng y = m.
           </p>
           <ul class="card-feature-list">
-            <li>Mô phỏng 2 vật thể chuyển động theo vectơ vận tốc <strong>v</strong>₁, <strong>v</strong>₂ theo thời gian t</li>
-            <li>Tính tự động khoảng cách tức thời d(t) = |M₁(t)M₂(t)| và vị trí đạt khoảng cách ngắn nhất</li>
-            <li>Quan sát trực quan đường tròn giao tuyến giữa mặt cầu (S) và mặt phẳng (α), bán kính r = √(R² − d²)</li>
-            <li>Thay đổi trực tiếp tọa độ điểm, vectơ pháp tuyến và xem ngay kết quả tính toán</li>
+            <li>Khảo sát chi tiết hàm số, xuất Bảng biến thiên (BBT) 3 dòng chuẩn sách giáo khoa GDPT 2018</li>
+            <li>Biện luận tương giao đồ thị và số nghiệm phương trình theo tham số m với thanh trượt trực quan</li>
+            <li>Dựng hình học phẳng: tam giác, đường thẳng Euler, trực tâm H, trọng tâm G, tâm ngoại tiếp O, đường tròn nội tiếp</li>
+            <li>Tính toán giải tích chính xác các điểm cực đại, cực tiểu, tiếp tuyến, diện tích hình phẳng giới hạn giữa hai đồ thị</li>
           </ul>
-          <button type="button" class="btn-card-action primary" id="cardBtnStudio">Mở Không gian Oxyz &amp; Đồ thị →</button>
+          <button type="button" class="btn-card-action primary" id="cardBtnStudio">Mở Khảo sát Đồ thị &amp; Hình học Oxy →</button>
         </div>
 
         <!-- Module Bento 2: Bảng viết bài giảng & hình khai triển 3D -->
@@ -429,7 +429,7 @@
     <div class="app-header">
       <div class="space-switcher" role="tablist" aria-label="Chế độ không gian">
         <button class="space-btn active" id="mode2DBtn" data-space="2d">Mặt phẳng 2D (Oxy)</button>
-        <button class="space-btn" id="mode3DBtn" data-space="3d">Không gian 3D (Oxyz)</button>
+        <button class="space-btn" id="mode3DBtn" data-space="3d" style="display: none;">Không gian 3D (Oxyz)</button>
       </div>
 
       <!-- 2D Graphing Mode Tools: Khảo sát hàm số chuẩn đề thi & Slider m -->
@@ -1293,7 +1293,7 @@
       const heroRotateBtn = document.getElementById("heroRotate3dBtn");
       const heroLaunchBtn = document.getElementById("heroLaunchStudioBtn");
 
-      if (heroLaunchBtn) heroLaunchBtn.addEventListener("click", () => activateGeoLab("airplanes_motion"));
+      if (heroLaunchBtn) heroLaunchBtn.addEventListener("click", () => activateGeoLab("cubic_extrema"));
 
       if (heroCanvas) {
         let isPlaying = true;
