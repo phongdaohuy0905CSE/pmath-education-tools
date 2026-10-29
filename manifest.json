@@ -26,7 +26,7 @@
     {
       "name": "Sổ Tay Hình Học",
       "short_name": "Sổ Tay",
-      "description": "Mở Sổ Tay Hình Học Động & Máy Tính Casio",
+      "description": "Mở Sổ Tay Hình Học Động & Máy Tính Khoa Học",
       "url": "./index.html?mode=nr",
       "icons": [{ "src": "./favicon.png", "sizes": "192x192" }]
     },

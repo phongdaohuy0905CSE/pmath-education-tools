@@ -108,33 +108,31 @@
         <li>Tôn trọng quyền sở hữu trí tuệ của nội dung và tài liệu giảng dạy.</li>
       </ul>
 
-      <h2>3. Tài Khoản Google &amp; Bảo Mật</h2>
-      <p>Khi bạn đăng nhập bằng tài khoản Google (Google Sign-In):</p>
+      <h2>3. Lưu Trữ Dữ Liệu Trình Duyệt &amp; Sao Lưu Tệp (.json)</h2>
+      <p>Ứng dụng hoạt động trực tiếp trên trình duyệt mà không yêu cầu đăng ký tài khoản:</p>
       <ul>
-        <li>Bạn chịu trách nhiệm bảo mật thiết bị và tài khoản Google của chính mình.</li>
-        <li>Ứng dụng sử dụng dịch vụ xác thực tiêu chuẩn của Google (OAuth 2.0 / Google Identity Services) và chỉ truy cập vào thông tin hồ sơ cơ bản (tên, email, ảnh đại diện).</li>
-        <li>Bạn có thể đăng xuất hoặc ngừng liên kết tài khoản bất cứ lúc nào.</li>
+        <li>Dữ liệu bài vẽ và sổ tay được lưu tự động trong bộ nhớ trình duyệt (<code>IndexedDB</code> và <code>LocalStorage</code>) trên thiết bị của bạn.</li>
+        <li>Việc xóa bộ nhớ đệm của trình duyệt (cache), dùng chế độ Ẩn danh hoặc đổi thiết bị sẽ làm mất dữ liệu trong trình duyệt cũ. Bạn có trách nhiệm định kỳ xuất tệp sao lưu (<code>.json</code>) thông qua mục "Sao Lưu &amp; Dữ Liệu" để bảo toàn tài liệu quan trọng.</li>
       </ul>
 
-      <h2>4. Quyền Sở Hữu Trí Tuệ &amp; Dữ Liệu Của Bạn</h2>
+      <h2>4. Quyền Sở Hữu Trí Tuệ, Nhãn Hiệu &amp; Dữ Liệu Của Bạn</h2>
       <ul>
-        <li><strong>Dữ liệu của người dùng:</strong> Toàn bộ các bài vẽ hình học, ghi chú bài giảng, mô hình 3D và phương trình do bạn tạo ra thuộc toàn quyền sở hữu của bạn. Chúng tôi không đòi hỏi bất kỳ quyền sở hữu nào đối với nội dung bạn sáng tạo.</li>
-        <li><strong>Nền tảng PMATH:</strong> Mã nguồn giao diện, thuật toán hình học và phong cách thiết kế sư phạm của PMATH TOOLS thuộc quyền sở hữu của PMATH EDUCATION và được bảo vệ theo quy định pháp luật.</li>
+        <li><strong>Dữ liệu của người dùng:</strong> Toàn bộ các bài vẽ hình học, ghi chú bài giảng, mô hình 3D và phương trình do bạn tạo ra thuộc toàn quyền sở hữu của bạn.</li>
+        <li><strong>Tuyên bố không liên kết thương hiệu:</strong> Trình mô phỏng máy tính khoa học tích hợp trong sổ tay là công cụ hỗ trợ học tập độc lập, không liên kết, không được ủy quyền và không được tài trợ bởi Casio Computer Co., Ltd.</li>
       </ul>
 
       <h2>5. Tuyên Bố Miễn Trừ Trách Nhiệm</h2>
-      <p>Ứng dụng được cung cấp "nguyên trạng" (as-is) nhằm phục vụ tối đa cho việc học tập và giảng dạy. Mặc dù chúng tôi luôn nỗ lực duy trì độ chính xác cao nhất cho các thuật toán hình học và tính toán giải tích, chúng tôi không chịu trách nhiệm đối với bất kỳ thiệt hại gián tiếp nào phát sinh từ việc sử dụng hoặc không thể sử dụng ứng dụng.</p>
+      <p>Ứng dụng được cung cấp "nguyên trạng" (as-is) nhằm phục vụ cho việc học tập và giảng dạy. Mặc dù chúng tôi luôn nỗ lực duy trì độ chính xác cho các thuật toán hình học và tính toán giải tích, chúng tôi không chịu trách nhiệm đối với bất kỳ thiệt hại gián tiếp nào phát sinh từ việc mất dữ liệu trình duyệt nếu người dùng chưa xuất tệp sao lưu.</p>
 
       <h2>6. Điều Chỉnh Điều Khoản</h2>
-      <p>Chúng tôi có thể cập nhật Điều Khoản Dịch Vụ này theo thời gian để phù hợp với sự phát triển của ứng dụng hoặc các yêu cầu pháp lý mới. Các thay đổi sẽ có hiệu lực ngay khi được công bố trên trang này.</p>
+      <p>Chúng tôi có thể cập nhật Điều Khoản Dịch Vụ này theo thời gian để phù hợp với sự phát triển của ứng dụng. Các thay đổi sẽ có hiệu lực ngay khi được công bố trên trang này.</p>
 
-      <h2>7. Liên Hệ</h2>
-      <p>Mọi thắc mắc hoặc góp ý về Điều Khoản Dịch Vụ, xin vui lòng gửi về:</p>
+      <h2>7. Liên Hệ &amp; Báo Lỗi</h2>
+      <p>Mọi thắc mắc hoặc góp ý về Điều Khoản Dịch Vụ, xin vui lòng gửi qua kho mã nguồn mở của dự án:</p>
       <ul>
-        <li><strong>Đơn vị phát triển:</strong> PMATH EDUCATION</li>
-        <li><strong>Người đại diện:</strong> Thầy Huy Đào Phong</li>
-        <li><strong>Email hỗ trợ:</strong> <a href="mailto:huydaophong@gmail.com">huydaophong@gmail.com</a></li>
+        <li><strong>Dự án:</strong> PMATH EDUCATION TOOLS</li>
         <li><strong>Trang chủ:</strong> <a href="https://pmath-education-tools.vercel.app">https://pmath-education-tools.vercel.app</a></li>
+        <li><strong>GitHub Issues:</strong> <a href="https://github.com/phongdaohuy0905CSE/pmath-education-tools/issues" target="_blank" rel="noopener noreferrer">github.com/phongdaohuy0905CSE/pmath-education-tools/issues</a></li>
       </ul>
     </div>
   </div>

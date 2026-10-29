@@ -2705,7 +2705,7 @@ function renderKnowledgePanel() {
       ${
         shape.tips && shape.tips.length
           ? `<div class="info-section">
-              <h4>Lưu ý &amp; Mẹo giải nhanh</h4>
+              <h4>Phương pháp giải &amp; Lưu ý thường gặp</h4>
               <ul class="prop-list">
                 ${shape.tips.map((t) => `<li>${t}</li>`).join("")}
               </ul>
@@ -4262,7 +4262,7 @@ function runAutoSaveCycle() {
 
   const text = document.getElementById("autoSaveText");
   const badge = document.getElementById("autoSaveBadge");
-  if (text) text.textContent = `Tự động lưu: 10s • ${timeStr}`;
+  if (text) text.textContent = `Lưu trình duyệt: 10s • ${timeStr}`;
   if (badge) {
     badge.classList.add("saving");
     setTimeout(() => badge.classList.remove("saving"), 1400);

@@ -2,19 +2,17 @@
 <html lang="vi" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#1e64b4" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="description" content="PMATH EDUCATION TOOLS — Nền tảng Hình học động 2D/3D, Đồ thị giải tích, Mô phỏng không gian Oxyz & Sổ tay Toán học THPT chuẩn GDPT 2018" />
+  <meta name="description" content="PMATH EDUCATION TOOLS — Công cụ trực quan hóa Không gian Oxyz, Mô phỏng Vectơ Vận Tốc 3D, Hình học động 2D/3D & Sổ tay Toán THPT chương trình GDPT 2018" />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="manifest" href="./manifest.json" />
-  <title>PMATH EDUCATION TOOLS — Hình Học Động 2D/3D, Đồ Thị, Bảng Biến Thiên &amp; Kho Kiến Thức Toán THPT</title>
-  <!-- Google Identity Services (GIS) for Google Gmail OAuth Sign-In -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <title>PMATH EDUCATION TOOLS — Không Gian Oxyz, Vectơ Vận Tốc 3D &amp; Hình Học Động THPT</title>
   <!-- Core Styles & Fonts (AxMath + KaTeX + Times New Roman) -->
   <link rel="stylesheet" href="./assets/index-B5VXrJpN.css" />
-  <!-- PMATH Education Signature Styles (Template_PMATH.tex v2.1) -->
+  <!-- PMATH Education Signature Styles -->
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -29,88 +27,50 @@
       <div class="pmath-brand-text">
         <div class="pmath-brand-row1">
           <span class="pmath-app-title">PMATH TOOLS</span>
-          <span class="pmath-tag-pill">STUDIO</span>
+          <span class="pmath-tag-pill">OXYZ &amp; HÌNH HỌC</span>
         </div>
         <div class="pmath-brand-row2">
-          <span>Hình học động &amp; Phương trình không gian</span>
+          <span>Mô phỏng không gian Oxyz &amp; Hình học động THPT</span>
         </div>
       </div>
     </div>
 
     <div class="pmath-global-nav" role="tablist" aria-label="Chế độ công cụ">
       <button class="pmath-nav-tab active" id="topSwitchToHomeBtn" title="Trang Chủ &amp; Giới Thiệu Tính Năng">
-        🏠 Trang Chủ
+        <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1V9.5z"/></svg>Trang Chủ
       </button>
-      <button class="pmath-nav-tab" id="topSwitchToNRBtn" title="Sổ Tay Hình Học Động, Khối 3D Trải Phẳng, Đồ Thị & Máy Tính Casio">
-        📒 Sổ Tay Hình Học Động
+      <button class="pmath-nav-tab" id="topSwitchToGeoLabBtn" title="Studio Phương Trình 2D/3D, Không Gian Oxyz &amp; Mô Phỏng Vận Tốc">
+        <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Không Gian Oxyz &amp; Phương Trình
       </button>
-      <button class="pmath-nav-tab" id="topSwitchToGeoLabBtn" title="Phòng Thí Nghiệm Phương Trình 2D/3D & Kho Hình Học">
-        📐 Phương Trình &amp; Không Gian 3D
+      <button class="pmath-nav-tab" id="topSwitchToNRBtn" title="Sổ Tay Hình Học Động, Khối 3D Trải Phẳng, Đồ Thị &amp; Máy Tính Khoa Học">
+        <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Sổ Tay Vẽ Hình &amp; Ghi Chú
       </button>
     </div>
 
     <div class="pmath-global-actions">
       <!-- iPad / Apple Pencil Palm-Rejection Toggle Pill -->
-      <button type="button" class="btn-ipad-pencil-mode active" id="togglePencilGuardBtn" title="Chế độ Apple Pencil (iPad): Chống tỳ đè lòng bàn tay, khóa bôi đen chữ khi viết, dùng ngón tay để cuộn trang">
-        ✏️ Chế độ Bút: BẬT
+      <button type="button" class="btn-ipad-pencil-mode active" id="togglePencilGuardBtn" title="Chế độ Bút cảm ứng (iPad): Chống tỳ đè lòng bàn tay, khóa bôi đen chữ khi viết, dùng ngón tay để cuộn trang">
+        Chế độ Bút: BẬT
       </button>
 
       <!-- Auto-Save Status Pill (10s periodic) -->
-      <div class="autosave-pill" id="autoSaveBadge" title="Tự động lưu trữ sổ tay và phòng thí nghiệm mỗi 10 giây">
+      <div class="autosave-pill" id="autoSaveBadge" title="Tự động lưu tạm trong trình duyệt mỗi 10 giây — Hãy xuất tệp .json định kỳ để sao lưu an toàn">
         <span class="autosave-indicator"></span>
-        <span id="autoSaveText">Tự động lưu: 10s</span>
+        <span id="autoSaveText">Lưu trình duyệt: 10s</span>
       </div>
 
-      <button class="btn-top-action" id="openStorageLocationBtn" title="Xem vị trí lưu trữ sổ tay trên ổ cứng &amp; Sao lưu">
-        📁 Ổ Cứng &amp; Dữ Liệu
+      <button class="btn-top-action" id="openStorageLocationBtn" title="Sao lưu &amp; Khôi phục dữ liệu sổ tay ra tệp (.json)">
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Sao Lưu &amp; Dữ Liệu
       </button>
 
-      <!-- Google Sign-In & User Profile Widget -->
-      <div class="user-auth-widget" id="userAuthWidget">
-        <button type="button" class="btn-google-login" id="googleLoginBtn" title="Đăng nhập tài khoản Google / Gmail">
-          <svg class="google-icon" viewBox="0 0 24 24" width="16" height="16">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          <span>Đăng nhập Google</span>
-        </button>
-
-        <div class="user-profile-menu" id="userProfileMenu" style="display:none;">
-          <button type="button" class="user-avatar-btn" id="userAvatarBtn" title="Tài khoản Google">
-            <img id="userAvatarImg" src="./favicon.png" alt="Avatar" class="user-avatar" />
-            <span id="userNameShort" class="user-name-short">Google User</span>
-            <span class="dropdown-arrow">▾</span>
-          </button>
-          <div class="user-dropdown-content" id="userDropdownContent">
-            <div class="user-dropdown-header">
-              <strong id="userFullName">Nguyễn Văn A</strong>
-              <span id="userEmail">user@gmail.com</span>
-            </div>
-            <div class="user-dropdown-divider"></div>
-            <button type="button" class="user-dropdown-item" id="btnCloudSync">
-              ☁️ Đồng bộ đám mây (Google Drive)
-            </button>
-            <button type="button" class="user-dropdown-item" id="btnAuthSettings">
-              ⚙️ Cấu hình Google Client ID
-            </button>
-            <div class="user-dropdown-divider"></div>
-            <button type="button" class="user-dropdown-item danger" id="btnLogout">
-              🚪 Đăng xuất
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <button class="btn-top-action" id="topOpenFormulaSheetBtn" title="Mở Bảng Công Thức Toán Học (Tra cứu nhanh, Copy &amp; Cập nhật công thức)">
-        📋 Bảng Công Thức
+      <button class="btn-top-action" id="topOpenFormulaSheetBtn" title="Mở Bảng Công Thức Toán Học (Tra cứu nhanh, Sao chép &amp; Cập nhật công thức)">
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="13" y2="16"/></svg>Bảng Công Thức
       </button>
-      <button class="btn-top-action" id="toggleKnowledgeBtn" title="Mở Sổ Tay Kiến Thức 24 Chuyên Đề (Lý thuyết, Định lý, Mẹo giải nhanh &amp; Bài tập)">
-        📖 Sổ Tay Kiến Thức
+      <button class="btn-top-action" id="toggleKnowledgeBtn" title="Mở Sổ Tay Kiến Thức 24 Chuyên Đề (Lý thuyết, Định lý, Phương pháp giải &amp; Bài tập)">
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Sổ Tay Kiến Thức
       </button>
-      <button class="btn-top-action theme-action-btn" id="themeToggleBtn" title="Chuyển đổi Giao diện Tối / Sáng">
-        🌙
+      <button class="btn-top-action theme-action-btn" id="themeToggleBtn" title="Chuyển đổi Giao diện Tối / Sáng" aria-label="Chuyển đổi Giao diện Tối / Sáng">
+        <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
     </div>
   </header>
@@ -119,103 +79,104 @@
   <!-- VIEW 0: PMATH HOME (TRANG CHỦ HIỆN ĐẠI, GIỚI THIỆU TÍNH NĂNG & CTA)   -->
   <!-- ===================================================================== -->
   <div id="homeView" class="pmath-home-view">
-    <!-- Hero Section with BioForge Modern Aesthetic -->
+    <!-- Hero Section -->
     <section class="home-hero-section">
       <div class="bioforge-badge">
         <span class="bioforge-badge-dot"></span>
-        <span class="bioforge-badge-text">PMATH NEXT-GEN GEOMETRIC PLATFORM • CHUẨN GDPT 2018</span>
-        <span class="bioforge-badge-tag">v2.6 PRO</span>
+        <span class="bioforge-badge-text">CÔNG CỤ TRỰC QUAN TOÁN THPT • BÁM SÁT CHƯƠNG TRÌNH GDPT 2018</span>
       </div>
 
       <h1 class="bioforge-hero-title">
-        Nền Tảng Hình Học Động 2D/3D,<br />
-        <span class="bioforge-gradient-text">Không Gian Oxyz &amp; Sổ Tay Toán Học THPT</span>
+        Mô Phỏng Không Gian Oxyz, Vectơ Vận Tốc 3D<br />
+        <span class="bioforge-gradient-text">&amp; Bảng Vẽ Hình Học Động Toán THPT</span>
       </h1>
 
       <p class="bioforge-hero-desc">
-        Hệ sinh thái toán học tương tác thế hệ mới chuẩn thiết kế LaTeX PMATH. Tích hợp sổ tay hình học động kéo thả, khối 3D trải phẳng, máy tính Casio fx-580VN X ảo, mô phỏng vectơ vận tốc không gian Oxyz, bảng công thức tra cứu nhanh và sổ tay 24 chuyên đề THPT.
+        Trực quan hóa nhanh bài toán tọa độ không gian $Oxyz$, chuyển động thẳng đều $\vec{r}(t) = \vec{r}_0 + \vec{v}t$ và dựng hình phẳng/khối đa diện cho chương trình Toán 10–11–12 mà không cần cài đặt hay viết lệnh phức tạp.
       </p>
 
       <!-- Primary Action Buttons -->
       <div class="bioforge-hero-actions">
-        <button type="button" class="bioforge-btn-primary" id="heroBtnOpenNR">
-          <span class="bioforge-btn-icon">📒</span>
+        <button type="button" class="bioforge-btn-primary" id="heroBtnOpenStudio">
+          <span class="bioforge-btn-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </span>
           <div class="bioforge-btn-text">
-            <strong>Mở Sổ Tay Hình Học Động</strong>
-            <small>Dựng hình phẳng, khối 3D &amp; Máy tính Casio</small>
+            <strong>Mở Studio Oxyz &amp; Vectơ Vận Tốc</strong>
+            <small>Vẽ mặt phẳng, mặt cầu, đồ thị &amp; mô phỏng chuyển động 3D</small>
           </div>
         </button>
 
-        <button type="button" class="bioforge-btn-secondary" id="heroBtnOpenStudio">
-          <span class="bioforge-btn-icon">🧊</span>
+        <button type="button" class="bioforge-btn-secondary" id="heroBtnOpenNR">
+          <span class="bioforge-btn-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </span>
           <div class="bioforge-btn-text">
-            <strong>Mở Studio Oxyz &amp; Vectơ Vận Tốc</strong>
-            <small>Vẽ phương trình 2D/3D &amp; Mô phỏng chuyển động</small>
+            <strong>Mở Sổ Tay Vẽ Hình &amp; Bài Giảng</strong>
+            <small>Dựng hình phẳng, trải phẳng khối 3D &amp; ghi chú viết tay</small>
           </div>
         </button>
 
         <button type="button" class="bioforge-btn-outline" id="heroBtnOpenFormulas">
-          <span class="bioforge-btn-icon">📋</span>
+          <span class="bioforge-btn-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="13" y2="16"/></svg>
+          </span>
           <div class="bioforge-btn-text">
-            <strong>Bảng Công Thức Toán Học</strong>
-            <small>Tra cứu nhanh, Copy &amp; Tự thêm mới</small>
+            <strong>Bảng Tra Cứu Công Thức</strong>
+            <small>Tìm kiếm, sao chép &amp; tự bổ sung công thức</small>
           </div>
         </button>
 
         <button type="button" class="bioforge-btn-outline" id="heroBtnOpenKnowledge">
-          <span class="bioforge-btn-icon">📖</span>
+          <span class="bioforge-btn-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </span>
           <div class="bioforge-btn-text">
             <strong>Sổ Tay 24 Chuyên Đề</strong>
-            <small>Lý thuyết, Mẹo giải nhanh &amp; Bài tập</small>
+            <small>Lý thuyết trọng tâm, phương pháp giải &amp; bài tập</small>
           </div>
         </button>
       </div>
 
       <!-- Quick Feature Pill Ribbon -->
       <div class="bioforge-features-pills">
-        <span class="bioforge-feat-pill">✦ Chuẩn GDPT 2018 Toán 10 - 11 - 12</span>
-        <span class="bioforge-feat-pill">✦ Mô phỏng Oxyz &amp; Vectơ Vận Tốc Thực Tế</span>
-        <span class="bioforge-feat-pill">✦ Khối 3D Trải Phẳng &amp; Gấp Hình Trực Quan</span>
-        <span class="bioforge-feat-pill">✦ Tự Động Lưu 10s (IndexedDB &amp; LocalStorage)</span>
-        <span class="bioforge-feat-pill">✦ Đăng Nhập Google Gmail &amp; Đồng Bộ Đám Mây</span>
-        <span class="bioforge-feat-pill">✦ Hỗ Trợ PWA &amp; Cài Đặt Chạy Offline</span>
+        <span class="bioforge-feat-pill">✦ Chuyên biệt cho bài toán Oxyz &amp; Vận tốc Toán 12</span>
+        <span class="bioforge-feat-pill">✦ Có sẵn 24 mô hình hình học THPT dựng sẵn</span>
+        <span class="bioforge-feat-pill">✦ Khối đa diện 3D &amp; Trải phẳng hình mạng 2D</span>
+        <span class="bioforge-feat-pill">✦ Không cần đăng nhập • Lưu cục bộ &amp; Xuất tệp .json</span>
+        <span class="bioforge-feat-pill">✦ Hiển thị ký hiệu toán học bằng KaTeX</span>
       </div>
 
-      <!-- User Account & Cloud Sync Status Banner -->
-      <div class="home-auth-banner-wrap" id="homeAuthStatusBanner">
-        <!-- Rendered by auth.js -->
-      </div>
-
-      <!-- BIOFORGE CENTERPIECE: INTERACTIVE 3D MATH CONSOLE -->
+      <!-- CENTERPIECE: INTERACTIVE 3D MATH CONSOLE -->
       <div class="bioforge-console-card">
         <div class="console-telemetry-header">
           <div class="console-dots">
             <span class="console-dot red"></span>
             <span class="console-dot yellow"></span>
             <span class="console-dot green"></span>
-            <span style="margin-left: 8px;">PMATH 3D KINEMATICS ENGINE • OXYZ SPACE</span>
+            <span style="margin-left: 8px;">MÔ PHỎNG HÌNH HỌC KHÔNG GIAN OXYZ • TOÁN 12</span>
           </div>
           <div class="console-status-pill">
             <span class="bioforge-badge-dot" style="width:6px; height:6px;"></span>
-            <span>REALTIME SIMULATION • 60 FPS</span>
+            <span>TƯƠNG TÁC TRỰC TIẾP TRÊN TRÌNH DUYỆT</span>
           </div>
         </div>
 
         <div class="console-canvas-wrap">
           <!-- Floating Telemetry Chips -->
           <div class="console-telemetry-chip left">
-            <strong style="color: #38bdf8;">📐 Mặt phẳng (α)</strong>
+            <strong style="color: #38bdf8;">Mặt phẳng (α)</strong>
             <span>2x - y + 2z - 6 = 0 • d(O, α) = 2.0</span>
           </div>
 
           <div class="console-telemetry-chip right">
-            <strong style="color: #f43f5e;">✈️ Vectơ Vận Tốc Máy Bay</strong>
+            <strong style="color: #f43f5e;">Vectơ Vận Tốc Máy Bay</strong>
             <span>v⃗₁ = (120; -80; 15) m/s • |v⃗| = 145 m/s</span>
           </div>
 
           <div class="console-telemetry-chip bottom">
-            <strong style="color: #34d399;">🛡️ Phân Tích Khoảng Cách An Toàn Hàng Không</strong>
-            <span>d(t) = 4.2 km &gt; 3.0 km (Cực ly an toàn • Không va chạm)</span>
+            <strong style="color: #34d399;">Bài Toán Khoảng Cách Hai Chuyển Động Trong Oxyz</strong>
+            <span>d(t) = |M₁(t) - M₂(t)| = 4.2 km &gt; 3.0 km (Cự ly an toàn)</span>
           </div>
 
           <canvas id="hero3dCanvas"></canvas>
@@ -224,7 +185,7 @@
         <div class="console-footer-bar">
           <div class="console-controls-group">
             <button type="button" class="btn-console-tool" id="heroPlay3dBtn" title="Chạy hoặc tạm dừng mô phỏng">
-              ▶ Chạy mô phỏng
+              ⏸ Tạm dừng
             </button>
             <button type="button" class="btn-console-tool" id="heroReset3dBtn" title="Đặt lại thời gian về t = 0">
               ↺ t = 0
@@ -232,114 +193,119 @@
             <button type="button" class="btn-console-tool" id="heroRotate3dBtn" title="Bật/Tắt tự động xoay 3D">
               ⟲ Tự xoay 3D: Bật
             </button>
-            <span style="font-size:0.75rem; color:#94a3b8; margin-left:6px;">💡 Kéo chuột trên hình để xoay không gian 3D</span>
+            <span style="font-size:0.75rem; color:#94a3b8; margin-left:6px;">Kéo chuột hoặc chạm trên hình để xoay góc nhìn 3D</span>
           </div>
           <button type="button" class="btn-console-launch" id="heroLaunchStudioBtn">
-            🚀 Khởi Chạy Studio Oxyz Toàn Màn Hình ➔
+            Mở Mô Hình Này Trong Studio Oxyz ➔
           </button>
         </div>
       </div>
     </section>
 
-    <!-- BioForge High-Tech Metrics Ribbon -->
+    <!-- Why PMATH alongside GeoGebra / Desmos Strip -->
     <div class="bioforge-metrics-strip">
       <div class="bioforge-metric-item">
-        <strong>4</strong>
-        <span>Bộ công cụ toán học tương tác</span>
+        <strong>Oxyz &amp; v⃗(t)</strong>
+        <span>Mô phỏng bài toán vận tốc 3D mới trong SGK Toán 12</span>
       </div>
       <div class="bioforge-metric-item">
-        <strong>10s</strong>
-        <span>Tự động lưu trữ đa tầng</span>
+        <strong>24 mẫu dựng sẵn</strong>
+        <span>Mở ngay hình mẫu THPT trong 1 chạm không cần nhập lệnh</span>
       </div>
       <div class="bioforge-metric-item">
-        <strong>100%</strong>
-        <span>Chuẩn LaTeX &amp; GDPT 2018</span>
+        <strong>Sổ tay + Vẽ hình</strong>
+        <span>Kết hợp viết tay trên iPad và chèn hình học động trên cùng trang</span>
       </div>
       <div class="bioforge-metric-item">
-        <strong>60 FPS</strong>
-        <span>Khối 3D &amp; Vectơ vận tốc</span>
+        <strong>Lưu tệp .json</strong>
+        <span>Hoạt động trên trình duyệt, xuất/nhập tệp bài giảng dễ dàng</span>
       </div>
       <div class="bioforge-metric-item">
-        <strong>PWA</strong>
-        <span>Cài đặt &amp; Chạy độc lập Offline</span>
+        <strong>Mã nguồn mở</strong>
+        <span>Miễn phí, không quảng cáo, không thu thập dữ liệu cá nhân</span>
       </div>
     </div>
 
-    <!-- 4 Core Modules Bento Grid Showcase -->
+    <!-- Core Modules Bento Grid Showcase -->
     <section class="home-modules-section">
       <div class="home-section-header">
-        <h2 class="home-section-title">Hệ Sinh Thái Công Cụ Toán Học Toàn Diện</h2>
-        <p class="home-section-subtitle">Được nghiên cứu &amp; tối ưu dành cho cả Giáo viên soạn bài giảng trực quan và Học sinh tự học trực giác</p>
+        <h2 class="home-section-title">Các Công Cụ Chính Trong PMATH TOOLS</h2>
+        <p class="home-section-subtitle">Vì sao nên dùng kết hợp cùng GeoGebra / Desmos? PMATH thiết kế sẵn các tình huống đặc thù của chương trình Toán THPT Việt Nam (chuyển động vectơ vận tốc $Oxyz$, giao tuyến mặt cầu – mặt phẳng, trải phẳng khối đa diện và ghi chú bài giảng trực tiếp).</p>
       </div>
 
       <div class="bioforge-bento-grid">
-        <!-- Module Bento 1 (Wide 7-Columns): Sổ Tay Hình Học Động & Khối 3D Trải Phẳng -->
-        <div class="bento-card wide">
-          <div class="bento-icon-wrap blue">📒</div>
-          <span class="card-category">Hình Học Phẳng &amp; Khối 3D Trải Phẳng</span>
-          <h3 class="card-title">Sổ Tay Hình Học Động &amp; Khối 3D Trải Phẳng</h3>
+        <!-- Module Bento 1 (Wide 7-Columns): Không Gian Oxyz & Vectơ Vận Tốc (ĐIỂM NHẤN CHÍNH) -->
+        <div class="bento-card wide highlight">
+          <div class="card-badge-top">TRỌNG TÂM TOÁN 12 (GDPT 2018)</div>
+          <div class="bento-icon-wrap red" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <span class="card-category">Hình Học Giải Tích Oxyz &amp; Bài Toán Thực Tế</span>
+          <h3 class="card-title">Mô Phỏng Không Gian Oxyz &amp; Vectơ Vận Tốc 3D</h3>
           <p class="card-desc">
-            Vẽ điểm, đoạn thẳng, đường tròn, tam giác với các đường và tâm đặc biệt (Euler, Fermat, trọng tâm, trực tâm). Dựng khối đa diện 3D (lăng trụ, chóp, nón, trụ) và trải phẳng 2D thành hình mạng để quan sát trực giác. Tích hợp máy tính học sinh Casio fx-580VN X ảo độ phân giải cao trực tiếp trong trang sổ.
+            Thiết kế riêng cho chương trình Toán 12 mới: biểu diễn trực quan mặt phẳng $(P): Ax + By + Cz + D = 0$, mặt cầu $(S)$, đường thẳng tham số và bài toán chuyển động thẳng đều $\vec{r}(t) = \vec{r}_0 + \vec{v}t$ trong không gian 3 chiều.
           </p>
           <ul class="card-feature-list">
-            <li>Dựng hình động kéo thả chuột mượt mà, căn chỉnh tọa độ chính xác</li>
-            <li>Khối 3D trải phẳng thành hình mạng 2D và mô phỏng gấp mở không gian</li>
-            <li>Máy tính Casio fx-580VN X ảo độ nét cao tính toán ma trận, phương trình, thống kê</li>
-            <li>Bảng biến thiên tự động, ghi chú bài giảng đa trang &amp; xuất PDF/PNG sắc nét</li>
+            <li>Mô phỏng 2 vật thể/máy bay chuyển động theo vectơ vận tốc $\vec{v}_1, \vec{v}_2$ theo thời gian $t$</li>
+            <li>Tính tự động khoảng cách tức thời $d(t) = |M_1(t) - M_2(t)|$ và vị trí đạt khoảng cách ngắn nhất</li>
+            <li>Quan sát trực quan đường tròn giao tuyến giữa mặt cầu $(S)$ và mặt phẳng $(\alpha)$, bán kính $r = \sqrt{R^2 - d^2}$</li>
+            <li>Thay đổi trực tiếp tọa độ điểm, vectơ pháp tuyến và xem ngay kết quả tính toán</li>
           </ul>
-          <button type="button" class="btn-card-action" id="cardBtnNR">Trải Nghiệm Sổ Tay Ngay ➔</button>
+          <button type="button" class="btn-card-action primary" id="cardBtnStudio">Mở Studio Không Gian Oxyz ➔</button>
         </div>
 
-        <!-- Module Bento 2 (5-Columns Accent): Không Gian Oxyz & Vectơ Vận Tốc -->
-        <div class="bento-card normal highlight">
-          <div class="card-badge-top">🚀 MỚI NHẤT</div>
-          <div class="bento-icon-wrap red">🧊</div>
-          <span class="card-category">Hình Học Giải Tích Oxyz &amp; Vận Tốc</span>
-          <h3 class="card-title">Không Gian Oxyz &amp; Vectơ Vận Tốc Thực Tế</h3>
+        <!-- Module Bento 2 (5-Columns): Sổ Tay Vẽ Hình & Khối 3D Trải Phẳng -->
+        <div class="bento-card normal">
+          <div class="bento-icon-wrap blue" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <span class="card-category">Sổ Tay Bài Giảng &amp; Khối Đa Diện</span>
+          <h3 class="card-title">Sổ Tay Hình Học Động &amp; Trải Phẳng Khối 3D</h3>
           <p class="card-desc">
-            Vẽ mặt phẳng $(P): Ax + By + Cz + D = 0$, mặt cầu $(S)$, phương trình đường thẳng tham số trong Oxyz. Mô phỏng chuyển động thực tế $\vec{r}(t) = \vec{r}_0 + \vec{v}t$, tính độ lớn vận tốc $|\vec{v}|$ và tự động tính khoảng cách an toàn tránh va chạm giữa 2 máy bay.
+            Kết hợp trang viết tay cho giáo viên/học sinh (hỗ trợ chống tỳ tay Apple Pencil trên iPad) với công cụ dựng hình học phẳng, trải phẳng khối chóp/lăng trụ/nón/trụ thành hình mạng 2D và máy tính khoa học tích hợp.
           </p>
           <ul class="card-feature-list">
-            <li>Quỹ đạo hạt phát sáng &amp; vệt đường bay 3D rực rỡ</li>
-            <li>Mũi tên vectơ vận tốc $\vec{v}$ trong không gian Oxyz</li>
-            <li>Đo khoảng cách tức thời $d(t) = |M_1(t) - M_2(t)|$</li>
-            <li>Cảnh báo va chạm an toàn hàng không khi $d(t) &lt; 3\text{km}$</li>
+            <li>Dựng tam giác với trọng tâm $G$, trực tâm $H$, tâm ngoại tiếp $O$, tâm nội tiếp $I$</li>
+            <li>Trải phẳng khối đa diện 3D thành hình mạng 2D để tính diện tích xung quanh, toàn phần</li>
+            <li>Tích hợp bảng biến thiên, máy tính khoa học và xuất trang bài giảng ra PDF/PNG</li>
           </ul>
-          <button type="button" class="btn-card-action primary" id="cardBtnStudio">Mở Studio Oxyz ➔</button>
+          <button type="button" class="btn-card-action" id="cardBtnNR">Mở Sổ Tay Vẽ Hình ➔</button>
         </div>
 
         <!-- Module Bento 3 (Half 6-Columns): Khảo Sát Đồ Thị Giải Tích -->
         <div class="bento-card half">
-          <div class="bento-icon-wrap teal">📈</div>
+          <div class="bento-icon-wrap teal" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
           <span class="card-category">Giải Tích 12 &amp; Khảo Sát Hàm Số</span>
           <h3 class="card-title">Đồ Thị Giải Tích &amp; Khảo Sát Hàm Số</h3>
           <p class="card-desc">
-            Vẽ chính xác đồ thị các hàm số trọng tâm THPT: hàm bậc ba, hàm phân thức bậc nhất/bậc nhất, phân thức bậc hai/bậc nhất, hàm lượng giác. Tự động tính tiếp tuyến, cực trị, điểm uốn và diện tích hình phẳng giới hạn bởi tích phân.
+            Vẽ đồ thị các hàm số thường gặp trong chương trình THPT: hàm bậc ba, hàm phân thức hữu tỉ bậc nhất/bậc nhất, bậc hai/bậc nhất và hàm lượng giác. Hiển thị rõ cực trị, tâm đối xứng và đường tiệm cận.
           </p>
           <ul class="card-feature-list">
-            <li>Nhập biểu thức tự nhiên: $y = x^3 - 3x + 1$, $y = \frac{2x-1}{x+1}$</li>
-            <li>Xác định tự động tiệm cận đứng, tiệm cận ngang, tiệm cận xiên</li>
-            <li>Vẽ mặt cong không gian 3 chiều: $z = f(x, y)$</li>
-            <li>Tìm giao điểm giữa đồ thị và đường thẳng tiếp tuyến</li>
+            <li>Nhập biểu thức hàm số: $y = x^3 - 3x + 1$, $y = \frac{2x-1}{x+1}$, $y = \frac{x^2-x+1}{x-1}$</li>
+            <li>Hiển thị trực quan tiệm cận đứng, tiệm cận ngang và tiệm cận xiên</li>
+            <li>Vẽ mặt cong hai biến $z = f(x, y)$ trong không gian 3 chiều</li>
           </ul>
           <button type="button" class="btn-card-action" id="cardBtnGraph">Vẽ Đồ Thị Giải Tích ➔</button>
         </div>
 
-        <!-- Module Bento 4 (Half 6-Columns): Kho Kiến Thức 24 Chuyên Đề -->
+        <!-- Module Bento 4 (Half 6-Columns): Sổ Tay 24 Chuyên Đề & Bảng Công Thức -->
         <div class="bento-card half">
-          <div class="bento-icon-wrap green">📚</div>
-          <span class="card-category">Lý Thuyết &amp; Công Thức Nhanh</span>
-          <h3 class="card-title">Kho Kiến Thức 24 Chuyên Đề GDPT 2018</h3>
+          <div class="bento-icon-wrap green" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="card-category">Tài Liệu Tra Cứu &amp; Ôn Tập</span>
+          <h3 class="card-title">Bảng Công Thức &amp; Sổ Tay 24 Chuyên Đề</h3>
           <p class="card-desc">
-            Hệ thống hóa toàn bộ định nghĩa, tính chất, định lý và công thức tính nhanh diện tích, thể tích, khoảng cách, góc trong chương trình Toán 10 - 11 - 12. Kèm câu hỏi trắc nghiệm vận dụng có lời giải chi tiết.
+            Tách biệt rõ Bảng tra cứu công thức (hỗ trợ tìm kiếm, sao chép, tự thêm mới) và Sổ tay 24 chuyên đề (tóm tắt định nghĩa, định lý, phương pháp giải, sai lầm thường gặp và câu hỏi tự luyện có lời giải).
           </p>
           <ul class="card-feature-list">
-            <li>24 chủ đề hình học &amp; giải tích bám sát ma trận đề thi tốt nghiệp THPT</li>
-            <li>Công thức tính nhanh thể tích khối chóp, lăng trụ, nón, trụ, cầu</li>
-            <li>Mẹo giải nhanh trắc nghiệm và các bài toán thực tế GDPT 2018</li>
-            <li>Drawer trượt mở linh hoạt không che khuất màn hình vẽ</li>
+            <li>24 chuyên đề hình học phẳng, khối đa diện, đồ thị và tọa độ Oxyz</li>
+            <li>Nút "Dựng Hình Này Vào Bảng Vẽ" liên kết trực tiếp từ lý thuyết sang mô hình tương tác</li>
+            <li>Cho phép giáo viên chỉnh sửa nội dung chuyên đề và xuất tệp JSON lưu trữ</li>
           </ul>
-          <button type="button" class="btn-card-action" id="cardBtnKnowledge">Xem Sổ Tay Kiến Thức ➔</button>
+          <button type="button" class="btn-card-action" id="cardBtnKnowledge">Xem Sổ Tay 24 Chuyên Đề ➔</button>
         </div>
       </div>
     </section>
@@ -347,47 +313,55 @@
     <!-- Quick Presets Demo Launch Section -->
     <section class="home-presets-section">
       <div class="home-section-header">
-        <h2 class="home-section-title">Khám Phá Nhanh Các Tình Huống Tương Tác Tiêu Biểu</h2>
-        <p class="home-section-subtitle">Chỉ cần 1 cú nhấp chuột để nạp ngay mô hình mẫu vào không gian vẽ</p>
+        <h2 class="home-section-title">Khám Phá Nhanh Các Mô Hình Tương Tác Mẫu</h2>
+        <p class="home-section-subtitle">Nhấp vào một bài toán bên dưới để mở ngay mô hình tương ứng trong Studio</p>
       </div>
 
       <div class="home-presets-grid">
         <div class="bioforge-preset-card" id="presetLaunchAirplanes">
           <div class="preset-badge">Vận Tốc Oxyz</div>
-          <div class="preset-icon">✈️</div>
+          <div class="preset-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+          </div>
           <div class="preset-info">
-            <strong>2 Máy Bay Chuyển Động Tránh Va Chạm</strong>
-            <p>Mô phỏng 2 vectơ vận tốc trong Oxyz, tính khoảng cách $d(t)$ và cảnh báo an toàn hàng không.</p>
+            <strong>2 Máy Bay Chuyển Động Trong Không Gian Oxyz</strong>
+            <p>Mô phỏng 2 vectơ vận tốc $\vec{v}_1, \vec{v}_2$, theo dõi khoảng cách $d(t)$ theo thời gian thực.</p>
           </div>
           <span class="preset-arrow">➔</span>
         </div>
 
         <div class="bioforge-preset-card" id="presetLaunchSpherePlane">
           <div class="preset-badge">Không Gian 3D</div>
-          <div class="preset-icon">🧊</div>
+          <div class="preset-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="10" ry="4"/></svg>
+          </div>
           <div class="preset-info">
             <strong>Mặt Cầu (S) &amp; Mặt Phẳng Cắt (α)</strong>
-            <p>Xác định đường tròn giao tuyến, tính bán kính $r = \sqrt{R^2 - d^2}$ và hình chiếu vuông góc $H$.</p>
+            <p>Quan sát đường tròn giao tuyến, tính bán kính $r = \sqrt{R^2 - d^2}$ và hình chiếu vuông góc $H$.</p>
           </div>
           <span class="preset-arrow">➔</span>
         </div>
 
         <div class="bioforge-preset-card" id="presetLaunchEuler">
           <div class="preset-badge">Hình Phẳng</div>
-          <div class="preset-icon">📐</div>
+          <div class="preset-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 3 2 21 22 21"/></svg>
+          </div>
           <div class="preset-info">
             <strong>Tam Giác &amp; Đường Thẳng Euler</strong>
-            <p>Chứng minh 3 điểm Trọng tâm $G$, Trực tâm $H$, Tâm ngoại tiếp $O$ thẳng hàng với $\vec{HG} = 2\vec{GO}$.</p>
+            <p>Kiểm nghiệm trực quan tính thẳng hàng của Trọng tâm $G$, Trực tâm $H$, Tâm ngoại tiếp $O$ ($\vec{HG} = 2\vec{GO}$) khi kéo thả đỉnh.</p>
           </div>
           <span class="preset-arrow">➔</span>
         </div>
 
         <div class="bioforge-preset-card" id="presetLaunchCubic">
           <div class="preset-badge">Đồ Thị 2D</div>
-          <div class="preset-icon">📈</div>
+          <div class="preset-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17c3-8 6-8 9 0s6 8 9 0"/></svg>
+          </div>
           <div class="preset-info">
             <strong>Khảo Sát Hàm Bậc 3: $y = x^3 - 3x + 1$</strong>
-            <p>Tìm 2 điểm cực trị, điểm uốn $I(0, 1)$ và đường thẳng đi qua hai điểm cực trị.</p>
+            <p>Quan sát 2 điểm cực trị, tâm đối xứng (điểm uốn) $I(0, 1)$ và đường thẳng qua hai cực trị.</p>
           </div>
           <span class="preset-arrow">➔</span>
         </div>
@@ -397,13 +371,15 @@
     <!-- PWA & Offline Banner -->
     <section class="home-pwa-banner">
       <div class="bioforge-pwa-card">
-        <span class="pwa-icon">📲</span>
+        <span class="pwa-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </span>
         <div class="pwa-text">
-          <h3>Cài Đặt Ứng Dụng PMATH TOOLS (PWA) Để Sử Dụng Mọi Lúc Mọi Nơi</h3>
-          <p>Ứng dụng có thể cài đặt trực tiếp vào màn hình máy tính Windows / MacOS hoặc điện thoại, hoạt động độc lập và hoàn toàn không cần kết nối mạng Internet.</p>
+          <h3>Hỗ Trợ Cài Đặt Web App (PWA) &amp; Hoạt Động Ngoại Tuyến</h3>
+          <p>Sau lần tải đầu tiên, trình duyệt lưu bộ nhớ đệm (Service Worker) giúp bạn mở công cụ vẽ hình ngay cả khi mất kết nối mạng. Lưu ý: dữ liệu được lưu trong trình duyệt của thiết bị hiện tại, hãy xuất tệp <code>.json</code> định kỳ để sao lưu an toàn.</p>
         </div>
         <button type="button" class="btn-pwa-install" id="homeInstallPwaBtn">
-          📥 Cài Đặt Ứng Dụng Ngay
+          Cài Đặt Ứng Dụng (PWA)
         </button>
       </div>
     </section>
@@ -413,14 +389,17 @@
       <div class="home-footer-inner">
         <div class="home-footer-brand">
           <img src="./favicon.png" alt="" class="footer-logo" />
-          <span><strong>PMATH EDUCATION TOOLS</strong> • <em>Nền tảng hình học &amp; giải tích trực quan chuẩn GDPT 2018</em></span>
+          <span><strong>PMATH EDUCATION TOOLS</strong> • <em>Công cụ trực quan hóa hình học &amp; giải tích THPT</em></span>
         </div>
         <div class="home-footer-links">
           <a href="./privacy.html" style="color:var(--text-muted); text-decoration:underline;">Chính Sách Quyền Riêng Tư</a> •
           <a href="./terms.html" style="color:var(--text-muted); text-decoration:underline;">Điều Khoản Dịch Vụ</a> •
-          <a href="https://github.com/phongdaohuy0905CSE/pmath-education-tools" target="_blank" rel="noopener noreferrer" style="color:var(--text-muted); text-decoration:underline;">Mã Nguồn GitHub</a> •
-          <span>Định dạng LaTeX PMATH</span>
+          <a href="https://github.com/phongdaohuy0905CSE/pmath-education-tools" target="_blank" rel="noopener noreferrer" style="color:var(--text-muted); text-decoration:underline;">Mã Nguồn Mở GitHub</a> •
+          <span>Hiển thị công thức bằng KaTeX</span>
         </div>
+      </div>
+      <div style="max-width:1200px; margin:0.45rem auto 0; padding-top:0.45rem; border-top:1px dashed var(--border-color); font-size:0.74rem; color:var(--text-muted); text-align:center;">
+        Lưu ý pháp lý: Máy tính khoa học tích hợp trong sổ tay là trình mô phỏng phục vụ học tập độc lập, không liên kết và không được tài trợ bởi Casio Computer Co., Ltd.
       </div>
     </footer>
   </div>
@@ -527,28 +506,28 @@
             <div class="tool-group" id="quickAddTools"></div>
             <div class="tool-divider"></div>
             <div class="tool-group">
-              <button class="cad-btn" id="undoBtn" title="Hoàn tác (Ctrl + Z)" disabled>↩️ Undo</button>
-              <button class="cad-btn" id="redoBtn" title="Làm lại (Ctrl + Y)" disabled>↪️ Redo</button>
-              <button class="cad-btn active-accent" id="editObjBtn" title="Tùy chỉnh &amp; Sửa chi tiết đối tượng đang chọn (Phím E)">⚙️ Sửa</button>
-              <button class="cad-btn" id="copyBtn" title="Sao chép đối tượng đang chọn (Ctrl + C)">📋 Copy</button>
-              <button class="cad-btn" id="pasteBtn" title="Dán đối tượng (Ctrl + V)">📄 Paste</button>
-              <button class="cad-btn" id="renameBtn" title="Đổi tên đối tượng / Đỉnh (A → P)">✏️ Đổi tên</button>
-              <button class="cad-btn" id="toggleVisBtn" title="Ẩn / Hiện đối tượng đang chọn (H)">👁️ Ẩn/Hiện</button>
-              <button class="cad-btn danger" id="deleteBtn" title="Xóa đối tượng đang chọn (Delete / Backspace)">🗑️ Xóa</button>
+              <button class="cad-btn" id="undoBtn" title="Hoàn tác (Ctrl + Z)" disabled>↩ Hoàn tác</button>
+              <button class="cad-btn" id="redoBtn" title="Làm lại (Ctrl + Y)" disabled>↪ Làm lại</button>
+              <button class="cad-btn active-accent" id="editObjBtn" title="Tùy chỉnh &amp; Sửa chi tiết đối tượng đang chọn (Phím E)">Sửa</button>
+              <button class="cad-btn" id="copyBtn" title="Sao chép đối tượng đang chọn (Ctrl + C)">Sao chép</button>
+              <button class="cad-btn" id="pasteBtn" title="Dán đối tượng (Ctrl + V)">Dán</button>
+              <button class="cad-btn" id="renameBtn" title="Đổi tên đối tượng / Đỉnh (Phím R)">Đổi tên</button>
+              <button class="cad-btn" id="toggleVisBtn" title="Ẩn / Hiện đối tượng đang chọn (Phím H)">Ẩn/Hiện</button>
+              <button class="cad-btn danger" id="deleteBtn" title="Xóa đối tượng đang chọn (Delete / Backspace)">Xóa</button>
             </div>
             <div class="tool-divider"></div>
             <div class="tool-group">
-              <button class="cad-btn" id="zoomFitBtn" title="Căn vừa tất cả đối tượng vào khung nhìn (Phím F)">⊡ Zoom to Fit</button>
+              <button class="cad-btn" id="zoomFitBtn" title="Căn vừa tất cả đối tượng vào khung nhìn (Phím F)">⊡ Khớp khung nhìn</button>
               <button class="cad-btn active" id="gridToggleBtn" title="Hiển thị / Ẩn lưới (Phím G)"># Lưới</button>
               <button class="cad-btn active" id="axesToggleBtn" title="Hiển thị / Ẩn trục tọa độ (Phím X)">┼ Trục tọa độ</button>
-              <button class="cad-btn" id="fullscreenBtn" title="Toàn màn hình Canvas (F11)">⛶ Fullscreen</button>
+              <button class="cad-btn" id="fullscreenBtn" title="Toàn màn hình (F11)">⛶ Toàn màn hình</button>
             </div>
           </div>
 
           <!-- Secondary Style & Special Overlay Toolbar (PMATH Signature Palette) -->
           <div class="style-toolbar">
             <div class="style-controls">
-              <span>🎨 Màu nét:</span>
+              <span>Màu nét:</span>
               <div class="color-swatch-group" id="colorSwatches">
                 <button class="color-swatch active" data-color="#1e64b4" style="background:#1e64b4" title="Xanh dương chuẩn (#1e64b4)"></button>
                 <button class="color-swatch" data-color="#148250" style="background:#148250" title="Xanh lá định lý (#148250)"></button>
@@ -559,7 +538,7 @@
                 <input type="color" id="customColorPicker" value="#1e64b4" title="Chọn màu tùy ý" />
               </div>
 
-              <span>📏 Độ dày:</span>
+              <span>Độ dày:</span>
               <select id="lineWidthSelect" class="stroke-select" title="Độ dày nét vẽ">
                 <option value="1.5">Mảnh (1.5pt)</option>
                 <option value="2.2" selected>Chuẩn (2.2pt)</option>
@@ -576,7 +555,7 @@
             </div>
 
             <div class="style-controls" id="specialOverlayBar">
-              <span>⭐ Tâm &amp; Đường △:</span>
+              <span>Tâm &amp; Đường △:</span>
               <button class="cad-btn" data-overlay="G" title="Trọng tâm G & 3 đường trung tuyến">G Trung tuyến</button>
               <button class="cad-btn" data-overlay="H" title="Trực tâm H & 3 đường cao">H Đường cao</button>
               <button class="cad-btn" data-overlay="O" title="Tâm ngoại tiếp O & Đường tròn ngoại tiếp">O Ngoại tiếp</button>
@@ -590,9 +569,9 @@
             <canvas id="geoCanvas"></canvas>
             <div class="canvas-status-bar">
               <div class="status-pill" id="canvasHint">
-                🖱️ Kéo đỉnh để biến đổi • Nhấp đúp để Sửa • Chuột giữa (hoặc Alt+Kéo) để Pan • Lăn chuột để Zoom
+                Kéo đỉnh để biến đổi • Nhấp đúp để Sửa • Chuột giữa (hoặc Alt+Kéo) để Kéo mặt phẳng • Lăn chuột để Thu phóng
               </div>
-              <div class="status-pill" id="cursorCoordPill">x: 0.00, y: 0.00 | Zoom: 100%</div>
+              <div class="status-pill" id="cursorCoordPill">x: 0.00, y: 0.00 | Thu phóng: 100%</div>
             </div>
           </div>
         </div>
@@ -600,7 +579,7 @@
         <!-- Bottom Controls (Direct Numeric Input) & Real-time Calculated Quantities -->
         <div class="controls-metrics-grid">
           <div class="panel-box tcolorbox-ex">
-            <div class="tcolorbox-badge badge-ex">🎛️ Nhập Thông Số Đối Tượng</div>
+            <div class="tcolorbox-badge badge-ex">Nhập Thông Số Đối Tượng</div>
             <div class="panel-box-header">
               <span style="font-size:0.82rem; color:var(--text-muted); font-style:italic;">Nhập trực tiếp giá trị số đo / hệ số:</span>
               <span id="selectedObjBadge" style="font-size:0.85rem; color:var(--excolor); font-weight:700;"></span>
@@ -609,7 +588,7 @@
           </div>
 
           <div class="panel-box tcolorbox-def">
-            <div class="tcolorbox-badge badge-def">📊 Số Đo, Chu Vi, Diện Tích / Thể Tích &amp; Giao Tuyến</div>
+            <div class="tcolorbox-badge badge-def">Số Đo, Chu Vi, Diện Tích / Thể Tích &amp; Giao Tuyến</div>
             <div class="metrics-grid" id="metricsGrid"></div>
           </div>
         </div>
@@ -626,18 +605,18 @@
           <p id="knowledgeSubtitle">Giao tuyến trực tiếp, Lý thuyết tóm tắt &amp; Vận dụng</p>
           <div style="display:flex; gap:0.4rem; margin-top:0.55rem;">
             <button type="button" class="cad-btn mini" id="expandFullHandbookBtn" style="flex:1; justify-content:center; font-weight:700; color:var(--excolor);">
-              📖 Mở Sổ Tay 24 Chuyên Đề
+              Mở Sổ Tay 24 Chuyên Đề
             </button>
             <button type="button" class="cad-btn mini" id="drawerOpenFormulaSheetBtn" style="flex:1; justify-content:center; font-weight:700; color:var(--defcolor);">
-              📋 Bảng Công Thức
+              Bảng Công Thức
             </button>
           </div>
         </div>
 
         <div class="info-tabs">
-          <button type="button" class="info-tab active" data-tab="interactions">🔗 Giao Tuyến &amp; Tương Tác</button>
-          <button type="button" class="info-tab" data-tab="theory">📖 Lý Thuyết Tóm Tắt</button>
-          <button type="button" class="info-tab" data-tab="practice">🎯 Câu Hỏi Vận Dụng</button>
+          <button type="button" class="info-tab active" data-tab="interactions">Giao Tuyến &amp; Tương Tác</button>
+          <button type="button" class="info-tab" data-tab="theory">Lý Thuyết Tóm Tắt</button>
+          <button type="button" class="info-tab" data-tab="practice">Câu Hỏi Vận Dụng</button>
         </div>
 
         <div class="knowledge-body" id="knowledgeBody"></div>
@@ -646,9 +625,9 @@
 
     <!-- Refined Minimal Status Footer -->
     <footer class="pmath-signature-footer">
-      <div class="footer-left"><span>PMATH TOOLS</span> • <em>Nền tảng hình học &amp; giải tích trực quan</em></div>
-      <div class="footer-center"><span>Phím tắt: F (Zoom vừa) • G (Lưới) • X (Trục) • E (Sửa đối tượng) • Del (Xóa)</span></div>
-      <div class="footer-right"><span>Oxyz Motion &amp; Equation Engine</span></div>
+      <div class="footer-left"><span>PMATH TOOLS</span> • <em>Mô phỏng không gian Oxyz &amp; Hình học động</em></div>
+      <div class="footer-center"><span>Phím tắt Studio: F (Khớp khung nhìn) • G (Lưới) • X (Trục) • E (Sửa đối tượng) • R (Đổi tên) • Del (Xóa)</span></div>
+      <div class="footer-right"><span>Không gian Oxyz &amp; Giải tích</span></div>
     </footer>
   </div>
 
@@ -657,7 +636,7 @@
   <!-- ===================================================================== -->
   <dialog class="app-dialog edit-dialog" id="editObjectDialog">
     <div class="dialog-header">
-      <h3 id="editDialogTitle">⚙️ Tùy Chỉnh &amp; Sửa Đối Tượng</h3>
+      <h3 id="editDialogTitle">Tùy Chỉnh &amp; Sửa Đối Tượng</h3>
       <button type="button" class="dialog-close-btn" id="closeEditDialogBtn">✕</button>
     </div>
     <div class="dialog-body" id="editDialogBody">
@@ -665,8 +644,8 @@
     </div>
     <div class="dialog-footer" style="display:flex; justify-content:space-between; align-items:center; padding:0.8rem 1rem; border-top:1px solid var(--border-color); background:var(--bg-card);">
       <div style="display:flex; gap:0.4rem;">
-        <button type="button" class="cad-btn danger" id="editDeleteBtn">🗑️ Xóa đối tượng</button>
-        <button type="button" class="cad-btn" id="editDuplicateBtn">📋 Nhân bản</button>
+        <button type="button" class="cad-btn danger" id="editDeleteBtn">Xóa đối tượng</button>
+        <button type="button" class="cad-btn" id="editDuplicateBtn">Nhân bản</button>
       </div>
       <div>
         <button type="button" class="btn-primary" id="saveEditBtn">✓ Hoàn tất</button>
@@ -675,85 +654,57 @@
   </dialog>
 
   <!-- ===================================================================== -->
-  <!-- MODAL: XEM VỊ TRÍ LƯU TRỮ TRÊN Ổ CỨNG & QUẢN LÝ DỮ LIỆU SỔ TAY       -->
+  <!-- MODAL: SAO LƯU & QUẢN LÝ DỮ LIỆU TRÌNH DUYỆT (INDEXEDDB / JSON)       -->
   <!-- ===================================================================== -->
   <dialog class="app-dialog storage-dialog" id="storageLocationDialog">
     <div class="dialog-header">
-      <h3>📁 Vị Trí Lưu Trữ Sổ Tay &amp; Quản Lý Dữ Liệu Ổ Cứng</h3>
+      <h3>Sao Lưu &amp; Quản Lý Dữ Liệu Sổ Tay</h3>
       <button type="button" class="dialog-close-btn" id="closeStorageDialogBtn">✕</button>
     </div>
     <div class="dialog-body">
       <div class="storage-intro-banner">
-        <span class="storage-intro-icon">💾</span>
+        <span class="storage-intro-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        </span>
         <div>
-          <strong>Tự Động Lưu Trữ Cứ Mỗi 10 Giây</strong>
-          <p>Mọi sổ tay hình học, công thức, đồ thị và không gian 3D của bạn đều được tự động lưu trữ định kỳ 10 giây một lần vào ổ đĩa máy tính (thông qua cơ sở dữ liệu trình duyệt IndexedDB &amp; LocalStorage).</p>
+          <strong>Cách Thức Lưu Dữ Liệu Trên Trình Duyệt (Local-First)</strong>
+          <p>Mọi sổ tay viết tay, hình vẽ và không gian 3D của bạn được lưu tự động mỗi 10 giây trực tiếp vào bộ nhớ trình duyệt (<strong>IndexedDB</strong> và <strong>LocalStorage</strong>) ngay trên thiết bị hiện tại, không gửi lên bất kỳ máy chủ nào.</p>
         </div>
       </div>
 
-      <div class="storage-section">
-        <h4 class="storage-section-title">📂 Vị Trí Thư Mục Thực Tế Trên Ổ Cứng (Windows)</h4>
-        
-        <div class="storage-path-card">
-          <div class="storage-path-label">
-            <strong>1. Thư mục dự án &amp; mã nguồn công cụ (Workspace):</strong>
-            <span class="path-badge">Thư mục nguồn</span>
-          </div>
-          <div class="storage-path-box">
-            <code id="workspacePathCode">C:\Users\huyda\.gemini\antigravity\scratch\geolab_interactive</code>
-            <button type="button" class="btn-copy-path" data-copy="C:\Users\huyda\.gemini\antigravity\scratch\geolab_interactive" title="Sao chép đường dẫn">📋 Copy</button>
-          </div>
-        </div>
-
-        <div class="storage-path-card">
-          <div class="storage-path-label">
-            <strong>2. Cơ sở dữ liệu IndexedDB của trình duyệt (Lưu trữ sổ tay &amp; hình vẽ):</strong>
-            <span class="path-badge primary">IndexedDB (Active)</span>
-          </div>
-          <div class="storage-path-box">
-            <code id="indexedDbPathCode">C:\Users\huyda\AppData\Local\Google\Chrome\User Data\Default\IndexedDB\</code>
-            <button type="button" class="btn-copy-path" data-copy="C:\Users\huyda\AppData\Local\Google\Chrome\User Data\Default\IndexedDB\" title="Sao chép đường dẫn">📋 Copy</button>
-          </div>
-          <small class="storage-path-hint">Nếu sử dụng Microsoft Edge, dữ liệu nằm tại: <code>%LOCALAPPDATA%\Microsoft\Edge\User Data\Default\IndexedDB\</code></small>
-        </div>
-
-        <div class="storage-path-card">
-          <div class="storage-path-label">
-            <strong>3. Thư mục ứng dụng NoteRenderer Desktop (Bản cài đặt Windows):</strong>
-            <span class="path-badge">AppData Roaming</span>
-          </div>
-          <div class="storage-path-box">
-            <code id="desktopAppPathCode">C:\Users\huyda\AppData\Roaming\noterenderer</code>
-            <button type="button" class="btn-copy-path" data-copy="C:\Users\huyda\AppData\Roaming\noterenderer" title="Sao chép đường dẫn">📋 Copy</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="storage-section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-          <h4 class="storage-section-title" style="margin-bottom:0;">📊 Danh Sách Sổ Tay &amp; Tệp Đang Lưu Trên Máy</h4>
-          <button type="button" class="cad-btn" id="refreshStorageStatsBtn" style="font-size:0.75rem;">🔄 Làm mới danh sách</button>
-        </div>
-        <div class="storage-files-container" id="storageFilesList">
-          <div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.85rem;">Đang tải danh sách sổ tay từ IndexedDB...</div>
-        </div>
+      <div class="storage-section" style="background: rgba(180, 90, 20, 0.08); border: 1px solid rgba(180, 90, 20, 0.35); border-radius: var(--radius-sm); padding: 0.9rem 1.1rem; margin-bottom: 1rem;">
+        <h4 class="storage-section-title" style="color: var(--warncolor); margin-bottom: 0.35rem;">⚠️ Lưu Ý Quan Trọng: Hãy Xuất Tệp Sao Lưu (.json) Định Kỳ</h4>
+        <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.84rem; color: var(--text-main); line-height: 1.6;">
+          <li>Vì dữ liệu nằm trong bộ nhớ trình duyệt (IndexedDB / LocalStorage), <strong>nếu bạn xóa bộ nhớ đệm (cache/dữ liệu duyệt web), dùng tab Ẩn danh hoặc đổi sang máy tính/iPad khác thì dữ liệu trên trình duyệt cũ sẽ mất</strong>.</li>
+          <li>Sau mỗi bài giảng quan trọng, hãy bấm nút <strong>"Xuất Toàn Bộ Sổ Tay Ra Tệp (.json)"</strong> bên dưới để tải tệp sao lưu về máy hoặc lưu vào USB / đám mây cá nhân của bạn.</li>
+        </ul>
       </div>
 
       <div class="storage-section storage-actions-section">
-        <h4 class="storage-section-title">💾 Xuất Dữ Liệu Ra Ổ Cứng &amp; Khôi Phục</h4>
+        <h4 class="storage-section-title">Xuất Tệp Sao Lưu (.json) &amp; Khôi Phục Dữ Liệu</h4>
         <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.8rem;">
-          Bạn có thể xuất toàn bộ sổ tay và dự án thành file backup (.json) để cất giữ an toàn trên ổ đĩa D, E hoặc chuyển sang máy tính khác:
+          Tải toàn bộ sổ tay và mô hình đang vẽ thành một tệp <code>.json</code> để cất giữ an toàn hoặc mở lại trên thiết bị khác:
         </p>
         <div class="storage-actions-grid">
           <button type="button" class="btn-primary" id="exportAllStorageBtn">
-            💾 Xuất Toàn Bộ Sổ Tay Ra File Ổ Cứng (.json)
+            Xuất Toàn Bộ Sổ Tay Ra Tệp (.json)
           </button>
           <label class="btn-secondary file-upload-btn" style="cursor:pointer; display:inline-flex; align-items:center; justify-content:center;">
-            📂 Nhập / Khôi Phục Sổ Tay Từ File
+            Nhập / Khôi Phục Sổ Tay Từ Tệp (.json)
             <input type="file" id="importStorageFileInput" accept=".json,.nrn" style="display:none;" />
           </label>
         </div>
         <div id="storageActionMsg" style="margin-top:0.5rem; font-size:0.82rem; font-weight:600; display:none;"></div>
+      </div>
+
+      <div class="storage-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+          <h4 class="storage-section-title" style="margin-bottom:0;">Danh Sách Sổ Tay Đang Lưu Trong Trình Duyệt Này</h4>
+          <button type="button" class="cad-btn" id="refreshStorageStatsBtn" style="font-size:0.75rem;">Làm mới danh sách</button>
+        </div>
+        <div class="storage-files-container" id="storageFilesList">
+          <div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.85rem;">Đang tải danh sách sổ tay từ bộ nhớ trình duyệt...</div>
+        </div>
       </div>
     </div>
     <div class="dialog-footer" style="display:flex; justify-content:flex-end; padding:0.8rem 1rem; border-top:1px solid var(--border-color); background:var(--bg-card);">
@@ -765,19 +716,19 @@
   <!-- FLOATING SWITCHER BETWEEN PMATH BOARD & PMATH EQUATION/THEORY STUDIO  -->
   <!-- ===================================================================== -->
   <div class="floating-mode-switcher" id="floatingModeSwitcher">
-    <button class="fms-btn active" id="switchToNRBtn" title="Sổ Tay Hình Học Động, Khối 3D Trải Phẳng, Đồ Thị, Bảng Biến Thiên & Máy Tính Casio">
+    <button class="fms-btn active" id="switchToNRBtn" title="Sổ Tay Hình Học Động, Khối 3D Trải Phẳng, Đồ Thị, Bảng Biến Thiên &amp; Máy Tính Khoa Học">
       <img src="./favicon.png" alt="" class="fms-logo" />
-      <span>Sổ Tay Hình Học, Đồ Thị &amp; Casio</span>
+      <span>Sổ Tay Vẽ Hình &amp; Ghi Chú</span>
     </button>
-    <button class="fms-btn" id="switchToGeoLabBtn" title="Phòng Thí Nghiệm Phương Trình 2D/3D & Kho Hình Học PMATH">
-      <span>📐 Phương Trình 3D &amp; Kho Hình Học PMATH</span>
+    <button class="fms-btn" id="switchToGeoLabBtn" title="Studio Phương Trình 2D/3D, Không Gian Oxyz &amp; Kho Hình Học">
+      <span>Không Gian Oxyz &amp; Phương Trình 3D</span>
     </button>
   </div>
 
   <!-- Rename Object / Vertex Dialog (A -> P) -->
   <dialog class="app-dialog small-dialog" id="renameDialog">
     <div class="dialog-header">
-      <h3>✏️ Đổi Tên Đối Tượng &amp; Các Đỉnh (VD: A → P)</h3>
+      <h3>Đổi Tên Đối Tượng &amp; Các Đỉnh (VD: A → P)</h3>
       <button class="btn-secondary" id="closeRenameBtn">✕</button>
     </div>
     <div class="dialog-body">
@@ -800,46 +751,61 @@
     </div>
   </dialog>
 
-  <!-- Keyboard Shortcuts Dialog -->
-  <dialog class="app-dialog small-dialog" id="shortcutsDialog">
+  <!-- Keyboard Shortcuts Dialog (Separated clearly by Mode/Context) -->
+  <dialog class="app-dialog small-dialog" id="shortcutsDialog" style="max-width: 680px;">
     <div class="dialog-header">
-      <h3>⌨️ Các Phím Tắt &amp; Thao Tác Chuột — PMATH EDUCATION TOOLS</h3>
+      <h3>Bảng Phím Tắt Theo Từng Chế Độ — PMATH TOOLS</h3>
       <button class="btn-secondary" id="closeShortcutsBtn">✕</button>
     </div>
-    <div class="dialog-body">
-      <table class="summary-table">
-        <tbody>
-          <tr><td><strong>Ctrl + Z / Ctrl + Y</strong></td><td>Hoàn tác (Undo) / Làm lại (Redo)</td></tr>
-          <tr><td><strong>Ctrl + C / Ctrl + V</strong></td><td>Sao chép / Dán đối tượng đang chọn</td></tr>
-          <tr><td><strong>Delete / Backspace</strong></td><td>Xóa các đối tượng đang chọn</td></tr>
-          <tr><td><strong>P / H / E / S</strong></td><td>Bút viết / Bút dạ quang / Tẩy / Chọn (trong Sổ Tay PMATH)</td></tr>
-          <tr><td><strong>G / F / R / T / B</strong></td><td>Đồ thị / Công thức / Thước &amp; Compa / Gõ chữ / Tô màu</td></tr>
-          <tr><td><strong>L / V / C / 3 / 4 / Q</strong></td><td>Vẽ nhanh: Đoạn thẳng / Vectơ / Đường tròn / Tam giác / HCN / Hình vuông</td></tr>
-          <tr><td><strong>Chuột giữa (Middle Drag)</strong></td><td>Kéo di chuyển mặt phẳng (Pan)</td></tr>
-          <tr><td><strong>Con lăn chuột (Wheel)</strong></td><td>Phóng to / Thu nhỏ tại vị trí con trỏ</td></tr>
-          <tr><td><strong>Phím F / Phím R / Phím H</strong></td><td>Zoom to Fit (F) • Đổi tên A→P (R) • Ẩn/Hiện (H)</td></tr>
-        </tbody>
-      </table>
+    <div class="dialog-body" style="display:flex; flex-direction:column; gap:1rem;">
+      <div>
+        <h4 style="font-size:0.9rem; color:var(--excolor); margin:0 0 0.4rem;">1. Khi đang ở tab "Không Gian Oxyz &amp; Phương Trình" (Studio 2D/3D)</h4>
+        <table class="summary-table">
+          <tbody>
+            <tr><td><strong>Ctrl + Z / Ctrl + Y</strong></td><td>Hoàn tác / Làm lại thao tác dựng hình</td></tr>
+            <tr><td><strong>Ctrl + C / Ctrl + V</strong></td><td>Sao chép / Dán đối tượng đang chọn</td></tr>
+            <tr><td><strong>Delete / Backspace</strong></td><td>Xóa đối tượng đang chọn</td></tr>
+            <tr><td><strong>Phím E</strong></td><td>Mở hộp thoại Sửa thông số &amp; tọa độ đối tượng đang chọn</td></tr>
+            <tr><td><strong>Phím F</strong></td><td>Khớp khung nhìn vừa tất cả đối tượng đang vẽ</td></tr>
+            <tr><td><strong>Phím G / Phím X</strong></td><td>Bật hoặc tắt Lưới tọa độ (G) • Bật hoặc tắt Trục tọa độ (X)</td></tr>
+            <tr><td><strong>Phím R / Phím H</strong></td><td>Đổi tên đối tượng và đỉnh (R) • Ẩn hoặc hiện đối tượng (H)</td></tr>
+            <tr><td><strong>Chuột giữa / Alt + Kéo</strong></td><td>Kéo di chuyển mặt phẳng (2D) hoặc xoay góc nhìn (3D)</td></tr>
+            <tr><td><strong>Con lăn chuột / Chụm 2 ngón</strong></td><td>Phóng to / Thu nhỏ tại vị trí con trỏ</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <h4 style="font-size:0.9rem; color:var(--defcolor); margin:0 0 0.4rem;">2. Khi đang ở tab "Sổ Tay Vẽ Hình &amp; Ghi Chú" (Trang viết tay)</h4>
+        <table class="summary-table">
+          <tbody>
+            <tr><td><strong>Phím P / Phím H / Phím E</strong></td><td>Chuyển công cụ: Bút viết (P) • Bút dạ quang (H) • Cục tẩy (E)</td></tr>
+            <tr><td><strong>Phím S / Phím T / Phím B</strong></td><td>Chuyển công cụ: Chọn vùng (S) • Gõ văn bản (T) • Đổ màu (B)</td></tr>
+            <tr><td><strong>Phím F / Phím G / Phím R</strong></td><td>Chèn hộp Công thức (F) • Chèn khung Đồ thị (G) • Mở Thước &amp; Compa (R)</td></tr>
+            <tr><td><strong>Phím L / V / C / 3 / 4 / Q</strong></td><td>Vẽ nhanh: Đoạn thẳng (L) • Vectơ (V) • Đường tròn (C) • Tam giác (3) • HCN (4) • Hình vuông (Q)</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </dialog>
 
   <!-- ===================================================================== -->
   <!-- MODAL 1: BẢNG CÔNG THỨC TOÁN HỌC (INTERACTIVE FORMULA HUB)            -->
-  <!-- Độc lập, hỗ trợ Tìm kiếm, Lọc chuyên đề, Copy 1 chạm & Tự cập nhật   -->
+  <!-- Độc lập, hỗ trợ Tìm kiếm, Lọc chuyên đề, Sao chép 1 chạm & Tự cập nhật -->
   <!-- ===================================================================== -->
   <dialog class="app-dialog formula-hub-dialog" id="cheatsheetDialog">
     <div class="dialog-header fh-header">
       <div class="fh-header-title-wrap">
-        <span class="fh-badge-pill">FORMULA HUB • GDPT 2018</span>
-        <h3>📋 Bảng Công Thức Toán Học THPT (Tra Cứu Nhanh &amp; Cập Nhật)</h3>
+        <span class="fh-badge-pill">BẢNG TRA CỨU CÔNG THỨC • GDPT 2018</span>
+        <h3>Bảng Công Thức Toán Học THPT (Tra Cứu Nhanh &amp; Tự Bổ Sung)</h3>
       </div>
       <div class="fh-header-actions">
         <span class="fh-count-badge" id="formulaTotalCountBadge">18 công thức</span>
         <button type="button" class="btn-primary fh-top-btn" id="openAddFormulaBtn" title="Thêm công thức mới vào bảng">
-          ➕ Thêm Công Thức
+          + Thêm Công Thức
         </button>
-        <button type="button" class="btn-secondary fh-top-btn" id="exportFormulasJsonBtn" title="Xuất dữ liệu công thức ra file JSON để lưu trữ hoặc cập nhật code">
-          📥 Xuất JSON
+        <button type="button" class="btn-secondary fh-top-btn" id="exportFormulasJsonBtn" title="Xuất dữ liệu công thức ra tệp JSON để lưu trữ">
+          Xuất JSON
         </button>
         <button type="button" class="btn-secondary fh-top-btn" id="resetFormulasDefaultBtn" title="Khôi phục danh sách công thức mặc định">
           ↺ Mặc định
@@ -852,7 +818,7 @@
     <div class="fh-toolbar">
       <div class="fh-search-row">
         <div class="fh-search-box">
-          <span class="fh-search-icon">🔍</span>
+          <span class="fh-search-icon" aria-hidden="true">⌕</span>
           <input
             type="search"
             id="formulaSearchInput"
@@ -861,8 +827,8 @@
             autocomplete="off"
           />
         </div>
-        <button type="button" class="fh-important-btn" id="formulaImportantToggleBtn" title="Chỉ hiển thị các công thức trọng tâm hay xuất hiện trong đề thi">
-          ⭐ Chỉ hiện Trọng tâm
+        <button type="button" class="fh-important-btn" id="formulaImportantToggleBtn" title="Chỉ hiển thị các công thức trọng tâm">
+          ★ Chỉ hiện Trọng tâm
         </button>
       </div>
 
@@ -874,8 +840,8 @@
     <div class="fh-editor-panel" id="formulaEditorPanel" style="display: none;">
       <form id="formulaEditForm" class="fh-editor-form">
         <div class="fh-editor-header">
-          <strong id="feModalTitle">➕ Thêm Công Thức Mới</strong>
-          <span style="font-size:0.76rem; color:var(--text-muted);">Dữ liệu lưu tự động vào trình duyệt &amp; có thể xuất JSON</span>
+          <strong id="feModalTitle">+ Thêm Công Thức Mới</strong>
+          <span style="font-size:0.76rem; color:var(--text-muted);">Dữ liệu lưu vào trình duyệt hiện tại &amp; có thể xuất tệp JSON</span>
         </div>
 
         <div class="fh-form-grid">
@@ -887,12 +853,12 @@
           <div class="fh-form-field">
             <label>Phân môn / Chuyên đề (*):</label>
             <select id="feCategorySelect" class="stroke-select" style="width:100%; height:36px;">
-              <option value="oxyz">🧊 Không gian Oxyz &amp; Vận tốc</option>
-              <option value="oxy">📐 Hình giải tích Oxy</option>
-              <option value="plane2d">△ Hệ thức lượng &amp; Hình 2D</option>
-              <option value="solid3d">📦 Khối đa diện &amp; Tròn xoay 3D</option>
-              <option value="calculus">📈 Đạo hàm, Đồ thị &amp; Tích phân</option>
-              <option value="trig">〰️ Lượng giác &amp; Cấp số</option>
+              <option value="oxyz">Không gian Oxyz &amp; Vận tốc</option>
+              <option value="oxy">Hình giải tích Oxy</option>
+              <option value="plane2d">Hệ thức lượng &amp; Hình 2D</option>
+              <option value="solid3d">Khối đa diện &amp; Tròn xoay 3D</option>
+              <option value="calculus">Đạo hàm, Đồ thị &amp; Tích phân</option>
+              <option value="trig">Lượng giác &amp; Cấp số</option>
             </select>
           </div>
 
@@ -907,7 +873,7 @@
           </div>
 
           <div class="fh-form-field full">
-            <label>Giải thích ký hiệu &amp; Mẹo áp dụng:</label>
+            <label>Giải thích ký hiệu &amp; Lưu ý áp dụng:</label>
             <input type="text" id="feDescInput" class="eq-input" placeholder="VD: Δ₁ đi qua M₁ có VTCP u⃗₁; Δ₂ đi qua M₂ có VTCP u⃗₂." />
           </div>
 
@@ -919,16 +885,16 @@
           <div class="fh-form-field" style="display:flex; align-items:flex-end; padding-bottom:0.4rem;">
             <label style="display:inline-flex; align-items:center; gap:0.5rem; cursor:pointer; font-weight:700; color:var(--warncolor);">
               <input type="checkbox" id="feImportantCheck" checked />
-              ⭐ Đánh dấu là Công thức Trọng tâm
+              ★ Đánh dấu là Công thức Trọng tâm
             </label>
           </div>
         </div>
 
         <div class="fh-editor-actions">
-          <button type="button" class="cad-btn danger" id="feDeleteBtn" style="display:none;">🗑️ Xóa công thức này</button>
+          <button type="button" class="cad-btn danger" id="feDeleteBtn" style="display:none;">Xóa công thức này</button>
           <div style="display:flex; gap:0.5rem; margin-left:auto;">
             <button type="button" class="btn-secondary" id="feCancelBtn">Hủy</button>
-            <button type="submit" class="btn-primary">💾 Lưu Công Thức</button>
+            <button type="submit" class="btn-primary">Lưu Công Thức</button>
           </div>
         </div>
       </form>
@@ -942,18 +908,18 @@
 
   <!-- ===================================================================== -->
   <!-- MODAL 2: SỔ TAY KIẾN THỨC 24 CHUYÊN ĐỀ (KNOWLEDGE HANDBOOK EXPLORER)  -->
-  <!-- Độc lập với Bảng công thức: Lý thuyết, Định lý, Mẹo giải & Bài tập    -->
+  <!-- Độc lập với Bảng công thức: Lý thuyết, Định lý, Phương pháp & Bài tập -->
   <!-- ===================================================================== -->
   <dialog class="app-dialog knowledge-handbook-dialog" id="knowledgeHandbookDialog">
     <div class="dialog-header kh-header">
       <div class="fh-header-title-wrap">
-        <span class="fh-badge-pill emerald">KNOWLEDGE HANDBOOK • 24 CHUYÊN ĐỀ</span>
-        <h3>📖 Sổ Tay Kiến Thức Toán Học THPT (Lý Thuyết, Định Lý, Mẹo Giải &amp; Bài Tập)</h3>
+        <span class="fh-badge-pill emerald">SỔ TAY KIẾN THỨC • 24 CHUYÊN ĐỀ</span>
+        <h3>Sổ Tay Kiến Thức Toán Học THPT (Lý Thuyết, Định Lý, Phương Pháp Giải &amp; Bài Tập)</h3>
       </div>
       <div class="fh-header-actions">
         <span class="fh-count-badge" id="khTopicsCountBadge">24/24 chuyên đề</span>
-        <button type="button" class="btn-secondary fh-top-btn" id="exportKnowledgeJsonBtn" title="Xuất toàn bộ nội dung Sổ tay 24 chuyên đề ra file JSON">
-          📥 Xuất JSON
+        <button type="button" class="btn-secondary fh-top-btn" id="exportKnowledgeJsonBtn" title="Xuất toàn bộ nội dung Sổ tay 24 chuyên đề ra tệp JSON">
+          Xuất JSON
         </button>
         <button type="button" class="dialog-close-btn" id="closeKnowledgeHandbookBtn">✕</button>
       </div>
@@ -967,7 +933,7 @@
             type="search"
             id="khSearchInput"
             class="search-input"
-            placeholder="🔍 Tìm chuyên đề (Tam giác, Euler, Mặt cầu...)"
+            placeholder="Tìm chuyên đề (Tam giác, Euler, Mặt cầu...)"
             autocomplete="off"
           />
           <div class="kh-filter-pills" id="khFilterPills">
@@ -975,7 +941,7 @@
             <button type="button" class="kh-filter-pill" data-kfilter="2d">2D Phẳng</button>
             <button type="button" class="kh-filter-pill" data-kfilter="3d">3D Khối</button>
             <button type="button" class="kh-filter-pill" data-kfilter="special">Đường &amp; Điểm</button>
-            <button type="button" class="kh-filter-pill" data-kfilter="motion">🚀 Vận Tốc</button>
+            <button type="button" class="kh-filter-pill" data-kfilter="motion">Vận Tốc Oxyz</button>
           </div>
         </div>
         <ul class="kh-topics-list" id="khTopicsList"></ul>
@@ -985,77 +951,6 @@
       <main class="kh-detail-pane" id="khDetailContent">
         <!-- Rendered dynamically by knowledge-handbook.js -->
       </main>
-    </div>
-  </dialog>
-
-  <!-- ===================================================================== -->
-  <!-- MODAL: ĐĂNG NHẬP GOOGLE GMAIL & CẤU HÌNH OAUTH                       -->
-  <!-- ===================================================================== -->
-  <dialog class="app-dialog login-dialog" id="loginDialog">
-    <div class="dialog-header">
-      <div style="display:flex; align-items:center; gap:0.6rem;">
-        <svg class="google-icon" viewBox="0 0 24 24" width="22" height="22">
-          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-        </svg>
-        <h3>Đăng Nhập Tài Khoản Google / Gmail</h3>
-      </div>
-      <button type="button" class="dialog-close-btn" id="closeLoginDialogBtn">✕</button>
-    </div>
-    <div class="dialog-body">
-      <!-- Fast One-Click Login for User's Account -->
-      <div class="user-quick-login-card">
-        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
-          <img src="./favicon.png" alt="" style="width:36px; height:36px; border-radius:50%; border:2px solid var(--excolor);" />
-          <div>
-            <strong style="display:block; font-size:0.92rem; color:var(--text-main);">Huy Đào Phong</strong>
-            <span style="font-size:0.78rem; color:var(--text-muted);">huydaophong@gmail.com</span>
-          </div>
-        </div>
-        <button type="button" class="btn-primary" id="loginAsHuyDaoBtn" style="width:100%; justify-content:center; padding:0.65rem 1rem;">
-          🚀 Tiếp Tục Với Tài Khoản huydaophong@gmail.com
-        </button>
-      </div>
-
-      <div style="display:flex; align-items:center; width:100%; gap:0.8rem; margin:1rem 0 0.8rem;">
-        <hr style="flex:1; border:none; border-top:1px solid var(--border-color);" />
-        <span style="font-size:0.74rem; color:var(--text-muted); font-weight:700;">HOẶC ĐĂNG NHẬP VỚI GMAIL KHÁC</span>
-        <hr style="flex:1; border:none; border-top:1px solid var(--border-color);" />
-      </div>
-
-      <!-- Custom Gmail input form -->
-      <form id="customLoginForm" style="display:flex; flex-direction:column; gap:0.6rem; margin-bottom:1rem;">
-        <div>
-          <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-main); margin-bottom:0.25rem;">Họ và Tên:</label>
-          <input type="text" id="loginInputName" class="edit-input-text" placeholder="VD: Thầy Huy Đào Phong" value="Huy Đào Phong" required />
-        </div>
-        <div>
-          <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-main); margin-bottom:0.25rem;">Địa chỉ Gmail:</label>
-          <input type="email" id="loginInputEmail" class="edit-input-text" placeholder="VD: huydaophong@gmail.com" value="huydaophong@gmail.com" required />
-        </div>
-        <button type="submit" class="btn-secondary" style="width:100%; justify-content:center; padding:0.55rem 1rem; font-weight:700;">
-          ✓ Xác Nhận Đăng Nhập
-        </button>
-      </form>
-
-      <!-- Google Cloud Console Official Client ID Configuration -->
-      <details class="oauth-config-details" id="oauthConfigDetails">
-        <summary>⚙️ Cấu hình Google OAuth Client ID chính thức (Dành cho Production / Deploy)</summary>
-        <div class="oauth-config-content">
-          <div class="oauth-help-alert">
-            <strong>ℹ️ Vì sao Google báo lỗi 401: invalid_client?</strong>
-            <p>Google yêu cầu Client ID phải được tạo thực tế trên <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer">Google Cloud Console</a> và cấp quyền cho địa chỉ <code>http://localhost:8000</code> hoặc tên miền web của bạn.</p>
-          </div>
-          <p style="font-size:0.76rem; color:var(--text-muted); margin:0.4rem 0;">Nếu bạn muốn hiển thị cửa sổ Popup chính thức từ Google, hãy dán mã Client ID của bạn vào ô dưới:</p>
-          <div style="display:flex; gap:0.5rem; margin-top:0.4rem;">
-            <input type="text" id="customGoogleClientIdInput" class="edit-input-text" placeholder="xxxx.apps.googleusercontent.com" />
-            <button type="button" class="btn-primary" id="saveGoogleClientIdBtn" style="white-space:nowrap;">Lưu ID</button>
-          </div>
-          <div style="margin-top:0.6rem;" id="googleGsiButtonContainer"></div>
-        </div>
-      </details>
     </div>
   </dialog>
 
@@ -1541,7 +1436,6 @@
   <script defer src="./data.js"></script>
   <script defer src="./formulas-data.js"></script>
   <script defer src="./equations.js"></script>
-  <script defer src="./auth.js"></script>
   <script defer src="./app.js"></script>
   <script defer src="./knowledge-handbook.js"></script>
 </body>

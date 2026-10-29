@@ -206,10 +206,10 @@
               <div class="fh-card-actions">
                 ${item.important ? `<span class="fh-star-badge" title="Công thức trọng tâm hay thi">⭐ Trọng tâm</span>` : ""}
                 <button type="button" class="fh-icon-btn copy-formula-btn" data-copy="${escapeAttr(item.formula + (item.subFormula ? " ; " + item.subFormula : ""))}" title="Sao chép công thức">
-                  📋 Copy
+                  Sao chép
                 </button>
                 <button type="button" class="fh-icon-btn edit-formula-btn" data-fid="${item.id}" title="Chỉnh sửa hoặc cập nhật công thức này">
-                  ✏️ Sửa
+                  Sửa
                 </button>
               </div>
             </div>
@@ -543,11 +543,11 @@
         </ul>
       </section>
 
-      <!-- Section 3: Lưu ý & Mẹo giải nhanh trắc nghiệm (tcolorbox warn) -->
+      <!-- Section 3: Phương pháp giải & Lưu ý sai lầm thường gặp (tcolorbox warn) -->
       ${
         topic.tips && topic.tips.length > 0
           ? `<section class="kh-box kh-box-warn">
-              <div class="kh-box-badge warn">📙 III. MẸO GIẢI NHANH &amp; LƯU Ý BẪY TRẮC NGHIỆM</div>
+              <div class="kh-box-badge warn">📙 III. PHƯƠNG PHÁP GIẢI &amp; LƯU Ý SAI LẦM THƯỜNG GẶP</div>
               <ul class="kh-tip-list">
                 ${topic.tips.map((t) => `<li>${escapeHtml(t)}</li>`).join("")}
               </ul>
@@ -700,7 +700,7 @@
           </div>
 
           <div class="kh-form-group">
-            <label>📙 3. Mẹo giải nhanh &amp; Lưu ý trắc nghiệm (Mỗi dòng 1 mẹo):</label>
+            <label>📙 3. Phương pháp giải &amp; Lưu ý sai lầm thường gặp (Mỗi dòng 1 ý):</label>
             <textarea id="khEditTips" rows="4" class="kh-textarea">${escapeHtml((topic.tips || []).join("\n"))}</textarea>
           </div>
 

@@ -107,63 +107,41 @@
         </p>
       </div>
 
-      <!-- Google User Data Policy Compliance Statement -->
-      <div class="legal-compliance-box">
-        <strong style="color:var(--excolor); display:block; margin-bottom:0.4rem;">Google API Services User Data Policy Compliance:</strong>
-        <p style="margin:0; font-style:italic;">
-          PMATH EDUCATION TOOLS's use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements.
-        </p>
-      </div>
-
-      <h2>1. Thông Tin Chúng Tôi Thu Thập Khi Đăng Nhập Google (Google User Data)</h2>
-      <p>Khi bạn sử dụng tính năng "Đăng nhập bằng Google" (Google Sign-In / OAuth 2.0 / Google Identity Services), ứng dụng chỉ yêu cầu quyền truy cập vào thông tin công khai cơ bản ở phạm vi tối thiểu (Non-sensitive scopes: <code>openid</code>, <code>profile</code>, <code>email</code>):</p>
+      <h2>1. Không Thu Thập Thông Tin Cá Nhân &amp; Không Yêu Cầu Đăng Nhập</h2>
+      <p>PMATH EDUCATION TOOLS vận hành theo nguyên tắc <strong>Không Tài Khoản — Ưu Tiên Cục Bộ (Zero-Account &amp; Local-First)</strong>:</p>
       <ul>
-        <li><strong>Tên đầy đủ và tên hiển thị (Full Name &amp; Given Name):</strong> Dùng để cá nhân hóa giao diện và hiển thị tên giáo viên/học sinh trong các bài vẽ.</li>
-        <li><strong>Địa chỉ Email (Gmail):</strong> Dùng làm định danh duy nhất (Account ID) để quản lý các sổ tay ghi chú và lưu trữ riêng tư của người dùng.</li>
-        <li><strong>Ảnh hồ sơ đại diện (Profile Picture URL):</strong> Dùng để hiển thị hình đại diện trên thanh tiêu đề người dùng.</li>
-        <li><strong>Mã định danh duy nhất của Google (Google User ID):</strong> Dùng để xác thực phiên đăng nhập an toàn.</li>
-      </ul>
-      <p><strong>Chúng tôi TUYỆT ĐỐI KHÔNG thu thập hoặc yêu cầu:</strong> Mật khẩu tài khoản Google, danh bạ điện thoại, vị trí địa lý GPS, dữ liệu Google Drive ngoài phạm vi ứng dụng, hay quyền đọc/gửi email cá nhân của bạn.</p>
-
-      <h2>2. Mục Đích Sử Dụng Dữ Liệu</h2>
-      <p>Dữ liệu thu thập từ Google được sử dụng độc quyền và duy nhất cho các chức năng sau:</p>
-      <ul>
-        <li>Xác thực danh tính người dùng khi đăng nhập vào hệ thống.</li>
-        <li>Tách biệt không gian làm việc giữa các người dùng khác nhau trên cùng một máy tính.</li>
-        <li>Cho phép người dùng lưu trữ, đồng bộ và tải lại các sổ tay hình học động và phương trình không gian Oxyz của chính mình.</li>
-        <li>Không sử dụng bất kỳ dữ liệu cá nhân nào cho mục đích quảng cáo nhắm mục tiêu, tiếp thị hoặc bán lại dữ liệu.</li>
+        <li><strong>Không yêu cầu đăng ký hay nhập Email:</strong> Giáo viên và học sinh sử dụng đầy đủ mọi tính năng mà không cần cung cấp họ tên, địa chỉ Gmail hay số điện thoại.</li>
+        <li><strong>Không thu thập dữ liệu ngầm:</strong> Ứng dụng không cài đặt trình theo dõi quảng cáo (trackers), không thu thập vị trí địa lý GPS hay danh bạ người dùng.</li>
       </ul>
 
-      <h2>3. Cách Thức Lưu Trữ &amp; Bảo Vệ Dữ Liệu (Data Storage &amp; Security)</h2>
-      <p>PMATH EDUCATION TOOLS áp dụng kiến trúc <strong>Ưu tiên Cục bộ (Local-First Architecture)</strong> để bảo vệ dữ liệu người dùng ở mức cao nhất:</p>
+      <h2>2. Cách Thức Lưu Trữ Dữ Liệu Trên Trình Duyệt &amp; Sao Lưu Tệp (.json)</h2>
+      <p>Để đảm bảo tốc độ phản hồi tức thời và quyền riêng tư tuyệt đối:</p>
       <ul>
-        <li><strong>Lưu trữ tại thiết bị:</strong> Toàn bộ các hình vẽ hình học, bài giảng và ghi chú sổ tay được lưu trữ trực tiếp trong bộ nhớ trình duyệt máy tính của bạn thông qua <strong>IndexedDB</strong> và <strong>LocalStorage</strong>.</li>
-        <li><strong>Mã hóa đường truyền:</strong> Mọi kết nối trao đổi giữa máy tính người dùng và máy chủ Vercel / Google Identity đều được mã hóa bắt buộc qua giao thức bảo mật cao cấp <strong>HTTPS / SSL</strong> (256-bit encryption).</li>
-        <li><strong>Không lưu mật khẩu:</strong> Chúng tôi sử dụng xác thực thông qua Google OAuth Token, hoàn toàn không bao giờ lưu trữ mật khẩu của người dùng trên bất kỳ máy chủ nào.</li>
+        <li><strong>Lưu trữ trong trình duyệt của thiết bị hiện tại:</strong> Toàn bộ hình vẽ hình học, phương trình không gian Oxyz và ghi chú sổ tay được lưu trực tiếp trong bộ nhớ trình duyệt trên thiết bị của bạn thông qua <strong>IndexedDB</strong> và <strong>LocalStorage</strong>. Dữ liệu này không được gửi về bất kỳ máy chủ từ xa nào.</li>
+        <li><strong>Lưu ý về việc mất dữ liệu khi xóa bộ nhớ trình duyệt:</strong> Vì dữ liệu nằm trong bộ nhớ cục bộ của trình duyệt, việc xóa dữ liệu duyệt web (Clear Cache / Site Data), dùng cửa sổ Ẩn danh (Incognito) hoặc chuyển sang thiết bị khác sẽ làm mất dữ liệu đang lưu tạm trên trình duyệt đó.</li>
+        <li><strong>Khuyến nghị sao lưu định kỳ:</strong> Người dùng được khuyến nghị sử dụng chức năng <strong>"Sao Lưu &amp; Dữ Liệu → Xuất Toàn Bộ Sổ Tay Ra Tệp (.json)"</strong> định kỳ để tải tệp sao lưu về thiết bị hoặc lưu trữ cá nhân.</li>
       </ul>
 
-      <h2>4. Chia Sẻ Dữ Liệu Cho Bên Thứ Ba (Third-Party Sharing)</h2>
+      <h2>3. Chia Sẻ Dữ Liệu Cho Bên Thứ Ba (Third-Party Sharing)</h2>
       <p>Chúng tôi tuyên bố rõ ràng và dứt khoát:</p>
       <ul>
-        <li>Chúng tôi <strong>KHÔNG</strong> chia sẻ, chuyển giao, bán hoặc tiết lộ thông tin người dùng Google cho bất kỳ bên thứ ba, nhà môi giới dữ liệu hoặc đối tác quảng cáo nào.</li>
+        <li>Chúng tôi <strong>KHÔNG</strong> thu thập, chia sẻ, chuyển giao, bán hoặc tiết lộ bất kỳ dữ liệu nào của người dùng cho bên thứ ba, nhà môi giới dữ liệu hoặc đối tác quảng cáo.</li>
         <li>Không có bất kỳ công cụ theo dõi hành vi thương mại (commercial tracking) nào được nhúng vào ứng dụng.</li>
       </ul>
 
-      <h2>5. Quyền Quản Lý &amp; Xóa Dữ Liệu Của Người Dùng (Data Retention &amp; Deletion)</h2>
-      <p>Người dùng có toàn quyền kiểm soát dữ liệu cá nhân của mình:</p>
+      <h2>4. Quyền Quản Lý &amp; Xóa Dữ Liệu Của Người Dùng (Data Retention &amp; Deletion)</h2>
+      <p>Người dùng có toàn quyền kiểm soát dữ liệu trên thiết bị của mình:</p>
       <ul>
-        <li><strong>Xuất dữ liệu:</strong> Người dùng có thể sao lưu và xuất toàn bộ dữ liệu ghi chú, hình vẽ ra tệp máy tính (.json) bất kỳ lúc nào thông qua menu "Ổ Cứng &amp; Dữ Liệu".</li>
-        <li><strong>Xóa toàn bộ dữ liệu:</strong> Người dùng có thể xóa toàn bộ dữ liệu lưu trữ trên trình duyệt bất cứ lúc nào qua tính năng "Làm mới" hoặc xóa dữ liệu trang web trong cài đặt trình duyệt.</li>
-        <li><strong>Hủy quyền truy cập Google:</strong> Bạn có thể thu hồi quyền đăng nhập của ứng dụng PMATH EDUCATION TOOLS bất cứ lúc nào tại trang quản lý tài khoản chính thức của Google: <a href="https://myaccount.google.com/permissions" target="_blank" rel="noreferrer">https://myaccount.google.com/permissions</a>.</li>
+        <li><strong>Xuất &amp; Nhập dữ liệu:</strong> Người dùng có thể sao lưu và khôi phục toàn bộ dữ liệu ghi chú, hình vẽ thông qua tệp <code>.json</code> bất kỳ lúc nào tại mục "Sao Lưu &amp; Dữ Liệu".</li>
+        <li><strong>Xóa dữ liệu:</strong> Người dùng có thể xóa toàn bộ dữ liệu lưu trữ trên trình duyệt bất cứ lúc nào qua nút "Làm mới" hoặc xóa dữ liệu trang web trong cài đặt trình duyệt.</li>
       </ul>
 
-      <h2>6. Thông Tin Liên Hệ Của Nhà Phát Triển (Developer Contact)</h2>
-      <p>Nếu bạn có bất kỳ thắc mắc, phản hồi hoặc yêu cầu xóa dữ liệu, vui lòng liên hệ trực tiếp với chúng tôi:</p>
+      <h2>5. Thông Tin Liên Hệ &amp; Mã Nguồn Mở (Project Contact)</h2>
+      <p>Nếu bạn có bất kỳ thắc mắc hoặc đóng góp kỹ thuật nào, vui lòng liên hệ qua kho mã nguồn mở chính thức của dự án:</p>
       <ul>
         <li><strong>Tên dự án:</strong> PMATH EDUCATION TOOLS</li>
-        <li><strong>Chủ quản &amp; Nhà phát triển:</strong> Thầy Huy Đào Phong (PMATH Education)</li>
-        <li><strong>Địa chỉ Email liên hệ:</strong> <a href="mailto:huydaophong@gmail.com">huydaophong@gmail.com</a></li>
         <li><strong>Trang web chính thức:</strong> <a href="https://pmath-education-tools.vercel.app">https://pmath-education-tools.vercel.app</a></li>
+        <li><strong>Kênh phản hồi &amp; Báo lỗi (GitHub Issues):</strong> <a href="https://github.com/phongdaohuy0905CSE/pmath-education-tools/issues" target="_blank" rel="noopener noreferrer">github.com/phongdaohuy0905CSE/pmath-education-tools/issues</a></li>
       </ul>
     </div>
   </div>
