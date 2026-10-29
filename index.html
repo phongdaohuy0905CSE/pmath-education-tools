@@ -197,17 +197,17 @@
         <div class="console-canvas-wrap">
           <!-- Floating Telemetry Chips (Chuẩn dấu trừ − và dấu phẩy thập phân Việt Nam) -->
           <div class="console-telemetry-chip left">
-            <strong style="color: #38bdf8;">Mặt phẳng (α)</strong>
+            <strong class="console-telemetry-title" style="color: #38bdf8;">Mặt phẳng (α)</strong>
             <span>2x − y + 2z − 6 = 0 • d(O, α) = 2,0</span>
           </div>
 
           <div class="console-telemetry-chip right">
-            <strong style="color: #f43f5e;">Vectơ vận tốc máy bay</strong>
-            <span><strong>v</strong>₁ = (120; −80; 15) m/s • |<strong>v</strong>₁| = 145 m/s</span>
+            <strong class="console-telemetry-title" style="color: #f43f5e;">Vectơ vận tốc máy bay</strong>
+            <span><span style="font-weight: 700;">v</span>₁ = (120; −80; 15) m/s • |<span style="font-weight: 700;">v</span>₁| = 145 m/s</span>
           </div>
 
           <div class="console-telemetry-chip bottom">
-            <strong style="color: #34d399;">Bài toán khoảng cách hai chuyển động trong Oxyz</strong>
+            <strong class="console-telemetry-title" style="color: #34d399;">Bài toán khoảng cách hai chuyển động trong Oxyz</strong>
             <span>d(t) = |M₁(t)M₂(t)| = 4,2 km &gt; 3,0 km (Cự ly an toàn)</span>
           </div>
 
@@ -1250,10 +1250,6 @@
           }
         });
       });
-
-      // Floating switcher
-      if (btnNR) btnNR.addEventListener("click", activateNR);
-      if (btnGL) btnGL.addEventListener("click", () => activateGeoLab());
 
       // Home Hero Action Buttons
       const heroNR = document.getElementById("heroBtnOpenNR");

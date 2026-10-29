@@ -2726,12 +2726,19 @@ dialog.storage-dialog {
   z-index: 5;
   pointer-events: none;
   animation: fadeIn 0.4s ease-out;
+  white-space: nowrap;
 }
 
-.console-telemetry-chip strong {
+.console-telemetry-chip > strong:first-child,
+.console-telemetry-chip .console-telemetry-title {
   display: block;
   font-size: 0.82rem;
   margin-bottom: 2px;
+}
+
+.console-telemetry-chip span {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .console-telemetry-chip.left {
