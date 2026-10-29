@@ -14,6 +14,11 @@
   <link rel="stylesheet" href="./assets/index-B5VXrJpN.css" />
   <!-- PMATH Education Signature Styles (Cache Busted v3.0) -->
   <link rel="stylesheet" href="./styles.css?v=3.0" />
+  <script>
+    if (!localStorage.getItem("lang")) {
+      localStorage.setItem("lang", "vi");
+    }
+  </script>
 </head>
 <body>
   <!-- ===================================================================== -->
@@ -836,19 +841,6 @@
     </div>
   </dialog>
 
-  <!-- ===================================================================== -->
-  <!-- FLOATING SWITCHER BETWEEN PMATH BOARD & PMATH EQUATION/THEORY STUDIO  -->
-  <!-- ===================================================================== -->
-  <div class="floating-mode-switcher" id="floatingModeSwitcher">
-    <button class="fms-btn active" id="switchToNRBtn" title="Bảng viết bài giảng, hình khai triển 3D, đồ thị và máy tính khoa học">
-      <img src="./favicon.png" alt="" class="fms-logo" />
-      <span>Bảng viết bài giảng</span>
-    </button>
-    <button class="fms-btn" id="switchToGeoLabBtn" title="Không gian Oxyz &amp; Đồ thị 2D/3D">
-      <span>Không gian Oxyz &amp; Đồ thị</span>
-    </button>
-  </div>
-
   <!-- Rename Object / Vertex Dialog (A -> P) -->
   <dialog class="app-dialog small-dialog" id="renameDialog">
     <div class="dialog-header">
@@ -1135,10 +1127,6 @@
       const topBtnGL = document.getElementById("topSwitchToGeoLabBtn");
       const brandHome = document.getElementById("pmathBrandHome");
 
-      const floatingSwitcher = document.getElementById("floatingModeSwitcher");
-      const btnNR = document.getElementById("switchToNRBtn");
-      const btnGL = document.getElementById("switchToGeoLabBtn");
-
       function updateNavPills(activeId) {
         [topBtnHome, topBtnNR, topBtnGL].forEach((btn) => {
           if (btn) btn.classList.toggle("active", btn.id === activeId);
@@ -1151,7 +1139,6 @@
         if (homeView) homeView.style.display = "block";
         if (nrRoot) nrRoot.style.display = "none";
         if (glView) glView.style.display = "none";
-        if (floatingSwitcher) floatingSwitcher.style.display = "none";
         updateNavPills("topSwitchToHomeBtn");
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
@@ -1162,9 +1149,6 @@
         if (homeView) homeView.style.display = "none";
         if (nrRoot) nrRoot.style.display = "block";
         if (glView) glView.style.display = "none";
-        if (floatingSwitcher) floatingSwitcher.style.display = "flex";
-        if (btnNR) btnNR.classList.add("active");
-        if (btnGL) btnGL.classList.remove("active");
         updateNavPills("topSwitchToNRBtn");
         window.dispatchEvent(new Event("resize"));
       }
@@ -1175,9 +1159,6 @@
         if (homeView) homeView.style.display = "none";
         if (nrRoot) nrRoot.style.display = "none";
         if (glView) glView.style.display = "flex";
-        if (floatingSwitcher) floatingSwitcher.style.display = "flex";
-        if (btnGL) btnGL.classList.add("active");
-        if (btnNR) btnNR.classList.remove("active");
         updateNavPills("topSwitchToGeoLabBtn");
         window.dispatchEvent(new Event("resize"));
         if (typeof drawScene === "function") drawScene();

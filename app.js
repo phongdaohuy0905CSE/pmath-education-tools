@@ -3,6 +3,17 @@
 // Đồng bộ thiết kế & bảng màu chuẩn Template_PMATH.tex (v2.1)
 // ============================================================================
 
+function escapeHtml(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+window.escapeHtml = escapeHtml;
+
 const COLORS_PALETTE = ["#1e64b4", "#148250", "#008c96", "#b45a14", "#6a1b9a", "#c62828"];
 
 const state = {
@@ -13,6 +24,11 @@ const state = {
   knowledgeOpen: false, // Right drawer is closed by default to maximize canvas space
   activeKnowledgeId: "triangle",
   activeInfoTab: "interactions", // "interactions" | "theory" | "practice"
+
+  // Multi-tab sync & change tracking
+  isDirty: false,
+  lastModifiedAt: 0,
+  lastLoadedAt: Date.now(),
 
   // Multi-object scenes
   objects2D: [],
@@ -110,6 +126,8 @@ function saveHistory() {
   state.undoStack.push(snapshot);
   if (state.undoStack.length > 50) state.undoStack.shift();
   state.redoStack = [];
+  state.isDirty = true;
+  state.lastModifiedAt = Date.now();
   updateUndoRedoButtons();
 }
 
@@ -127,6 +145,8 @@ function undo() {
   state.objects2D = prev.objects2D;
   state.objects3D = prev.objects3D;
   state.selectedIds = prev.selectedIds;
+  state.isDirty = true;
+  state.lastModifiedAt = Date.now();
   syncSpaceModeUI();
   updateUndoRedoButtons();
   refreshAllUI();
@@ -146,6 +166,8 @@ function redo() {
   state.objects2D = next.objects2D;
   state.objects3D = next.objects3D;
   state.selectedIds = next.selectedIds;
+  state.isDirty = true;
+  state.lastModifiedAt = Date.now();
   syncSpaceModeUI();
   updateUndoRedoButtons();
   refreshAllUI();
@@ -327,15 +349,23 @@ function screenToMath2D(sx, sy) {
 // Uses true orthographic projection (R in SO(3)) so spheres, planes, cross-section circles,
 // and intersection points never distort or drift apart when rotating yaw/pitch.
 function project3D(pt3) {
-  const { yaw, pitch, zoom, panX, panY } = state.cam3D;
+  const { yaw, pitch, zoom, panX, panY, target, unitScale } = state.cam3D;
+  const uScale = unitScale || 1.0;
+  const tx = target ? target.x : 0;
+  const ty = target ? target.y : 0;
+  const tz = target ? target.z : 0;
+  const px = (pt3.x - tx) / uScale;
+  const py = (pt3.y - ty) / uScale;
+  const pz = (pt3.z - tz) / uScale;
+
   const scale = 34 * zoom;
 
   // Rotate in XY plane by yaw
   const cosY = Math.cos(yaw);
   const sinY = Math.sin(yaw);
-  const x1 = pt3.x * cosY - pt3.y * sinY;
-  const y1 = pt3.x * sinY + pt3.y * cosY;
-  const z1 = pt3.z;
+  const x1 = px * cosY - py * sinY;
+  const y1 = px * sinY + py * cosY;
+  const z1 = pz;
 
   // Tilt by pitch
   const cosP = Math.cos(pitch);
@@ -375,11 +405,16 @@ function bindUIEvents() {
 
   // Clear Scene Button
   document.getElementById("clearSceneBtn").addEventListener("click", () => {
+    const totalObjs = state.spaceMode === "2d" ? state.objects2D.length : state.objects3D.length;
+    if (totalObjs === 0) return;
+    const confirmed = window.confirm(`Bạn có chắc muốn xóa toàn bộ ${totalObjs} đối tượng trên khung vẽ? (Có thể bấm Hoàn tác sau khi xóa)`);
+    if (!confirmed) return;
     saveHistory();
     if (state.spaceMode === "2d") state.objects2D = [];
     else state.objects3D = [];
     state.selectedIds = [];
     refreshAllUI();
+    showToast("Đã xóa các đối tượng trên khung vẽ (Nhấn Hoàn tác để khôi phục)");
   });
 
   // CAD Toolbar Buttons
@@ -537,19 +572,25 @@ function bindUIEvents() {
 
   // Theme Toggle (Default is data-theme="light" matching Template_PMATH.tex)
   const themeBtn = document.getElementById("themeToggleBtn");
-  const themeLabel = document.getElementById("themeToggleLabel");
+  const updateThemeUI = (isDark) => {
+    if (!themeBtn) return;
+    if (isDark) {
+      document.documentElement.setAttribute("data-theme", "dark");
+      document.body.setAttribute("data-theme", "dark");
+      document.body.classList.add("dark-theme");
+      themeBtn.innerHTML = `<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><span id="themeToggleLabel">Giao diện Sáng</span>`;
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+      document.body.setAttribute("data-theme", "light");
+      document.body.classList.remove("dark-theme");
+      themeBtn.innerHTML = `<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span id="themeToggleLabel">Giao diện Tối</span>`;
+    }
+  };
+
   if (themeBtn) {
     themeBtn.addEventListener("click", () => {
       const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-      if (isDark) {
-        document.documentElement.setAttribute("data-theme", "light");
-        if (themeLabel) themeLabel.textContent = "Giao diện Tối";
-        else themeBtn.textContent = "Giao diện Tối";
-      } else {
-        document.documentElement.setAttribute("data-theme", "dark");
-        if (themeLabel) themeLabel.textContent = "Giao diện Sáng";
-        else themeBtn.textContent = "Giao diện Sáng";
-      }
+      updateThemeUI(!isDark);
       drawScene();
     });
   }
@@ -857,6 +898,8 @@ function renderEquationPresets() {
           { label: "Bậc 3: y = x^3 - 3x + 1", eq: "y = x^3 - 3x + 1" },
           { label: "Trùng phương: y = x^4 - 2x^2 - 1", eq: "y = x^4 - 2x^2 - 1" },
           { label: "Phân thức: y = (2x-1)/(x+1)", eq: "y = (2x-1)/(x+1)" },
+          { label: "Phân thức 2/1: y = (x^2+x+1)/(x-1)", eq: "y = (x^2+x+1)/(x-1)" },
+          { label: "Tổ hợp: Diện tích S = 0.5 (f(x)=x & g(x)=x³)", combo: "area_between_curves" },
           { label: "Lượng giác: y = 2*sin(x)", eq: "y = 2*sin(x)" },
           { label: "Trị tuyệt đối: y = |x^2 - 4|", eq: "y = |x^2 - 4|" },
           { label: "Đường tròn: (x-1)^2 + (y+1)^2 = 16", eq: "(x-1)^2 + (y+1)^2 = 16" },
@@ -866,6 +909,7 @@ function renderEquationPresets() {
         ]
       : [
           { label: "Tổ hợp: 2 Máy bay & Khoảng cách tiếp cận Oxyz", combo: "airplanes_motion" },
+          { label: "Mẫu: Khối nón r=3, h=4 (Trải phẳng 2D)", combo: "cone_survey" },
           { label: "Mặt phẳng: x + y + z - 3 = 0", eq: "x + y + z - 3 = 0" },
           { label: "Mặt cầu: (x-1)^2 + (y-1)^2 + (z-1)^2 = 16", eq: "(x-1)^2 + (y-1)^2 + (z-1)^2 = 16" },
           { label: "Đường 3D: (x-1)/2 = (y+1)/1 = z/3", eq: "(x-1)/2 = (y+1)/1 = z/3" },
@@ -899,52 +943,55 @@ function loadInteractionCombo(comboName) {
         id: genId("plane1"),
         space: "3d",
         type: "line3d",
-        name: "✈️ Máy bay 1",
+        name: "✈️ Máy bay A",
         visible: true,
-        color: "#c62828",
-        lineWidth: 2.6,
+        color: "#dc2626",
+        lineWidth: 2.8,
         dash: "solid",
-        x0: -3.8,
-        y0: -2.5,
-        z0: 1.8,
-        ux: 1.8,
-        uy: 1.2,
-        uz: 0.3,
+        x0: 0,
+        y0: 0,
+        z0: 0,
+        ux: 100,
+        uy: 0,
+        uz: 0,
         hasVelocity: true,
-        vx: 1.8,
-        vy: 1.2,
-        vz: 0.3,
+        vx: 100,
+        vy: 0,
+        vz: 0,
         t: 0,
         isPlaying: true,
-        equationText: "r⃗₁(t) = (-3.8;-2.5;1.8) + (1.8;1.2;0.3)t",
+        equationText: "r⃗_A(t) = (0; 0; 0) + (100; 0; 0)t (m)",
         knowledgeId: "line3d_velocity"
       },
       {
         id: genId("plane2"),
         space: "3d",
         type: "line3d",
-        name: "✈️ Máy bay 2",
+        name: "✈️ Máy bay B",
         visible: true,
-        color: "#1e64b4",
-        lineWidth: 2.6,
+        color: "#2563eb",
+        lineWidth: 2.8,
         dash: "solid",
-        x0: -2.5,
-        y0: 3.2,
-        z0: 2.5,
-        ux: 1.3,
-        uy: -1.5,
-        uz: -0.2,
+        x0: 10000,
+        y0: 500,
+        z0: 0,
+        ux: -100,
+        uy: 0,
+        uz: 0,
         hasVelocity: true,
-        vx: 1.3,
-        vy: -1.5,
-        vz: -0.2,
+        vx: -100,
+        vy: 0,
+        vz: 0,
         t: 0,
         isPlaying: true,
-        equationText: "r⃗₂(t) = (-2.5;3.2;2.5) + (1.3;-1.5;-0.2)t",
+        equationText: "r⃗_B(t) = (10000; 500; 0) + (-100; 0; 0)t (m)",
         knowledgeId: "line3d_velocity"
       }
     ];
     state.selectedIds = [state.objects3D[0].id];
+    syncSpaceModeUI();
+    zoomToFit();
+    showToast("Đã nạp bài toán 2 Máy bay chuẩn SGK: d_min = 500 m tại t = 50 s");
   } else if (comboName === "cubic_secant") {
     state.spaceMode = "2d";
     state.objects2D = [
@@ -1084,6 +1131,59 @@ function loadInteractionCombo(comboName) {
       }
     ];
     state.selectedIds = [state.objects3D[0].id];
+  } else if (comboName === "area_between_curves") {
+    state.spaceMode = "2d";
+    state.objects2D = [
+      {
+        id: genId("f1"),
+        space: "2d",
+        type: "func2d",
+        name: "f(x)",
+        expr: "x",
+        visible: true,
+        color: "#2563eb",
+        lineWidth: 2.6,
+        dash: "solid",
+        equationText: "y = x"
+      },
+      {
+        id: genId("f2"),
+        space: "2d",
+        type: "func2d",
+        name: "g(x)",
+        expr: "x^3",
+        visible: true,
+        color: "#dc2626",
+        lineWidth: 2.6,
+        dash: "solid",
+        equationText: "y = x³"
+      }
+    ];
+    state.selectedIds = [state.objects2D[0].id, state.objects2D[1].id];
+    state.calcAreaBetweenCurves = true;
+    showToast("Đã nạp tổ hợp: Diện tích hình phẳng S = 0,50 đvdt giữa f(x) = x và g(x) = x³");
+  } else if (comboName === "cone_survey") {
+    state.spaceMode = "3d";
+    state.objects3D = [
+      {
+        id: genId("cone"),
+        space: "3d",
+        type: "solid3d",
+        solidType: "cone",
+        name: "Khối nón",
+        r: 3,
+        h: 4,
+        a: 3,
+        isUnfolded: true,
+        visible: true,
+        color: "#2563eb",
+        lineWidth: 2.4,
+        dash: "solid",
+        equationText: "Khối nón: r = 3 cm, h = 4 cm (l = 5 cm, α = 216°)"
+      }
+    ];
+    state.selectedIds = [state.objects3D[0].id];
+    showToast("Đã nạp Khối nón r = 3 cm, h = 4 cm (đường sinh l = 5 cm, góc quạt 216°)");
   }
   syncSpaceModeUI();
   refreshAllUI();
@@ -1102,6 +1202,10 @@ window.applyEquationPreset = function(presetName) {
   } else if (presetName === "cubic_extrema" || presetName === "cubic_secant") {
     state.spaceMode = "2d";
     loadInteractionCombo("cubic_secant");
+  } else if (presetName === "area_between_curves") {
+    loadInteractionCombo("area_between_curves");
+  } else if (presetName === "cone_survey") {
+    loadInteractionCombo("cone_survey");
   }
 };
 
@@ -1649,10 +1753,58 @@ function applyRenameFromModal() {
 
 function zoomToFit() {
   if (state.spaceMode === "3d") {
+    const vis = state.objects3D.filter((o) => o.visible !== false);
+    if (vis.length === 0) {
+      state.cam3D = { yaw: -0.65, pitch: 0.42, zoom: 1.0, panX: 0, panY: 0, target: { x: 0, y: 0, z: 0 }, unitScale: 1.0 };
+      drawScene();
+      return;
+    }
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+    let minZ = Infinity, maxZ = -Infinity;
+    const include = (x, y, z) => {
+      if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return;
+      if (x < minX) minX = x; if (x > maxX) maxX = x;
+      if (y < minY) minY = y; if (y > maxY) maxY = y;
+      if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
+    };
+    vis.forEach((o) => {
+      if (o.type === "line3d") {
+        include(o.x0, o.y0, o.z0);
+        if (o.hasVelocity) {
+          const tMax = Math.max(25, o.tMinCpa ? o.tMinCpa * 1.5 : 50);
+          include(o.x0 + (o.vx || 0) * tMax, o.y0 + (o.vy || 0) * tMax, o.z0 + (o.vz || 0) * tMax);
+        } else {
+          include(o.x0 + (o.ux || 1) * 3, o.y0 + (o.uy || 0) * 3, o.z0 + (o.uz || 0) * 3);
+        }
+      } else if (o.type === "point3d") {
+        include(o.x, o.y, o.z);
+      } else if (o.type === "sphere3d") {
+        include(o.cx - o.r, o.cy - o.r, o.cz - o.r);
+        include(o.cx + o.r, o.cy + o.r, o.cz + o.r);
+      } else if (o.type === "vector3d") {
+        include(o.x0 || 0, o.y0 || 0, o.z0 || 0);
+        include((o.x0 || 0) + o.x, (o.y0 || 0) + o.y, (o.z0 || 0) + o.z);
+      } else {
+        include(-4.5, -4.5, -4.5);
+        include(4.5, 4.5, 4.5);
+      }
+    });
+    const spanX = maxX - minX;
+    const spanY = maxY - minY;
+    const spanZ = maxZ - minZ;
+    const maxSpan = Math.max(spanX, spanY, spanZ, 8);
+    state.cam3D.target = {
+      x: (minX + maxX) / 2,
+      y: (minY + maxY) / 2,
+      z: (minZ + maxZ) / 2
+    };
+    state.cam3D.unitScale = Math.max(1.0, maxSpan / 8.5);
     state.cam3D.zoom = 1.0;
     state.cam3D.panX = 0;
     state.cam3D.panY = 0;
     drawScene();
+    showToast("Đã khớp toàn bộ đối tượng 3D vào khung nhìn!");
     return;
   }
 
@@ -2279,20 +2431,38 @@ function renderSceneObjectsTree() {
     const li = document.createElement("li");
     li.className = `scene-obj-item ${isSel ? "selected" : ""} ${obj.visible === false ? "hidden-obj" : ""}`;
 
+    const typeLabelMap = {
+      solid3d: "Khối 3D",
+      func2d: "Hàm số 2D",
+      line2d: "Đường thẳng",
+      line3d: "Đường thẳng 3D",
+      polygon2d: "Đa giác",
+      circle2d: "Đường tròn",
+      sphere3d: "Mặt cầu",
+      plane3d: "Mặt phẳng",
+      point2d: "Điểm",
+      point3d: "Điểm",
+      vector3d: "Vectơ 3D",
+      parabola2d: "Parabol 2D",
+      surface3d: "Mặt cong 3D",
+      curve3d: "Đường cong 3D"
+    };
+    const typeVn = typeLabelMap[obj.type] || obj.type;
+
     const subText = obj.hasVelocity
       ? `v = ${Math.hypot(obj.vx || obj.ux, obj.vy || obj.uy, obj.vz || obj.uz).toFixed(1).replace(".", ",")} m/s`
       : obj.equationText
       ? obj.equationText
       : obj.pts
-      ? obj.pts.map((p) => p.label).join("")
-      : obj.type;
+      ? `${typeVn} ${obj.pts.map((p) => p.label).join("")}`
+      : typeVn;
 
     li.innerHTML = `
       <div class="obj-left">
         <span class="obj-color-dot" style="background:${obj.color || "#1e64b4"}"></span>
         <div class="obj-title-wrap">
-          <span class="obj-name">${obj.name}</span>
-          <span class="obj-sub">${subText}</span>
+          <span class="obj-name">${escapeHtml(obj.name)}</span>
+          <span class="obj-sub">${escapeHtml(subText)}</span>
         </div>
       </div>
       <div class="obj-actions">
@@ -2697,6 +2867,22 @@ function renderSelectedObjectSliders() {
     if (obj.solidType !== "cube") {
       addNumberInput("Chiều cao (h)", obj.h, "cm", (v) => (obj.h = Math.max(0.2, v)), { min: 0.2 });
     }
+    if (obj.solidType === "cone" || obj.solidType === "cylinder") {
+      const btnGroup = document.createElement("div");
+      btnGroup.className = "param-input-group";
+      btnGroup.style.gridColumn = "span 2";
+      btnGroup.innerHTML = `
+        <button type="button" class="btn-primary" style="width:100%; justify-content:center; padding:7px 12px; font-size:0.82rem; margin-top:4px;">
+          ${obj.isUnfolded ? "✕ Đóng trải phẳng" : "📐 Trải phẳng (Khai triển 2D)"}
+        </button>
+      `;
+      btnGroup.querySelector("button").addEventListener("click", () => {
+        obj.isUnfolded = !obj.isUnfolded;
+        renderAll();
+        populateInspectorForObject(obj);
+      });
+      fieldsContainer.appendChild(btnGroup);
+    }
   }
 }
 
@@ -2776,18 +2962,56 @@ function renderLiveMetrics() {
         const x0 = obj.probeX !== undefined ? obj.probeX : 0;
         const y0 = GeoEquations.evalFunc2D(obj, x0);
         const h = 1e-5;
-        const dy = (GeoEquations.evalFunc2D(obj, x0 + h) - GeoEquations.evalFunc2D(obj, x0 - h)) / (2 * h);
+        const yPlus = GeoEquations.evalFunc2D(obj, x0 + h);
+        const yMinus = GeoEquations.evalFunc2D(obj, x0 - h);
+        let subDeriv = "";
+        if (!Number.isFinite(y0) || Math.abs(y0) > 1e4 || !Number.isFinite(yPlus) || !Number.isFinite(yMinus)) {
+          subDeriv = `Tại x = ${fmt(x0)}: Hàm số không xác định (Tiệm cận đứng / Điểm kỳ dị)`;
+        } else {
+          const dy = (yPlus - yMinus) / (2 * h);
+          subDeriv = `f(${fmt(x0)}) = ${fmt(y0)} ; f'(${fmt(x0)}) = ${Number.isFinite(dy) && Math.abs(dy) < 1e5 ? fmt(dy) : "Không xác định"}`;
+        }
         const roots = GeoEquations.findRoots1D((x) => GeoEquations.evalFunc2D(obj, x), -15, 15, 360);
         items.push({
           name: `Hàm số ${obj.name}`,
           val: obj.equationText || `y = ${obj.expr}`,
-          sub: `f(${fmt(x0)}) = ${Number.isFinite(y0) ? fmt(y0) : "KXĐ"} ; f'(${fmt(x0)}) = ${Number.isFinite(dy) ? fmt(dy) : "KXĐ"}`
+          sub: subDeriv
         });
         items.push({
           name: "Nghiệm thực f(x) = 0 trên [-15; 15]",
           val: `${roots.length} nghiệm`,
           sub: roots.length > 0 ? roots.slice(0, 4).map((r) => `x ≈ ${r.toFixed(2)}`).join("; ") : "Không cắt trục Ox"
         });
+
+        const survey = window.MathSurveyEngine ? window.MathSurveyEngine.analyze(obj.equationText || obj.expr) : null;
+        if (survey) {
+          const extremaStr = survey.extrema && survey.extrema.length > 0
+            ? survey.extrema.map((e) => `${e.type}: (${e.exactX}; ${e.exactY})`).join(" ; ")
+            : "Không có cực trị";
+          items.push({
+            name: "Cực trị hàm số (GDPT 2018)",
+            val: extremaStr,
+            sub: survey.inflections && survey.inflections.length > 0
+              ? `Điểm uốn: ${survey.inflections.map((i) => `(${i.exactX}; ${i.exactY})`).join(" ; ")}`
+              : "Không có điểm uốn"
+          });
+
+          const asymParts = [];
+          if (survey.asymptotes?.vertical?.length > 0) {
+            asymParts.push(`TCĐ: ${survey.asymptotes.vertical.map((v) => v.label || v).join(", ")}`);
+          }
+          if (survey.asymptotes?.horizontal?.length > 0) {
+            asymParts.push(`TCN: ${survey.asymptotes.horizontal.map((h) => h.label || h).join(", ")}`);
+          }
+          if (survey.asymptotes?.slant?.length > 0) {
+            asymParts.push(`TCX: ${survey.asymptotes.slant.map((s) => s.label || s.line || s).join(", ")}`);
+          }
+          items.push({
+            name: "Đường tiệm cận đồ thị",
+            val: asymParts.length > 0 ? asymParts.join(" | ") : "Không có tiệm cận",
+            sub: survey.domain || "D = ℝ"
+          });
+        }
       }
     }
     items.push({
@@ -2835,9 +3059,33 @@ function renderLiveMetrics() {
           items.push({ name: "Diện tích xung quanh S_xq", val: `${fmt(2 * a * d)} cm²`, sub: `Trung đoạn SI = ${fmt(d)} cm` });
           items.push({ name: "Thể tích V = ⅓ a²h", val: `${fmt((a * a * h) / 3)} cm³`, sub: `Chiều cao SO = ${h} cm` });
         } else if (solidType === "cone") {
-          const l = Math.hypot(r, h);
-          items.push({ name: "Diện tích xung quanh S_xq = πrl", val: `${fmt(Math.PI * r * l)} cm²`, sub: `Đường sinh l = ${fmt(l)} cm` });
-          items.push({ name: "Thể tích V = ⅓ πr²h", val: `${fmt((Math.PI * r * r * h) / 3)} cm³`, sub: `Bán kính r = ${r}, cao h = ${h}` });
+          const cr = obj.r || 3;
+          const ch = obj.h || 4;
+          const l = Math.hypot(cr, ch);
+          const alphaDeg = (cr / l) * 360;
+          const sXq = Math.PI * cr * l;
+          const sDay = Math.PI * cr * cr;
+          const sTp = sXq + sDay;
+          const vCone = (Math.PI * cr * cr * ch) / 3;
+          const piFracXq = (cr * l);
+          const piFracDay = (cr * cr);
+          const piFracTp = (cr * (l + cr));
+
+          items.push({
+            name: "Đường sinh l & Góc trải phẳng α",
+            val: `l = ${fmt(l)} cm ; α = ${alphaDeg.toFixed(1)}°`,
+            sub: `r = ${cr} cm, h = ${ch} cm (l = √(r² + h²))`
+          });
+          items.push({
+            name: "Diện tích xung quanh & Toàn phần",
+            val: `S_xq = ${piFracXq}π ≈ ${fmt(sXq)} cm²`,
+            sub: `S_tp = ${piFracTp}π ≈ ${fmt(sTp)} cm² (S_đáy = ${piFracDay}π ≈ ${fmt(sDay)} cm²)`
+          });
+          items.push({
+            name: "Thể tích khối nón V = ⅓πr²h",
+            val: `V = ${fmt(vCone)} cm³`,
+            sub: `${(cr * cr * ch) % 3 === 0 ? `${(cr * cr * ch) / 3}π ≈ ` : ""}${fmt(vCone)} cm³`
+          });
         } else if (solidType === "cylinder") {
           items.push({ name: "Diện tích xung quanh S_xq = 2πrh", val: `${fmt(2 * Math.PI * r * h)} cm²`, sub: `S_tp = ${fmt(2 * Math.PI * r * (r + h))} cm²` });
           items.push({ name: "Thể tích V = πr²h", val: `${fmt(Math.PI * r * r * h)} cm³`, sub: `Bán kính r = ${r}, cao h = ${h}` });
@@ -3087,7 +3335,7 @@ function drawScene() {
     drawAll2DObjects(w, h, theme);
   } else {
     draw3DGridAndAxes(theme);
-    drawAll3DObjects(theme);
+    drawAll3DObjects(w, h, theme);
     draw3DOrientationTriad(w, h, theme);
   }
 
@@ -3285,8 +3533,149 @@ function drawAll2DObjects(w, h, theme) {
       }
       ctx.stroke();
 
-      // Draw dashed vertical asymptotes if detected (e.g. rational functions)
-      if (asymptoteXs.length > 0) {
+      // Analyze analytical features via MathSurveyEngine: TCĐ, TCN, TCX, Extrema, Inflection
+      const analysis = window.MathSurveyEngine ? window.MathSurveyEngine.analyze(obj.equationText || obj.expr) : null;
+      if (analysis) {
+        // Vertical asymptotes: TCĐ
+        if (analysis.asymptotes && analysis.asymptotes.vertical && analysis.asymptotes.vertical.length > 0) {
+          analysis.asymptotes.vertical.forEach((asym) => {
+            const val = typeof asym === "object" ? asym.val : asym;
+            if (Number.isFinite(val)) {
+              const sX = mathToScreen2D(val, 0).x;
+              ctx.save();
+              ctx.setLineDash([6, 4]);
+              ctx.strokeStyle = "#e11d48";
+              ctx.lineWidth = 1.8;
+              ctx.beginPath();
+              ctx.moveTo(sX, -halfH);
+              ctx.lineTo(sX, halfH);
+              ctx.stroke();
+
+              const lbl = `TCĐ: ${asym.label || `x = ${val}`}`;
+              ctx.font = 'bold 12px "Segoe UI", system-ui, sans-serif';
+              ctx.fillStyle = "#e11d48";
+              ctx.fillText(lbl, sX + 8, -halfH + 35);
+              ctx.restore();
+            }
+          });
+        }
+
+        // Horizontal asymptotes: TCN
+        if (analysis.asymptotes && analysis.asymptotes.horizontal && analysis.asymptotes.horizontal.length > 0) {
+          analysis.asymptotes.horizontal.forEach((asym) => {
+            const val = typeof asym === "object" ? asym.val : asym;
+            if (Number.isFinite(val)) {
+              const sY = mathToScreen2D(0, val).y;
+              ctx.save();
+              ctx.setLineDash([6, 4]);
+              ctx.strokeStyle = "#0d9488";
+              ctx.lineWidth = 1.8;
+              ctx.beginPath();
+              ctx.moveTo(-halfW, sY);
+              ctx.lineTo(halfW, sY);
+              ctx.stroke();
+
+              const lbl = `TCN: ${asym.label || `y = ${val}`}`;
+              ctx.font = 'bold 12px "Segoe UI", system-ui, sans-serif';
+              ctx.fillStyle = "#0d9488";
+              ctx.fillText(lbl, halfW - 120, sY - 8);
+              ctx.restore();
+            }
+          });
+        }
+
+        // Slant asymptotes: TCX
+        if (analysis.asymptotes && analysis.asymptotes.slant && analysis.asymptotes.slant.length > 0) {
+          analysis.asymptotes.slant.forEach((asym) => {
+            const a = asym.A !== undefined ? asym.A : asym.a;
+            const b = asym.B !== undefined ? asym.B : asym.b;
+            if (Number.isFinite(a) && Number.isFinite(b)) {
+              const mx1 = (-halfW - state.view2D.offsetX) / state.view2D.scale;
+              const mx2 = (halfW - state.view2D.offsetX) / state.view2D.scale;
+              const p1 = mathToScreen2D(mx1, a * mx1 + b);
+              const p2 = mathToScreen2D(mx2, a * mx2 + b);
+
+              ctx.save();
+              ctx.setLineDash([6, 4]);
+              ctx.strokeStyle = "#d97706";
+              ctx.lineWidth = 1.8;
+              ctx.beginPath();
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.stroke();
+
+              const lbl = `TCX: ${asym.label || `y = ${a}x + ${b}`}`;
+              ctx.font = 'bold 12px "Segoe UI", system-ui, sans-serif';
+              ctx.fillStyle = "#d97706";
+              ctx.fillText(lbl, (p1.x + p2.x) * 0.35 + 10, (p1.y + p2.y) * 0.35 - 8);
+              ctx.restore();
+            }
+          });
+        }
+
+        // Extrema markers
+        if (analysis.extrema && analysis.extrema.length > 0) {
+          analysis.extrema.forEach((ext) => {
+            if (Number.isFinite(ext.x) && Number.isFinite(ext.y)) {
+              const sp = mathToScreen2D(ext.x, ext.y);
+              const isMax = ext.type === "Cực đại";
+              const ptColor = isMax ? "#e11d48" : "#2563eb";
+              const tag = isMax ? "CĐ" : "CT";
+
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(sp.x, sp.y, 8, 0, Math.PI * 2);
+              ctx.fillStyle = isMax ? "rgba(225, 29, 72, 0.2)" : "rgba(37, 99, 235, 0.2)";
+              ctx.fill();
+
+              ctx.beginPath();
+              ctx.arc(sp.x, sp.y, 4.5, 0, Math.PI * 2);
+              ctx.fillStyle = ptColor;
+              ctx.fill();
+              ctx.strokeStyle = "#ffffff";
+              ctx.lineWidth = 1.6;
+              ctx.stroke();
+
+              const xStr = ext.exactX || ext.x.toFixed(2).replace(".", ",");
+              const yStr = ext.exactY || ext.y.toFixed(2).replace(".", ",");
+              ctx.font = 'bold 11px "Segoe UI", system-ui, sans-serif';
+              ctx.fillStyle = ptColor;
+              ctx.fillText(`${tag}(${xStr}; ${yStr})`, sp.x + 8, isMax ? sp.y - 8 : sp.y + 16);
+              ctx.restore();
+            }
+          });
+        }
+
+        // Inflection points (Điểm uốn)
+        if (analysis.inflections && analysis.inflections.length > 0) {
+          analysis.inflections.forEach((inf) => {
+            if (Number.isFinite(inf.x) && Number.isFinite(inf.y)) {
+              const sp = mathToScreen2D(inf.x, inf.y);
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(sp.x, sp.y, 8, 0, Math.PI * 2);
+              ctx.fillStyle = "rgba(168, 85, 247, 0.22)";
+              ctx.fill();
+
+              ctx.beginPath();
+              ctx.arc(sp.x, sp.y, 4.5, 0, Math.PI * 2);
+              ctx.fillStyle = "#9333ea";
+              ctx.fill();
+              ctx.strokeStyle = "#ffffff";
+              ctx.lineWidth = 1.6;
+              ctx.stroke();
+
+              const xStr = inf.exactX || inf.x.toFixed(2).replace(".", ",");
+              const yStr = inf.exactY || inf.y.toFixed(2).replace(".", ",");
+              ctx.font = 'bold 11px "Segoe UI", system-ui, sans-serif';
+              ctx.fillStyle = "#9333ea";
+              ctx.fillText(`I(${xStr}; ${yStr})`, sp.x + 8, sp.y - 8);
+              ctx.restore();
+            }
+          });
+        }
+      } else if (asymptoteXs.length > 0) {
+        // Fallback dashed vertical asymptotes if detected via screen jump
         ctx.save();
         ctx.setLineDash([5, 4]);
         ctx.strokeStyle = color + "88";
@@ -3444,6 +3833,9 @@ function drawAll2DObjects(w, h, theme) {
 
   // Draw Parametric m Line and Intersections (GDPT 2018 calculus tool)
   drawMLineAndIntersections(w, h, theme);
+
+  // Draw Bounded Area between Curves (GDPT 2018 integral calculus tool)
+  drawBoundedAreaBetweenCurves(w, h, theme);
 }
 
 // ============================================================================
@@ -3595,6 +3987,132 @@ function drawMLineAndIntersections(w, h, theme) {
     rootCountEl.style.color = roots.length === 0 ? "var(--text-muted)" : "#7c3aed";
     rootCountEl.style.background = roots.length === 0 ? "rgba(148, 163, 184, 0.2)" : "rgba(139, 92, 246, 0.15)";
   }
+}
+
+function drawBoundedAreaBetweenCurves(w, h, theme) {
+  if (state.spaceMode !== "2d") return;
+  const funcs = state.objects2D.filter((o) => (o.type === "func2d" || o.type === "parabola2d") && o.visible !== false);
+  if (funcs.length < 2 && !state.calcAreaBetweenCurves) return;
+  if (funcs.length < 2) return;
+
+  const f1 = funcs[0];
+  const f2 = funcs[1];
+
+  // Find intersection roots of diff(x) = f1(x) - f2(x) = 0 in [-15, 15]
+  const diffFn = (x) => GeoEquations.evalFunc2D(f1, x) - GeoEquations.evalFunc2D(f2, x);
+  const numSamples = 400;
+  const xMin = Math.max(-15, (-w / 2 - state.view2D.offsetX) / state.view2D.scale);
+  const xMax = Math.min(15, (w / 2 - state.view2D.offsetX) / state.view2D.scale);
+  const step = (xMax - xMin) / numSamples;
+
+  const roots = [];
+  let prevX = xMin;
+  let prevVal = diffFn(prevX);
+
+  for (let i = 1; i <= numSamples; i++) {
+    const currX = xMin + i * step;
+    const currVal = diffFn(currX);
+    if (!Number.isFinite(currVal) || Math.abs(currVal) > 1e4) {
+      prevX = currX;
+      prevVal = NaN;
+      continue;
+    }
+    if (Number.isFinite(prevVal) && prevVal * currVal <= 0) {
+      // Bisection refinement
+      let lo = prevX, hi = currX;
+      for (let it = 0; it < 16; it++) {
+        const mid = (lo + hi) / 2;
+        const vMid = diffFn(mid);
+        if (Math.abs(vMid) < 1e-6) { lo = mid; hi = mid; break; }
+        if (prevVal * vMid <= 0) hi = mid;
+        else lo = mid;
+      }
+      const root = (lo + hi) / 2;
+      if (!roots.some((r) => Math.abs(r - root) < 0.05)) {
+        roots.push(root);
+      }
+    }
+    prevX = currX;
+    prevVal = currVal;
+  }
+  roots.sort((a, b) => a - b);
+
+  if (roots.length < 2) return;
+
+  const a = roots[0];
+  const b = roots[roots.length - 1];
+
+  // 1. Fill the bounded area
+  ctx.save();
+  ctx.beginPath();
+  const sampleSteps = 200;
+  const dx = (b - a) / sampleSteps;
+
+  // Along f1 from a to b
+  for (let i = 0; i <= sampleSteps; i++) {
+    const x = a + i * dx;
+    const y = GeoEquations.evalFunc2D(f1, x);
+    const sp = mathToScreen2D(x, y);
+    if (i === 0) ctx.moveTo(sp.x, sp.y);
+    else ctx.lineTo(sp.x, sp.y);
+  }
+  // Along f2 from b back to a
+  for (let i = sampleSteps; i >= 0; i--) {
+    const x = a + i * dx;
+    const y = GeoEquations.evalFunc2D(f2, x);
+    const sp = mathToScreen2D(x, y);
+    ctx.lineTo(sp.x, sp.y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = "rgba(37, 99, 235, 0.18)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(37, 99, 235, 0.55)";
+  ctx.lineWidth = 1.4;
+  ctx.setLineDash([4, 4]);
+  ctx.stroke();
+  ctx.restore();
+
+  // 2. Numerical Integration: Composite Simpson's Rule for S = ∫|f1 - f2|dx and I = ∫(f1 - f2)dx
+  const N = 200; // must be even
+  const hSimp = (b - a) / N;
+  let sumAbs = Math.abs(diffFn(a)) + Math.abs(diffFn(b));
+  let sumSigned = diffFn(a) + diffFn(b);
+
+  for (let i = 1; i < N; i++) {
+    const x = a + i * hSimp;
+    const dVal = diffFn(x);
+    const coeff = (i % 2 === 1) ? 4 : 2;
+    sumAbs += coeff * Math.abs(dVal);
+    sumSigned += coeff * dVal;
+  }
+  const areaS = (hSimp / 3) * sumAbs;
+  const integralI = (hSimp / 3) * sumSigned;
+
+  // 3. Draw On-Canvas Floating Badge with results
+  const badgeX = -w / 2 + 20;
+  const badgeY = h / 2 - 50;
+  ctx.save();
+  ctx.fillStyle = theme.isLight ? "rgba(255, 255, 255, 0.94)" : "rgba(15, 23, 42, 0.92)";
+  ctx.strokeStyle = "#2563eb";
+  ctx.lineWidth = 1.6;
+  ctx.shadowColor = "rgba(0, 0, 0, 0.15)";
+  ctx.shadowBlur = 10;
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(badgeX, badgeY, 360, 36, 8);
+  } else {
+    ctx.rect(badgeX, badgeY, 360, 36);
+  }
+  ctx.fill();
+  ctx.stroke();
+  ctx.shadowColor = "transparent";
+
+  ctx.font = 'bold 12.5px "Segoe UI", system-ui, sans-serif';
+  ctx.fillStyle = "#2563eb";
+  const sText = `S = ∫|${f1.name} - ${f2.name}|dx = ${areaS.toFixed(2).replace(".", ",")} đvdt`;
+  const iText = ` | I = ${Math.abs(integralI) < 1e-4 ? "0,00" : integralI.toFixed(2).replace(".", ",")}`;
+  ctx.fillText(sText + iText, badgeX + 14, badgeY + 23);
+  ctx.restore();
 }
 
 function openSurveyDialog(targetExpr) {
@@ -4191,7 +4709,7 @@ function getOrthonormalBasis3D(nx, ny, nz) {
   return { n, u, v };
 }
 
-function drawAll3DObjects(theme) {
+function drawAll3DObjects(w, h, theme) {
   const vis = state.objects3D.filter((o) => o.visible !== false);
   const scale = 34 * state.cam3D.zoom;
 
@@ -4288,11 +4806,29 @@ function drawAll3DObjects(theme) {
     }
   });
 
-  // Multi-Object 3D Motion Proximity & Collision Alert (e.g. 2 airplanes)
+  // Multi-Object 3D Motion Proximity & Collision Alert (e.g. 2 airplanes CPA)
   const movingLines = state.objects3D.filter((o) => o.type === "line3d" && o.hasVelocity && o.visible);
   if (movingLines.length >= 2) {
     const l1 = movingLines[0];
     const l2 = movingLines[1];
+
+    // Analytical Closest Point of Approach (CPA)
+    const dx0 = l1.x0 - l2.x0;
+    const dy0 = l1.y0 - l2.y0;
+    const dz0 = l1.z0 - l2.z0;
+    const dvx = (l1.vx || 0) - (l2.vx || 0);
+    const dvy = (l1.vy || 0) - (l2.vy || 0);
+    const dvz = (l1.vz || 0) - (l2.vz || 0);
+    const dvSq = dvx * dvx + dvy * dvy + dvz * dvz;
+
+    let tMin = 0;
+    if (dvSq > 1e-9) {
+      tMin = Math.max(0, -(dx0 * dvx + dy0 * dvy + dz0 * dvz) / dvSq);
+    }
+    const dMin = Math.sqrt((dx0 + dvx * tMin) ** 2 + (dy0 + dvy * tMin) ** 2 + (dz0 + dvz * tMin) ** 2);
+    l1.tMinCpa = tMin;
+    l2.tMinCpa = tMin;
+
     const t1 = l1.t !== undefined ? l1.t : (state.motionTime || 0);
     const t2 = l2.t !== undefined ? l2.t : (state.motionTime || 0);
     const m1 = { x: l1.x0 + (l1.vx || 0) * t1, y: l1.y0 + (l1.vy || 0) * t1, z: l1.z0 + (l1.vz || 0) * t1 };
@@ -4301,15 +4837,28 @@ function drawAll3DObjects(theme) {
     const pm1 = project3D(m1);
     const pm2 = project3D(m2);
 
-    const isAlert = dist < 3.0;
-    drawScreenSegment(pm1, pm2, isAlert ? "#c62828" : "#b45a14", isAlert ? 2.8 : 1.8, true);
+    const isMeters = Math.max(Math.abs(l1.x0), Math.abs(l2.x0), Math.abs(l1.vx || 0)) > 50;
+    const alertThresh = isMeters ? 1000 : 3.0;
+    const isAlert = dist <= alertThresh || dMin <= alertThresh;
+
+    drawScreenSegment(pm1, pm2, isAlert ? "#dc2626" : "#b45a14", isAlert ? 2.6 : 1.8, true);
     const midX = (pm1.x + pm2.x) / 2;
     const midY = (pm1.y + pm2.y) / 2;
 
+    const unitStr = isMeters ? "m" : "km";
+    const curDistStr = isMeters && dist >= 1000 ? `${dist.toFixed(0)} m (${(dist/1000).toFixed(2)} km)` : `${dist.toFixed(2)} ${unitStr}`;
+    const dMinStr = isMeters && dMin >= 1000 ? `${dMin.toFixed(0)} m (${(dMin/1000).toFixed(2)} km)` : `${dMin.toFixed(2)} ${unitStr}`;
+
     ctx.save();
-    ctx.font = 'bold 12.5px "Segoe UI", system-ui, sans-serif';
-    ctx.fillStyle = isAlert ? "#c62828" : "#b45a14";
-    ctx.fillText(`${isAlert ? "⚠️ Cảnh báo an toàn! " : ""}d(t) = ${dist.toFixed(2)} km`, midX + 8, midY - 6);
+    ctx.font = 'bold 12px "Segoe UI", system-ui, sans-serif';
+    ctx.fillStyle = isAlert ? "#dc2626" : (theme.isLight ? "#1e293b" : "#f1f5f9");
+    ctx.fillText(`d(t) = ${curDistStr}`, midX + 8, midY - 6);
+    ctx.fillText(`d_min = ${dMinStr} tại t = ${tMin.toFixed(1)}s`, midX + 8, midY + 11);
+    if (isAlert) {
+      ctx.fillStyle = "#dc2626";
+      ctx.font = 'bold 11.5px "Segoe UI", system-ui, sans-serif';
+      ctx.fillText(`⚠️ CẢNH BÁO TIẾP CẬN GẦN!`, midX + 8, midY + 27);
+    }
     ctx.restore();
   }
 
@@ -4357,6 +4906,139 @@ function drawAll3DObjects(theme) {
       drawScreenSegment(p1, p2, "#b45a14", 2.8, false);
     }
   });
+
+  // Check if any cone is unfolded
+  const unfoldedCone = state.objects3D.find(
+    (o) => o.type === "solid3d" && o.solidType === "cone" && o.isUnfolded && o.visible !== false
+  );
+  if (unfoldedCone) {
+    drawConeUnfolding(unfoldedCone, w, h, theme);
+  }
+}
+
+function drawConeUnfolding(obj, w, h, theme) {
+  const r = obj.r || 3;
+  const height = obj.h || 4;
+  const l = Math.hypot(r, height);
+  const alphaDeg = (r / l) * 360;
+  const alphaRad = (alphaDeg * Math.PI) / 180;
+  const sXq = Math.PI * r * l;
+  const sDay = Math.PI * r * r;
+  const sTp = sXq + sDay;
+  const vCone = (Math.PI * r * r * height) / 3;
+
+  // Draw overlay card in top-right of 3D canvas
+  const cardW = 340;
+  const cardH = 340;
+  const cardX = w / 2 - cardW - 24;
+  const cardY = -h / 2 + 30;
+
+  ctx.save();
+  // Card background
+  ctx.fillStyle = theme.isLight ? "rgba(255, 255, 255, 0.95)" : "rgba(15, 23, 42, 0.94)";
+  ctx.strokeStyle = theme.isLight ? "#cbd5e1" : "#334155";
+  ctx.lineWidth = 1.6;
+  ctx.shadowColor = "rgba(0, 0, 0, 0.16)";
+  ctx.shadowBlur = 18;
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(cardX, cardY, cardW, cardH, 12);
+  } else {
+    ctx.rect(cardX, cardY, cardW, cardH);
+  }
+  ctx.fill();
+  ctx.stroke();
+  ctx.shadowColor = "transparent";
+
+  // Card Title
+  ctx.fillStyle = "#2563eb";
+  ctx.font = 'bold 13.5px "Segoe UI", system-ui, sans-serif';
+  ctx.fillText("📐 Khai Triển 2D Hình Nón (Trải Phẳng)", cardX + 16, cardY + 26);
+
+  // Unfolding Geometry Center
+  const ox = cardX + 135;
+  const oy = cardY + 115;
+  const pxScale = 14; // pixels per cm
+  const lPx = l * pxScale;
+  const rPx = r * pxScale;
+
+  // Unfolded sector: apex at S'(ox, oy)
+  const startAng = -Math.PI / 2 - alphaRad / 2;
+  const endAng = startAng + alphaRad;
+
+  ctx.beginPath();
+  ctx.moveTo(ox, oy);
+  ctx.arc(ox, oy, lPx, startAng, endAng);
+  ctx.closePath();
+  ctx.fillStyle = "rgba(37, 99, 235, 0.15)";
+  ctx.fill();
+  ctx.strokeStyle = "#2563eb";
+  ctx.lineWidth = 2.2;
+  ctx.stroke();
+
+  // Apex marker S'
+  ctx.beginPath();
+  ctx.arc(ox, oy, 4, 0, Math.PI * 2);
+  ctx.fillStyle = "#2563eb";
+  ctx.fill();
+  ctx.font = 'bold 11px "Segoe UI", system-ui, sans-serif';
+  ctx.fillText("S'", ox - 16, oy - 6);
+
+  // Sector radius label l
+  ctx.font = '600 11.5px "Segoe UI", system-ui, sans-serif';
+  ctx.fillStyle = "#1e40af";
+  ctx.fillText(`l = ${l.toFixed(0)} cm`, ox + lPx * 0.45, oy - 10);
+
+  // Sector angle label alpha
+  ctx.fillStyle = "#b45a14";
+  ctx.fillText(`α = ${alphaDeg.toFixed(1)}°`, ox - 24, oy + 28);
+
+  // Base circle: tangent to the midpoint of the arc
+  const midAng = (startAng + endAng) / 2;
+  const touchX = ox + lPx * Math.cos(midAng);
+  const touchY = oy + lPx * Math.sin(midAng);
+  const baseCenter = {
+    x: touchX + rPx * Math.cos(midAng),
+    y: touchY + rPx * Math.sin(midAng)
+  };
+
+  ctx.beginPath();
+  ctx.arc(baseCenter.x, baseCenter.y, rPx, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(16, 185, 129, 0.15)";
+  ctx.fill();
+  ctx.strokeStyle = "#059669";
+  ctx.lineWidth = 2.0;
+  ctx.stroke();
+
+  // Base center point O'
+  ctx.beginPath();
+  ctx.arc(baseCenter.x, baseCenter.y, 3.5, 0, Math.PI * 2);
+  ctx.fillStyle = "#059669";
+  ctx.fill();
+  ctx.fillText("O'", baseCenter.x + 6, baseCenter.y - 4);
+
+  // Base radius line and label
+  ctx.beginPath();
+  ctx.moveTo(baseCenter.x, baseCenter.y);
+  ctx.lineTo(baseCenter.x + rPx, baseCenter.y);
+  ctx.setLineDash([3, 2]);
+  ctx.strokeStyle = "#059669";
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = "#065f46";
+  ctx.fillText(`r = ${r} cm`, baseCenter.x + 8, baseCenter.y + 14);
+
+  // Analytical summary below drawing
+  const textStartY = cardY + 225;
+  ctx.font = '12px "Segoe UI", system-ui, sans-serif';
+  ctx.fillStyle = theme.isLight ? "#334155" : "#cbd5e1";
+  ctx.fillText(`• Bán kính quạt (đường sinh): l = √(r²+h²) = ${l.toFixed(0)} cm`, cardX + 16, textStartY);
+  ctx.fillText(`• Góc ở đỉnh quạt: α = (r/l)·360° = ${alphaDeg.toFixed(1)}°`, cardX + 16, textStartY + 18);
+  ctx.fillText(`• S_xq = π·r·l = ${r * l}π ≈ ${sXq.toFixed(2).replace(".", ",")} cm²`, cardX + 16, textStartY + 36);
+  ctx.fillText(`• S_đáy = π·r² = ${r * r}π ≈ ${sDay.toFixed(2).replace(".", ",")} cm²`, cardX + 16, textStartY + 54);
+  ctx.fillText(`• S_tp = ${r * (l + r)}π ≈ ${sTp.toFixed(2).replace(".", ",")} cm² | V = ${((r * r * height) / 3).toFixed(1)}π ≈ ${vCone.toFixed(2).replace(".", ",")} cm³`, cardX + 16, textStartY + 72);
+
+  ctx.restore();
 }
 
 // ============================================================================
@@ -5181,14 +5863,17 @@ function startMotionLoop() {
 
     let hasActiveMotion = false;
     if (state.spaceMode === "3d") {
-      state.objects3D.forEach((obj) => {
-        if (obj.type === "line3d" && obj.hasVelocity && obj.isPlaying) {
-          hasActiveMotion = true;
-          if (obj.t === undefined) obj.t = 0;
-          obj.t += dt * 0.8;
-          if (obj.t > 8) obj.t = -3.5; // loop flight
-          state.motionTime = obj.t;
-        }
+      const moving = state.objects3D.filter((o) => o.type === "line3d" && o.hasVelocity && o.isPlaying);
+      let maxFlightTime = 25;
+      if (moving.length >= 2 && moving[0].tMinCpa) {
+        maxFlightTime = Math.max(25, Math.ceil(moving[0].tMinCpa * 1.5));
+      }
+      moving.forEach((obj) => {
+        hasActiveMotion = true;
+        if (obj.t === undefined) obj.t = 0;
+        obj.t += dt * 1.0;
+        if (obj.t > maxFlightTime) obj.t = 0; // seamlessly loop from 0 to maxFlightTime
+        state.motionTime = obj.t;
       });
     }
 
@@ -5228,7 +5913,7 @@ function openEditModal(objId) {
   const title = document.getElementById("editDialogTitle");
   const body = document.getElementById("editDialogBody");
 
-  if (title) title.innerHTML = `Sửa đối tượng: <strong>${targetObj.name}</strong>`;
+  if (title) title.innerHTML = `Sửa đối tượng: <strong>${escapeHtml(targetObj.name)}</strong>`;
   if (body) body.innerHTML = renderEditDialogContent(targetObj);
 
   bindEditDialogDynamicEvents(targetObj);
@@ -5242,7 +5927,7 @@ function renderEditDialogContent(obj) {
     <div class="edit-form-group">
       <label>Tên và ký hiệu đối tượng:</label>
       <div class="edit-input-row">
-        <input type="text" id="editObjName" class="edit-input-text" value="${obj.name || ""}" placeholder="VD: A, B, d, (S), (α)..." />
+        <input type="text" id="editObjName" class="edit-input-text" value="${escapeHtml(obj.name || "")}" placeholder="VD: A, B, d, (S), (α)..." />
       </div>
     </div>
     ${
@@ -5251,7 +5936,7 @@ function renderEditDialogContent(obj) {
     <div class="edit-form-group">
       <label>Tên các đỉnh (cách nhau bằng dấu phẩy, VD: A, B, C):</label>
       <div class="edit-input-row">
-        <input type="text" id="editVerticesInput" class="edit-input-text" value="${vertexNamesVal}" placeholder="VD: A, B, C" />
+        <input type="text" id="editVerticesInput" class="edit-input-text" value="${escapeHtml(vertexNamesVal)}" placeholder="VD: A, B, C" />
       </div>
     </div>`
         : ""
@@ -5323,7 +6008,7 @@ function renderEditDialogContent(obj) {
             .map(
               (p, i) => `
             <div class="edit-coord-item" style="grid-column: span 1;">
-              <span>${p.name || "P" + (i + 1)}:</span>
+              <span>${escapeHtml(p.name || "P" + (i + 1))}:</span>
               <input type="number" class="edit-poly-pt" data-idx="${i}" data-coord="x" step="0.1" value="${p.x}" style="width:45px;" />
               <span style="margin:0 2px;">,</span>
               <input type="number" class="edit-poly-pt" data-idx="${i}" data-coord="y" step="0.1" value="${p.y}" style="width:45px;" />
@@ -5338,7 +6023,7 @@ function renderEditDialogContent(obj) {
     html += `
       <div class="edit-form-group">
         <label>Biểu thức hàm số y = f(x):</label>
-        <input type="text" id="editFuncExpr" class="edit-input-text" value="${obj.expr || "x^3 - 3*x"}" placeholder="VD: x^3 - 3*x + 1, sin(x), (2*x-1)/(x+1)..." />
+        <input type="text" id="editFuncExpr" class="edit-input-text" value="${escapeHtml(obj.expr || "x^3 - 3*x")}" placeholder="VD: x^3 - 3*x + 1, sin(x), (2*x-1)/(x+1)..." />
       </div>
     `;
   } else if (obj.type === "point3d") {
@@ -5639,22 +6324,66 @@ function duplicateSelectedObject() {
 }
 
 // ============================================================================
-// AUTO-SAVE ENGINE (EVERY 10 SECONDS FOR SỔ TAY & PHÒNG THÍ NGHIỆM)
+// AUTOMATIC PERSISTENCE & LOCALSTORAGE ENGINE (MULTI-TAB SYNC & SILENT DRAFT)
 // ============================================================================
+
+function sanitizeObjectForWorkspace(obj) {
+  if (!obj || typeof obj !== "object") return null;
+  const clean = { ...obj };
+  if (clean.name) clean.name = String(clean.name).replace(/<[^>]*>/g, "").trim().slice(0, 100);
+  if (clean.expr) clean.expr = String(clean.expr).replace(/<[^>]*>/g, "").trim().slice(0, 500);
+  if (clean.equationText) clean.equationText = String(clean.equationText).replace(/<[^>]*>/g, "").trim().slice(0, 500);
+  if (clean.label) clean.label = String(clean.label).replace(/<[^>]*>/g, "").trim().slice(0, 100);
+  if (Array.isArray(clean.pts)) {
+    clean.pts = clean.pts.map((p) => ({
+      ...p,
+      name: p.name ? String(p.name).replace(/<[^>]*>/g, "").slice(0, 50) : undefined,
+      label: p.label ? String(p.label).replace(/<[^>]*>/g, "").slice(0, 50) : undefined
+    }));
+  }
+  return clean;
+}
 
 function initAutoSaveEngine() {
   // Trigger periodic auto-save every 10 seconds (10000 ms)
   setInterval(() => {
     runAutoSaveCycle();
   }, 10000);
+
+  // Multi-tab synchronization (BUG-05)
+  window.addEventListener("storage", (e) => {
+    if (e.key === "pmath_studio_workspace" && e.newValue) {
+      try {
+        const data = JSON.parse(e.newValue);
+        // If our current tab has unsaved changes, don't blindly clobber
+        if (state.isDirty) return;
+        if (data.objects2D && Array.isArray(data.objects2D)) {
+          state.objects2D = data.objects2D.map(sanitizeObjectForWorkspace).filter(Boolean);
+        }
+        if (data.objects3D && Array.isArray(data.objects3D)) {
+          state.objects3D = data.objects3D.map(sanitizeObjectForWorkspace).filter(Boolean);
+        }
+        if (data.cam3D) state.cam3D = { ...state.cam3D, ...data.cam3D };
+        if (data.view2D) state.view2D = { ...state.view2D, ...data.view2D };
+        state.lastLoadedAt = Date.now();
+        refreshAllUI();
+        drawScene();
+      } catch (err) {
+        console.warn("Storage sync error:", err);
+      }
+    }
+  });
 }
 
 function runAutoSaveCycle() {
-  // 1. Auto-save studio workspace to localStorage
-  saveStudioWorkspaceToLocalStorage();
+  // 1. Auto-save studio workspace to localStorage only if modified (BUG-05)
+  if (state.isDirty) {
+    saveStudioWorkspaceToLocalStorage();
+    state.isDirty = false;
+  }
 
-  // 2. Dispatch synthetic Ctrl+S to NoteRenderer to trigger its built-in save
-  triggerNoteRendererSave();
+  // 2. Silent draft auto-save without synthetic Ctrl+S disruption (BUG-06)
+  triggerNoteRendererSilentDraft();
 
   // 3. Update top indicator badge
   const now = new Date();
@@ -5670,22 +6399,14 @@ function runAutoSaveCycle() {
   }
 }
 
-function triggerNoteRendererSave() {
-  const root = document.getElementById("root");
-  const activeEl = document.activeElement || document.body;
-  const evt = new KeyboardEvent("keydown", {
-    key: "s",
-    code: "KeyS",
-    keyCode: 83,
-    which: 83,
-    ctrlKey: true,
-    metaKey: false,
-    bubbles: true,
-    cancelable: true
-  });
-  if (root) root.dispatchEvent(evt);
-  window.dispatchEvent(evt);
-  activeEl.dispatchEvent(evt);
+function triggerNoteRendererSilentDraft() {
+  // DO NOT dispatch synthetic Ctrl+S which disrupts the user by popping open the save modal!
+  try {
+    const rawActive = localStorage.getItem("pmath_active_notebook");
+    if (rawActive) {
+      localStorage.setItem("pmath_notebook_autosave_draft", rawActive);
+    }
+  } catch (err) {}
 }
 
 function saveStudioWorkspaceToLocalStorage() {
@@ -5694,12 +6415,13 @@ function saveStudioWorkspaceToLocalStorage() {
       version: "2.1",
       savedAt: Date.now(),
       spaceMode: state.spaceMode,
-      objects2D: state.objects2D,
-      objects3D: state.objects3D,
+      objects2D: state.objects2D.map(sanitizeObjectForWorkspace).filter(Boolean),
+      objects3D: state.objects3D.map(sanitizeObjectForWorkspace).filter(Boolean),
       cam3D: state.cam3D,
       view2D: state.view2D
     };
     localStorage.setItem("pmath_studio_workspace", JSON.stringify(payload));
+    state.lastLoadedAt = payload.savedAt;
   } catch (err) {
     console.warn("Could not save to localStorage:", err);
   }
@@ -5711,13 +6433,14 @@ function restoreStudioWorkspace() {
     if (!raw) return;
     const data = JSON.parse(raw);
     if (data.objects2D && Array.isArray(data.objects2D)) {
-      state.objects2D = data.objects2D;
+      state.objects2D = data.objects2D.map(sanitizeObjectForWorkspace).filter(Boolean);
     }
     if (data.objects3D && Array.isArray(data.objects3D)) {
-      state.objects3D = data.objects3D;
+      state.objects3D = data.objects3D.map(sanitizeObjectForWorkspace).filter(Boolean);
     }
     if (data.cam3D) state.cam3D = { ...state.cam3D, ...data.cam3D };
     if (data.view2D) state.view2D = { ...state.view2D, ...data.view2D };
+    state.lastLoadedAt = Date.now();
   } catch (err) {
     console.warn("Failed to restore studio workspace:", err);
   }
@@ -5921,6 +6644,12 @@ async function importDataFromDisk(file) {
     }
 
     if (backup.studioWorkspace) {
+      if (backup.studioWorkspace.objects2D && Array.isArray(backup.studioWorkspace.objects2D)) {
+        backup.studioWorkspace.objects2D = backup.studioWorkspace.objects2D.map(sanitizeObjectForWorkspace).filter(Boolean);
+      }
+      if (backup.studioWorkspace.objects3D && Array.isArray(backup.studioWorkspace.objects3D)) {
+        backup.studioWorkspace.objects3D = backup.studioWorkspace.objects3D.map(sanitizeObjectForWorkspace).filter(Boolean);
+      }
       localStorage.setItem("pmath_studio_workspace", JSON.stringify(backup.studioWorkspace));
       restoreStudioWorkspace();
       refreshAllUI();

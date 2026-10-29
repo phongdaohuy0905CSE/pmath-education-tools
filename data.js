@@ -378,7 +378,7 @@ const GEOMETRY_DATA = [
       "Tính chất tỉ lệ vàng của trọng tâm: Trọng tâm G cách mỗi đỉnh một khoảng bằng 2/3 độ dài đường trung tuyến đi qua đỉnh ấy: AG/AMₐ = BG/BM_b = CG/CM_c = 2/3 (hay GA = 2·GMₐ).",
       "Mỗi đường trung tuyến chia tam giác thành 2 tam giác có diện tích bằng nhau. Ba đường trung tuyến chia tam giác thành 6 tam giác nhỏ có diện tích bằng nhau!",
       "Tọa độ trọng tâm: x_G = (x_A + x_B + x_C)/3 ; y_G = (y_A + y_B + y_C)/3 (công thức trung bình cộng).",
-      "Hệ thức вектор: GA⃗ + GB⃗ + GC⃗ = 0⃗. Về mặt vật lý, G chính là khối tâm (trọng tâm cân bằng) của tấm phẳng hình tam giác."
+      "Hệ thức vectơ: GA⃗ + GB⃗ + GC⃗ = 0⃗. Về mặt vật lý, G chính là khối tâm (trọng tâm cân bằng) của tấm phẳng hình tam giác."
     ],
     formulas: [
       {
@@ -531,7 +531,7 @@ const GEOMETRY_DATA = [
       "Năm 1765, nhà toán học Leonhard Euler chứng minh rằng trong mọi tam giác không đều, Tâm đường tròn ngoại tiếp (O), Trọng tâm (G) và Trực tâm (H) luôn thẳng hàng trên một đường thẳng gọi là Đường thẳng Euler.",
     properties: [
       "Ba điểm O, G, H luôn thẳng hàng và G luôn nằm giữa O và H.",
-      "Tỉ lệ khoảng cách cố định: GH = 2 · GO hay OH = 3 · OG (Hệ thức вектор: OH⃗ = 3·OG⃗ = OA⃗ + OB⃗ + OC⃗).",
+      "Tỉ lệ khoảng cách cố định: GH = 2 · GO hay OH = 3 · OG (Hệ thức vectơ: OH⃗ = 3·OG⃗ = OA⃗ + OB⃗ + OC⃗).",
       "Đường tròn Euler (Đường tròn 9 điểm): Tâm E là trung điểm của đoạn OH, có bán kính R_E = R / 2.",
       "Đường tròn Euler đi qua đúng 9 điểm đặc biệt: 3 trung điểm của 3 cạnh (Mₐ, M_b, M_c), 3 chân đường cao (Hₐ, H_b, H_c), và 3 trung điểm của các đoạn nối đỉnh với trực tâm (HA, HB, HC)!"
     ],

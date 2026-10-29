@@ -8,7 +8,7 @@ const PMATH_FORMULA_CATEGORIES = [
   { id: "all", label: "Tất cả công thức", icon: "📚", color: "#1e64b4" },
   { id: "oxyz", label: "Không gian Oxyz & Vận tốc", icon: "🧊", color: "#e11d48" },
   { id: "oxy", label: "Hình giải tích Oxy", icon: "📐", color: "#0284c7" },
-  { id: "plane2d", label: "Hệ thức lượng & Hình 2D", icon: "△", color: "#148250" },
+  { id: "plane2d", label: "Hệ thức lượng & Hình 2D", icon: "📐", color: "#148250" },
   { id: "solid3d", label: "Khối đa diện & Tròn xoay 3D", icon: "📦", color: "#7c3aed" },
   { id: "calculus", label: "Đạo hàm, Đồ thị & Tích phân", icon: "📈", color: "#008c96" },
   { id: "trig", label: "Lượng giác & Cấp số", icon: "〰️", color: "#b45a14" }
@@ -25,7 +25,7 @@ const PMATH_DEFAULT_FORMULAS = [
     title: "Tích vô hướng & Tích có hướng của 2 vectơ",
     formula: "u⃗ · v⃗ = x₁x₂ + y₁y₂ + z₁z₂ = |u⃗|·|v⃗|·cos(u⃗, v⃗)",
     subFormula: "[u⃗, v⃗] = (y₁z₂ - z₁y₂ ; z₁x₂ - x₁z₂ ; x₁y₂ - y₁x₂)",
-    description: "u⃗ ⊥ v⃗ ⇔ u⃗ · v⃗ = 0. u⃗ cùng phương v⃗ ⇔ [u⃗, v⃗] = 0⃗. Diện tích tam giác S_ABC = ½|[AB⃗, AC⃗]|.",
+    description: "u⃗ ⊥ v⃗ ⇔ u⃗ · v⃗ = 0. u⃗ cùng phương v⃗ ⇔ [u⃗, v⃗] = 0⃗. Diện tích tam giác S_ABC = ½|[\\vec{AB}, \\vec{AC}]|.",
     tags: ["Oxyz", "Vectơ", "Tích có hướng", "Diện tích"],
     important: true
   },
@@ -140,7 +140,7 @@ const PMATH_DEFAULT_FORMULAS = [
     id: "f_2d_tri_area",
     category: "plane2d",
     categoryName: "Hệ thức lượng & Hình 2D",
-    title: "5 Công thức tính Diện tích Tam giác (△ABC)",
+    title: "5 Công thức tính Diện tích Tam giác (ΔABC)",
     formula: "S = ½·a·hₐ = ½·b·c·sin(A) = √[p(p - a)(p - b)(p - c)]",
     subFormula: "S = (a·b·c) / (4R) = p · r   (với p = (a + b + c)/2)",
     description: "Tam giác đều cạnh a: Đường cao h = a√3/2, Diện tích S = a²√3/4, R = a√3/3, r = a√3/6.",
@@ -152,8 +152,8 @@ const PMATH_DEFAULT_FORMULAS = [
     category: "plane2d",
     categoryName: "Hệ thức lượng & Hình 2D",
     title: "Hệ thức Đường thẳng Euler & Tâm tỉ cự Tam giác",
-    formula: "OH⃗ = 3·OG⃗ = OA⃗ + OB⃗ + OC⃗   ;   GH⃗ = -2·GO⃗",
-    subFormula: "Trọng tâm G: GA⃗ + GB⃗ + GC⃗ = 0⃗   ;   Bán kính đường tròn Euler: R_E = R / 2",
+    formula: "\\vec{OH} = 3\\vec{OG} = \\vec{OA} + \\vec{OB} + \\vec{OC}   ;   \\vec{GH} = -2\\vec{GO}",
+    subFormula: "Trọng tâm G: \\vec{GA} + \\vec{GB} + \\vec{GC} = \\vec{0}   ;   Bán kính đường tròn Euler: R_E = R / 2",
     description: "Trong mọi tam giác, Tâm ngoại tiếp O, Trọng tâm G và Trực tâm H luôn thẳng hàng trên đường thẳng Euler và HG = 2·GO.",
     tags: ["Tam giác", "Euler", "Trọng tâm", "Trực tâm"],
     important: false
