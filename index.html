@@ -13,8 +13,17 @@
   <!-- Core Styles & Fonts (AxMath + KaTeX + Times New Roman) -->
   <link rel="stylesheet" href="./assets/index-B5VXrJpN.css" />
   <!-- PMATH Education Signature Styles (Cache Busted v3.2) -->
-  <link rel="stylesheet" href="./styles.css?v=3.3" />
+  <link rel="stylesheet" href="./styles.css?v=4.0" />
   <script>
+        try {
+      if ('caches' in window) {
+        caches.keys().then(function(keys) {
+          keys.forEach(function(k) {
+            if (k !== 'pmath-cache-v4.0') caches.delete(k);
+          });
+        });
+      }
+    } catch(e) {}
     if (!localStorage.getItem("lang")) {
       localStorage.setItem("lang", "vi");
     }
@@ -101,6 +110,13 @@
             <div>
               <strong>Sao lưu &amp; khôi phục tệp (.json)</strong>
               <small>Xuất bài vẽ ra máy hoặc mở tệp đã lưu</small>
+            </div>
+          </button>
+          <button type="button" class="top-dropdown-item" id="topImportPdfBtn">
+            <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <div>
+              <strong>Nạp tài liệu PDF vào Bảng viết</strong>
+              <small>Tải đề thi, giáo án, sách bài tập PDF để trình chiếu &amp; giải toán</small>
             </div>
           </button>
           <button type="button" class="top-dropdown-item" id="togglePencilGuardBtn">
@@ -1597,7 +1613,7 @@
         window.addEventListener("load", () => {
           navigator.serviceWorker
             .register("./sw.js")
-            .then((reg) => console.log("[PWA] Service Worker đăng ký thành công:", reg.scope))
+            .then((reg) => console.log("[PWA] Service Worker đăng ký thành công:", reg.scope); reg.update();)
             .catch((err) => console.warn("[PWA] Service Worker đăng ký thất bại:", err));
         });
       }
@@ -1612,7 +1628,7 @@
   </script>
 
   <!-- PMATH Board Core Engine -->
-  <script defer src="./assets/index-Cfxrtuua.js"></script>
+  <script defer src="./assets/index-Cfxrtuua.js?v=4.0"></script>
   <!-- PMATH 2D/3D Equation, Formula Hub & Knowledge Handbook Engine -->
   <script defer src="./data.js"></script>
   <script defer src="./formulas-data.js"></script>
@@ -1620,5 +1636,19 @@
   <script defer src="./analysis-engine.js"></script>
   <script defer src="./app.js"></script>
   <script defer src="./knowledge-handbook.js"></script>
+  <!-- Hidden file picker for global PDF loading -->
+  <input type="file" id="pmathGlobalPdfInput" accept="application/pdf,.pdf" style="display:none;" />
+
+  <!-- Drag and drop visual overlay -->
+  <div id="pmathDropOverlay" class="pmath-drop-overlay" style="display:none;">
+    <div class="pmath-drop-card">
+      <div class="pmath-drop-icon">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+      </div>
+      <h3 class="pmath-drop-title">Thả tệp PDF hoặc ảnh vào đây</h3>
+      <p class="pmath-drop-desc">Hệ thống sẽ tự động nạp toàn bộ trang vào Bảng viết bài giảng</p>
+    </div>
+  </div>
+
 </body>
 </html>

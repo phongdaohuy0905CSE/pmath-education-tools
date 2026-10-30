@@ -5071,4 +5071,90 @@ canvas.board-canvas {
   }
 }
 
+/* ==========================================================================
+   GLOBAL PDF & ASSET DRAG-AND-DROP OVERLAY
+   ========================================================================== */
+.pmath-drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  background: rgba(15, 23, 42, 0.68);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
 
+.pmath-drop-overlay.active {
+  display: flex !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.pmath-drop-card {
+  background: var(--bg-panel, #ffffff);
+  border: 2.5px dashed var(--excolor, #1e64b4);
+  border-radius: 16px;
+  padding: 36px 48px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  animation: pmathDropPulse 1.8s ease-in-out infinite alternate;
+  max-width: 90vw;
+}
+
+@keyframes pmathDropPulse {
+  0% { transform: scale(0.98); border-color: var(--excolor, #1e64b4); }
+  100% { transform: scale(1.02); border-color: var(--defcolor, #148250); }
+}
+
+.pmath-drop-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--exbg, #f0f8ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--excolor, #1e64b4);
+  margin-bottom: 4px;
+}
+
+.pmath-drop-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-main, #0f172a);
+  margin: 0;
+}
+
+.pmath-drop-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted, #64748b);
+  margin: 0;
+}
+
+[data-theme="dark"] .pmath-drop-card {
+  background: #0f1827;
+  border-color: #3b82f6;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+}
+
+[data-theme="dark"] .pmath-drop-icon {
+  background: #1e293b;
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .pmath-drop-title {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .pmath-drop-desc {
+  color: #94a3b8;
+}

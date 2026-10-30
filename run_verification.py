@@ -4,7 +4,7 @@ import re
 sys.stdout.reconfigure(encoding='utf-8')
 
 print("=================================================================")
-print("PMATH MASTER QA VERIFICATION SUITE (VERIFY-01 to VERIFY-09)")
+print("PMATH MASTER QA VERIFICATION SUITE (VERIFY-01 to VERIFY-10)")
 print("=================================================================")
 
 all_passed = True
@@ -95,9 +95,23 @@ with open(r"C:\Users\huyda\.gemini\antigravity\scratch\geolab_interactive\assets
 has_non_empty_pdf = "items.length>0" in cfx_js
 check("VERIFY-09", "ServiceWorker PDF Pre-cache & Smart Non-Empty Export", has_pdf_cache and has_non_empty_pdf, "All PDF chunks cached offline, default export selects non-empty pages")
 
+# 10. VERIFY-10 - Robust PDF Import Engine (No Missing Exports, Fake Worker, Top Menu & Drag-Drop)
+with open(r"C:\Users\huyda\.gemini\antigravity\scratch\geolab_interactive\assets\pdfimport-OaRpQMT4.js", "r", encoding="utf-8") as f:
+    pdfimport_js = f.read()
+
+no_broken_import = 'from "./index-Cfxrtuua.js"' not in pdfimport_js
+has_pdf_modules = "pdf-VJcNm7C7.js" in pdfimport_js and "pdf.worker-CI4BB1ED.js" in pdfimport_js
+has_worker_binding = "globalThis.pdfjsWorker = pdfjsWorker" in pdfimport_js
+has_top_import_btn = "topImportPdfBtn" in index_html
+has_drop_overlay = "pmathDropOverlay" in index_html and ".pmath-drop-overlay" in styles_css
+has_global_pdf_func = "window.pmathImportPdf" in app_js
+check("VERIFY-10", "Robust PDF Import Engine (No Missing Exports, Fake Worker, Top Menu & Drag-Drop)", 
+      no_broken_import and has_pdf_modules and has_worker_binding and has_top_import_btn and has_drop_overlay and has_global_pdf_func,
+      "Standalone PDF.js + Worker modules, no broken exports, Top Bar & Drag-and-Drop active")
+
 print("=================================================================")
 if all_passed:
-    print("ALL 9 QA CRITERIA PASSED WITH ZERO FAILURES!")
+    print("ALL 10 QA CRITERIA PASSED WITH ZERO FAILURES!")
 else:
     print("SOME CRITERIA FAILED!")
     sys.exit(1)

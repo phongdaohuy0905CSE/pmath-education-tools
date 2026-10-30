@@ -321,6 +321,7 @@ function initApp() {
   initDefaultScenes();
   restoreStudioWorkspace();
   initApplePencilAndTouchGuard();
+  initPdfLoadingFeature();
   bindUIEvents();
   bindCanvasEvents();
   bindKeyboardShortcuts();
@@ -7028,3 +7029,118 @@ function initApplePencilAndTouchGuard() {
 }
 
 window.addEventListener("DOMContentLoaded", initApp);
+
+// ============================================================================
+// PDF IMPORT & DOCUMENT LOADING ENGINE (Top Menu, Drag & Drop, In-App Native)
+// ============================================================================
+function initPdfLoadingFeature() {
+  const topImportPdfBtn = document.getElementById("topImportPdfBtn");
+  const globalPdfInput = document.getElementById("pmathGlobalPdfInput");
+
+  if (topImportPdfBtn && globalPdfInput) {
+    topImportPdfBtn.addEventListener("click", () => {
+      globalPdfInput.click();
+    });
+
+    globalPdfInput.addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) {
+        await window.pmathImportPdf(file);
+      }
+      globalPdfInput.value = "";
+    });
+  }
+
+  // Global Drag & Drop handling for PDF documents and image files
+  const dropOverlay = document.getElementById("pmathDropOverlay");
+  let dragCounter = 0;
+
+  window.addEventListener("dragenter", (e) => {
+    if (e.dataTransfer && e.dataTransfer.types && Array.from(e.dataTransfer.types).includes("Files")) {
+      e.preventDefault();
+      dragCounter++;
+      if (dropOverlay) dropOverlay.classList.add("active");
+    }
+  });
+
+  window.addEventListener("dragover", (e) => {
+    if (e.dataTransfer && e.dataTransfer.types && Array.from(e.dataTransfer.types).includes("Files")) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "copy";
+    }
+  });
+
+  window.addEventListener("dragleave", (e) => {
+    dragCounter--;
+    if (dragCounter <= 0) {
+      dragCounter = 0;
+      if (dropOverlay) dropOverlay.classList.remove("active");
+    }
+  });
+
+  window.addEventListener("drop", async (e) => {
+    dragCounter = 0;
+    if (dropOverlay) dropOverlay.classList.remove("active");
+
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      const file = e.dataTransfer.files[0];
+      const isPdf = file.name.toLowerCase().endsWith(".pdf") || file.type === "application/pdf";
+      if (isPdf) {
+        await window.pmathImportPdf(file);
+      }
+    }
+  });
+
+  // Global helper for opening/importing PDF bytes or files into NoteRenderer
+  window.pmathImportPdf = async function (fileOrBytes) {
+    if (!fileOrBytes) return;
+    let bytes;
+    try {
+      if (fileOrBytes instanceof Uint8Array) {
+        bytes = fileOrBytes;
+      } else if (fileOrBytes instanceof ArrayBuffer) {
+        bytes = new Uint8Array(fileOrBytes);
+      } else if (fileOrBytes instanceof Blob || fileOrBytes instanceof File) {
+        bytes = new Uint8Array(await fileOrBytes.arrayBuffer());
+      } else {
+        console.warn("[PMATH] Dữ liệu PDF không hợp lệ");
+        return;
+      }
+    } catch (readErr) {
+      console.error("[PMATH] Không thể đọc file PDF:", readErr);
+      if (typeof showToast === "function") {
+        showToast("Lỗi khi đọc file PDF: " + (readErr.message || readErr));
+      }
+      return;
+    }
+
+    // Switch to NoteRenderer (Bảng viết bài giảng) if not currently active
+    const nrTab = document.getElementById("topSwitchToNRBtn");
+    if (nrTab && !nrTab.classList.contains("active")) {
+      nrTab.click();
+      await new Promise((r) => setTimeout(r, 180));
+    }
+
+    // Call NoteRenderer's registered open PDF handler
+    if (typeof window.__pmathOnOpenPdf === "function") {
+      return window.__pmathOnOpenPdf({ pdf: bytes });
+    } else if (typeof window.__pmathImportPdfInternal === "function") {
+      return await window.__pmathImportPdfInternal(bytes);
+    } else {
+      for (let attempt = 0; attempt < 20; attempt++) {
+        await new Promise((r) => setTimeout(r, 100));
+        if (typeof window.__pmathOnOpenPdf === "function") {
+          return window.__pmathOnOpenPdf({ pdf: bytes });
+        } else if (typeof window.__pmathImportPdfInternal === "function") {
+          return await window.__pmathImportPdfInternal(bytes);
+        }
+      }
+      console.warn("[PMATH] NoteRenderer chưa sẵn sàng để nạp PDF");
+      if (typeof showToast === "function") {
+        showToast("Đang chuẩn bị Bảng viết bài giảng, vui lòng thử lại sau giây lát...");
+      }
+    }
+  };
+}

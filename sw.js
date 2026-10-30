@@ -1,10 +1,10 @@
-// PMATH EDUCATION TOOLS — Service Worker (Offline & Cache Optimization v3.3)
-const CACHE_NAME = "pmath-cache-v3.4";
+// PMATH EDUCATION TOOLS — Service Worker (Offline & Cache Optimization v4.0)
+const CACHE_NAME = "pmath-cache-v4.0";
 
 const STATIC_ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=3.3",
+  "./styles.css?v=4.0",
   "./app.js",
   "./data.js",
   "./formulas-data.js",
@@ -16,8 +16,11 @@ const STATIC_ASSETS = [
   "./manifest.json",
   "./assets/index-B5VXrJpN.css",
   "./assets/index-Cfxrtuua.js",
+  "./assets/index-Cfxrtuua.js?v=4.0",
   "./assets/pdf-VJcNm7C7.js",
   "./assets/pdfimport-OaRpQMT4.js",
+  "./assets/pdfimport-v2.js",
+  "./assets/pdfimport-v2.js?v=4.0",
   "./assets/pdf.worker-CI4BB1ED.js",
   "./assets/AxMath-Regular-BJ-pkwBB.ttf",
   "./assets/AxMath-Bold-BrMN_prG.ttf",
