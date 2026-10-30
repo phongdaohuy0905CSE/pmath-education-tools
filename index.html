@@ -1613,7 +1613,12 @@
         window.addEventListener("load", () => {
           navigator.serviceWorker
             .register("./sw.js")
-            .then((reg) => console.log("[PWA] Service Worker đăng ký thành công:", reg.scope); reg.update();)
+            .then((reg) => {
+              console.log("[PWA] Service Worker đăng ký thành công:", reg.scope);
+              if (reg && typeof reg.update === "function") {
+                reg.update();
+              }
+            })
             .catch((err) => console.warn("[PWA] Service Worker đăng ký thất bại:", err));
         });
       }
