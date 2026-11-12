@@ -5158,3 +5158,113 @@ canvas.board-canvas {
 [data-theme="dark"] .pmath-drop-desc {
   color: #94a3b8;
 }
+
+/* ============================================================================ */
+/* Google Drive Sync Pill & Overwrite Engine Styles (v4.1)                       */
+/* ============================================================================ */
+.drive-sync-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 9999px;
+  padding: 3px 6px 3px 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-color, #1e293b);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.drive-sync-pill:hover {
+  border-color: #0284c7;
+  background: var(--defbg, #f0f9ff);
+}
+
+.drive-pill-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.drive-pill-text {
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-color, #1e293b);
+}
+
+.btn-drive-update {
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.15s ease;
+}
+
+.btn-drive-update:hover {
+  background: #059669;
+}
+
+.btn-drive-update:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-drive-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #64748b);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 5px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-drive-close:hover {
+  color: #f43f5e;
+  background: rgba(244, 63, 94, 0.1);
+}
+
+/* Google Drive Dialog Details */
+.drive-section-card {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.drive-file-card {
+  background: var(--defbg, #f0f9ff);
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+[data-theme="dark"] .drive-file-card {
+  background: rgba(2, 132, 199, 0.12);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.pmath-toast.drive-toast {
+  background: #0f172a;
+  color: #f8fafc;
+  border-left: 4px solid #10b981;
+}
+
+[data-theme="dark"] .pmath-toast.drive-toast {
+  background: #1e293b;
+  border-left-color: #34d399;
+}

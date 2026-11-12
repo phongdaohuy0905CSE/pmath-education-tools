@@ -10,16 +10,18 @@
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="manifest" href="./manifest.json" />
   <title>PMATH EDUCATION TOOLS — Không Gian Oxyz, Vectơ Vận Tốc 3D &amp; Hình Học Động THPT</title>
+  <!-- Google Identity Services (GIS) for Google Drive Sync & Overwrite -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <!-- Core Styles & Fonts (AxMath + KaTeX + Times New Roman) -->
   <link rel="stylesheet" href="./assets/index-B5VXrJpN.css" />
-  <!-- PMATH Education Signature Styles (Cache Busted v3.2) -->
-  <link rel="stylesheet" href="./styles.css?v=4.0" />
+  <!-- PMATH Education Signature Styles (Cache Busted v4.1) -->
+  <link rel="stylesheet" href="./styles.css?v=4.1" />
   <script>
         try {
       if ('caches' in window) {
         caches.keys().then(function(keys) {
           keys.forEach(function(k) {
-            if (k !== 'pmath-cache-v4.0') caches.delete(k);
+            if (k !== 'pmath-cache-v4.1') caches.delete(k);
           });
         });
       }
@@ -90,6 +92,16 @@
     </div>
 
     <div class="pmath-global-actions">
+      <!-- Google Drive Active File Sync & Quick Overwrite Pill -->
+      <div class="drive-sync-pill" id="driveSyncPill" style="display:none;" title="Tệp PDF Google Drive đang mở (Bấm để xem chi tiết &amp; cập nhật)">
+        <span class="drive-pill-icon">🔺</span>
+        <span class="drive-pill-text" id="drivePillFileName">Google Drive</span>
+        <button type="button" class="btn-drive-update" id="btnDriveSyncUpdate" title="Ghi đè bản mới lên Google Drive nếu liên kết cho phép chỉnh sửa">
+          🔄 Ghi đè Drive
+        </button>
+        <button type="button" class="btn-drive-close" id="btnDriveSyncClose" title="Đóng liên kết Google Drive">✕</button>
+      </div>
+
       <!-- Nút đổi giao diện Sáng / Tối đặt ngay vị trí dễ bấm nhất -->
       <button class="btn-top-action theme-action-btn" id="themeToggleBtn" title="Đổi giao diện Sáng / Tối">
         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span id="themeToggleLabel">Giao diện Tối</span>
@@ -115,8 +127,15 @@
           <button type="button" class="top-dropdown-item" id="topImportPdfBtn">
             <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
             <div>
-              <strong>Nạp tài liệu PDF vào Bảng viết</strong>
-              <small>Tải đề thi, giáo án, sách bài tập PDF để trình chiếu &amp; giải toán</small>
+              <strong>Nạp tài liệu PDF từ máy tính</strong>
+              <small>Tải đề thi, giáo án, sách bài tập PDF từ máy vào Bảng viết</small>
+            </div>
+          </button>
+          <button type="button" class="top-dropdown-item" id="topOpenDrivePdfBtn">
+            <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <div>
+              <strong>Tải PDF từ liên kết Google Drive</strong>
+              <small>Nạp từ link Google Drive, giải toán &amp; ghi đè bản mới</small>
             </div>
           </button>
           <button type="button" class="top-dropdown-item" id="togglePencilGuardBtn">
@@ -804,6 +823,10 @@
   </dialog>
 
   <!-- ===================================================================== -->
+  <!-- MODAL: GOOGLE DRIVE PDF SYNC & OVERWRITE ENGINE                       -->
+  
+
+  <!-- ===================================================================== -->
   <!-- MODAL: SAO LƯU & KHÔI PHỤC TỆP (.JSON) TRÊN TRÌNH DUYỆT               -->
   <!-- ===================================================================== -->
   <dialog class="app-dialog storage-dialog" id="storageLocationDialog">
@@ -924,6 +947,74 @@
             <tr><td><strong>Phím L / V / C / 3 / 4 / Q</strong></td><td>Vẽ nhanh: Đoạn thẳng (L) • Vectơ (V) • Đường tròn (C) • Tam giác (3) • Hình chữ nhật (4) • Hình vuông (Q)</td></tr>
           </tbody>
         </table>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: GOOGLE DRIVE PDF SYNC & OVERWRITE ENGINE                       -->
+  <!-- ===================================================================== -->
+  <dialog class="app-dialog drive-dialog" id="googleDriveDialog" style="max-width: 640px;">
+    <div class="dialog-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:1.3rem;">🔺</span>
+        <h3 style="margin:0;">Google Drive PDF &amp; Cập nhật Ghi đè</h3>
+      </div>
+      <button class="btn-secondary" id="closeGoogleDriveDialogBtn" type="button">✕</button>
+    </div>
+    <div class="dialog-body" style="display:flex; flex-direction:column; gap:1.2rem; padding:1.2rem;">
+      <!-- Section 1: Nạp PDF từ liên kết -->
+      <div class="drive-section-card">
+        <h4 style="margin:0 0 0.5rem; font-size:0.95rem; color:var(--defcolor);">1. Nạp PDF từ liên kết Google Drive</h4>
+        <p style="margin:0 0 0.6rem; font-size:0.82rem; color:var(--text-muted);">
+          Dán đường link chia sẻ tệp PDF trên Google Drive (ví dụ: <code>https://drive.google.com/file/d/.../view?usp=sharing</code>).
+        </p>
+        <div style="display:flex; gap:8px;">
+          <input type="url" id="drivePdfUrlInput" class="app-input" placeholder="Dán link Google Drive tại đây..." style="flex:1; padding:8px 12px; font-size:0.88rem; border:1px solid var(--border-color); border-radius:6px; background:var(--card-bg); color:var(--text-color);" />
+          <button type="button" class="btn-primary" id="btnDriveSubmitLoad" style="white-space:nowrap; padding:8px 16px;">
+            Tải PDF vào Bảng viết
+          </button>
+        </div>
+        <div id="driveModalStatus" style="display:none; margin-top:8px; font-size:0.83rem; font-weight:600;"></div>
+      </div>
+
+      <!-- Section 2: Trạng thái tệp hiện tại & Ghi đè -->
+      <div class="drive-section-card">
+        <h4 style="margin:0 0 0.5rem; font-size:0.95rem; color:var(--excolor);">2. Tệp đang mở &amp; Cập nhật bản mới</h4>
+        <div id="driveModalFileInfo" style="margin-bottom:0.8rem;">
+          <div style="color:var(--text-muted); font-size:0.85rem;">Chưa có tệp Google Drive nào được nạp.</div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn-primary" id="btnDriveModalOverwrite" style="background:#10b981; border-color:#059669; padding:8px 16px;">
+            🔄 Xuất &amp; Ghi đè bản mới lên Google Drive
+          </button>
+        </div>
+        <small style="display:block; margin-top:6px; color:var(--text-muted); font-size:0.78rem;">
+          * Nếu liên kết chia sẻ cho phép chỉnh sửa (Editor), tệp gốc trên Google Drive sẽ được cập nhật phiên bản mới. Nếu là liên kết chỉ xem (View-only), hệ thống sẽ tự động xuất và tải tệp đã sửa về máy tính cho bạn.
+        </small>
+      </div>
+
+      <!-- Section 3: Xác thực tài khoản Google (OAuth) -->
+      <div class="drive-section-card" style="background:var(--defbg); border:1px solid var(--border-color); border-radius:8px; padding:10px 14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <strong style="font-size:0.88rem; color:var(--defcolor);">Tài khoản Google (OAuth 2.0)</strong>
+          <span id="driveAccountInfo" style="font-size:0.82rem;"></span>
+        </div>
+        <p style="margin:0 0 8px; font-size:0.8rem; color:var(--text-muted);">
+          Google yêu cầu xác thực tài khoản để ghi đè tệp. Bạn có thể kết nối nhanh bằng 1 cú nhấp:
+        </p>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="btn-secondary" id="btnDriveConnectGoogle" style="font-size:0.83rem; padding:6px 12px;">
+            🔑 Kết nối tài khoản Google
+          </button>
+          <details style="font-size:0.8rem; color:var(--text-muted); cursor:pointer;">
+            <summary>Nhập Access Token thủ công</summary>
+            <div style="margin-top:6px; display:flex; gap:6px;">
+              <input type="password" id="manualDriveTokenInput" placeholder="Dán OAuth Access Token (ya29...)" style="flex:1; padding:4px 8px; font-size:0.8rem; border:1px solid var(--border-color); border-radius:4px;" />
+              <button type="button" class="btn-secondary" id="btnSaveManualDriveToken" style="padding:4px 10px; font-size:0.8rem;">Lưu</button>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
   </dialog>
@@ -1641,6 +1732,7 @@
   <script defer src="./formulas-data.js"></script>
   <script defer src="./equations.js"></script>
   <script defer src="./analysis-engine.js"></script>
+  <script defer src="./google-drive.js?v=4.1"></script>
   <script defer src="./app.js?v=4.1"></script>
   <script defer src="./knowledge-handbook.js"></script>
   <!-- Hidden file picker for global PDF loading -->
