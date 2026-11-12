@@ -1917,9 +1917,71 @@ function toggleFullscreenCanvas() {
 }
 
 function bindKeyboardShortcuts() {
+  let tabDown = false;
+  let tabUsed = false;
+
+  window.addEventListener("blur", () => {
+    tabDown = false;
+    tabUsed = false;
+  });
+
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "Tab" || e.code === "Tab") {
+      const gl = document.getElementById("geolabView");
+      if (!gl || gl.style.display === "none") return;
+      const tag = document.activeElement ? document.activeElement.tagName : "";
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+      e.preventDefault();
+      const wasUsed = tabUsed;
+      tabDown = false;
+      tabUsed = false;
+      if (!wasUsed) {
+        // Chuyển tiếp màu bút / màu nét vẽ khi nhấn phím Tab
+        const swatches = Array.from(document.querySelectorAll("#colorSwatches .color-swatch"));
+        if (swatches.length > 0) {
+          const activeIdx = swatches.findIndex((s) => s.classList.contains("active"));
+          const nextIdx = e.shiftKey
+            ? ((activeIdx <= 0 ? swatches.length : activeIdx) - 1) % swatches.length
+            : (activeIdx + 1) % swatches.length;
+          swatches[nextIdx].click();
+        }
+      }
+    }
+  });
+
   window.addEventListener("keydown", (e) => {
+    const gl = document.getElementById("geolabView");
+    if (!gl || gl.style.display === "none") return;
+
     const tag = document.activeElement ? document.activeElement.tagName : "";
     if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+    if (e.key === "Tab" || e.code === "Tab") {
+      e.preventDefault();
+      if (!e.repeat) {
+        tabDown = true;
+        tabUsed = false;
+      }
+      return;
+    }
+
+    if (tabDown) {
+      let digit = -1;
+      if (/^[1-9]$/.test(e.key)) digit = parseInt(e.key, 10);
+      else if (/^Digit([1-9])$/.test(e.code)) digit = parseInt(e.code.slice(5), 10);
+      else if (/^Numpad([1-9])$/.test(e.code)) digit = parseInt(e.code.slice(6), 10);
+      if (digit > 0) {
+        const swatches = Array.from(document.querySelectorAll("#colorSwatches .color-swatch"));
+        const idx = digit - 1;
+        if (idx >= 0 && idx < swatches.length) {
+          e.preventDefault();
+          tabUsed = true;
+          swatches[idx].click();
+          return;
+        }
+      }
+    }
 
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
       e.preventDefault();

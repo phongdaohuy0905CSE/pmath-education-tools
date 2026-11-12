@@ -641,12 +641,12 @@
             <div class="style-controls">
               <span>Màu nét:</span>
               <div class="color-swatch-group" id="colorSwatches">
-                <button class="color-swatch active" data-color="#1e64b4" style="background:#1e64b4" title="Xanh dương (#1e64b4)"></button>
-                <button class="color-swatch" data-color="#148250" style="background:#148250" title="Xanh lá (#148250)"></button>
-                <button class="color-swatch" data-color="#008c96" style="background:#008c96" title="Ngọc lam (#008c96)"></button>
-                <button class="color-swatch" data-color="#b45a14" style="background:#b45a14" title="Cam nâu (#b45a14)"></button>
-                <button class="color-swatch" data-color="#6a1b9a" style="background:#6a1b9a" title="Tím (#6a1b9a)"></button>
-                <button class="color-swatch" data-color="#c62828" style="background:#c62828" title="Đỏ (#c62828)"></button>
+                <button class="color-swatch active" data-color="#1e64b4" style="background:#1e64b4" title="Xanh dương (#1e64b4) (Tab + 1)"></button>
+                <button class="color-swatch" data-color="#148250" style="background:#148250" title="Xanh lá (#148250) (Tab + 2)"></button>
+                <button class="color-swatch" data-color="#008c96" style="background:#008c96" title="Ngọc lam (#008c96) (Tab + 3)"></button>
+                <button class="color-swatch" data-color="#b45a14" style="background:#b45a14" title="Cam nâu (#b45a14) (Tab + 4)"></button>
+                <button class="color-swatch" data-color="#6a1b9a" style="background:#6a1b9a" title="Tím (#6a1b9a) (Tab + 5)"></button>
+                <button class="color-swatch" data-color="#c62828" style="background:#c62828" title="Đỏ (#c62828) (Tab + 6)"></button>
                 <input type="color" id="customColorPicker" value="#1e64b4" title="Chọn màu tùy ý" />
               </div>
 
@@ -906,6 +906,7 @@
             <tr><td><strong>Phím F</strong></td><td>Khớp khung nhìn vừa tất cả đối tượng đang vẽ</td></tr>
             <tr><td><strong>Phím G / Phím X</strong></td><td>Bật hoặc tắt Lưới tọa độ (G) • Bật hoặc tắt Trục tọa độ (X)</td></tr>
             <tr><td><strong>Phím R / Phím H</strong></td><td>Đổi tên nhanh (R) • Ẩn hoặc hiện đối tượng (H)</td></tr>
+            <tr><td><strong>Tab + 1 / 2 / 3 / 4 / 5 / 6</strong></td><td>Đổi nhanh màu nét vẽ theo thứ tự ô màu trên thanh công cụ (hoặc nhấn Tab để chuyển tiếp màu)</td></tr>
             <tr><td><strong>Chuột giữa / Alt + Kéo</strong></td><td>Kéo di chuyển mặt phẳng (2D) hoặc xoay góc nhìn (3D)</td></tr>
             <tr><td><strong>Con lăn chuột / Chụm 2 ngón</strong></td><td>Phóng to / Thu nhỏ tại vị trí con trỏ</td></tr>
           </tbody>
@@ -917,6 +918,7 @@
         <table class="summary-table">
           <tbody>
             <tr><td><strong>Phím P / Phím H / Phím E</strong></td><td>Chuyển công cụ: Bút viết (P) • Bút dạ quang (H) • Cục tẩy (E)</td></tr>
+            <tr><td><strong>Tab + 1 / 2 / 3 / 4 / 5</strong></td><td>Đổi màu bút nhanh theo thứ tự trên thanh công cụ (hoặc nhấn Tab để chuyển tiếp màu)</td></tr>
             <tr><td><strong>Phím S / Phím T / Phím B</strong></td><td>Chuyển công cụ: Chọn vùng (S) • Gõ văn bản (T) • Đổ màu (B)</td></tr>
             <tr><td><strong>Phím F / Phím G / Phím R</strong></td><td>Chèn hộp Công thức (F) • Chèn khung Đồ thị (G) • Mở Thước &amp; Compa (R)</td></tr>
             <tr><td><strong>Phím L / V / C / 3 / 4 / Q</strong></td><td>Vẽ nhanh: Đoạn thẳng (L) • Vectơ (V) • Đường tròn (C) • Tam giác (3) • Hình chữ nhật (4) • Hình vuông (Q)</td></tr>
@@ -1633,13 +1635,13 @@
   </script>
 
   <!-- PMATH Board Core Engine -->
-  <script defer src="./assets/index-Cfxrtuua.js?v=4.0"></script>
+  <script defer src="./assets/index-Cfxrtuua.js?v=4.1"></script>
   <!-- PMATH 2D/3D Equation, Formula Hub & Knowledge Handbook Engine -->
   <script defer src="./data.js"></script>
   <script defer src="./formulas-data.js"></script>
   <script defer src="./equations.js"></script>
   <script defer src="./analysis-engine.js"></script>
-  <script defer src="./app.js"></script>
+  <script defer src="./app.js?v=4.1"></script>
   <script defer src="./knowledge-handbook.js"></script>
   <!-- Hidden file picker for global PDF loading -->
   <input type="file" id="pmathGlobalPdfInput" accept="application/pdf,.pdf" style="display:none;" />
