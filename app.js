@@ -2008,6 +2008,19 @@ function bindKeyboardShortcuts() {
   let tabDown = false;
   let tabUsed = false;
 
+  function getActiveSwatches() {
+    const gl = document.getElementById("geolabView");
+    if (gl && gl.style.display !== "none") {
+      return Array.from(document.querySelectorAll("#colorSwatches .color-swatch"));
+    }
+    const root = document.getElementById("root");
+    if (root && root.style.display !== "none") {
+      const nrSwatches = Array.from(document.querySelectorAll("#root button.swatch"));
+      if (nrSwatches.length > 0) return nrSwatches;
+    }
+    return [];
+  }
+
   window.addEventListener("blur", () => {
     tabDown = false;
     tabUsed = false;
@@ -2016,9 +2029,13 @@ function bindKeyboardShortcuts() {
   window.addEventListener("keyup", (e) => {
     if (e.key === "Tab" || e.code === "Tab") {
       const gl = document.getElementById("geolabView");
-      if (!gl || gl.style.display === "none") return;
+      const root = document.getElementById("root");
+      const isGlActive = gl && gl.style.display !== "none";
+      const isRootActive = root && root.style.display !== "none";
+      if (!isGlActive && !isRootActive) return;
+
       const tag = document.activeElement ? document.activeElement.tagName : "";
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (document.activeElement && document.activeElement.isContentEditable)) return;
 
       e.preventDefault();
       const wasUsed = tabUsed;
@@ -2026,9 +2043,9 @@ function bindKeyboardShortcuts() {
       tabUsed = false;
       if (!wasUsed) {
         // Chuyển tiếp màu bút / màu nét vẽ khi nhấn phím Tab
-        const swatches = Array.from(document.querySelectorAll("#colorSwatches .color-swatch"));
+        const swatches = getActiveSwatches();
         if (swatches.length > 0) {
-          const activeIdx = swatches.findIndex((s) => s.classList.contains("active"));
+          const activeIdx = swatches.findIndex((s) => s.classList.contains("active") || s.classList.contains("on"));
           const nextIdx = e.shiftKey
             ? ((activeIdx <= 0 ? swatches.length : activeIdx) - 1) % swatches.length
             : (activeIdx + 1) % swatches.length;
@@ -2040,10 +2057,13 @@ function bindKeyboardShortcuts() {
 
   window.addEventListener("keydown", (e) => {
     const gl = document.getElementById("geolabView");
-    if (!gl || gl.style.display === "none") return;
+    const root = document.getElementById("root");
+    const isGlActive = gl && gl.style.display !== "none";
+    const isRootActive = root && root.style.display !== "none";
+    if (!isGlActive && !isRootActive) return;
 
     const tag = document.activeElement ? document.activeElement.tagName : "";
-    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (document.activeElement && document.activeElement.isContentEditable)) return;
 
     if (e.key === "Tab" || e.code === "Tab") {
       e.preventDefault();
@@ -2060,7 +2080,7 @@ function bindKeyboardShortcuts() {
       else if (/^Digit([1-9])$/.test(e.code)) digit = parseInt(e.code.slice(5), 10);
       else if (/^Numpad([1-9])$/.test(e.code)) digit = parseInt(e.code.slice(6), 10);
       if (digit > 0) {
-        const swatches = Array.from(document.querySelectorAll("#colorSwatches .color-swatch"));
+        const swatches = getActiveSwatches();
         const idx = digit - 1;
         if (idx >= 0 && idx < swatches.length) {
           e.preventDefault();
@@ -2070,6 +2090,9 @@ function bindKeyboardShortcuts() {
         }
       }
     }
+
+    // Các phím tắt đồ thị & hình học chỉ kích hoạt khi đang ở phòng thí nghiệm 2D/3D (geolabView)
+    if (!isGlActive) return;
 
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
       e.preventDefault();

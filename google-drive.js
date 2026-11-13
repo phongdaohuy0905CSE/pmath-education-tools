@@ -339,6 +339,53 @@ async function loadPdfFromDriveUrl(urlOrId) {
   }
 }
 
+// Hàm sinh tệp PDF từ Bảng viết bài giảng NoteRenderer
+window.__pmathGeneratePdf = async function (selectedPages) {
+  if (typeof window.__pmathTriggerExportPdf === "function") {
+    const editor = typeof window.__pmathGetEditorInstance === "function" ? window.__pmathGetEditorInstance() : null;
+    const numPages = editor && editor.doc && Array.isArray(editor.doc.pages) ? editor.doc.pages.length : 1;
+    const pages = Array.isArray(selectedPages) ? selectedPages : Array.from({ length: numPages }, (_, i) => i);
+
+    return new Promise((resolve, reject) => {
+      const prevSuppress = window.__pmathSuppressDownload;
+      window.__pmathSuppressDownload = true;
+
+      const timeout = setTimeout(() => {
+        window.__pmathSuppressDownload = prevSuppress;
+        window.__pmathOnPdfExported = null;
+        reject(new Error("Quá thời gian kết xuất PDF (Timeout 30s)"));
+      }, 30000);
+
+      window.__pmathOnPdfExported = (bytes, fileName) => {
+        clearTimeout(timeout);
+        window.__pmathSuppressDownload = prevSuppress;
+        window.__pmathOnPdfExported = null;
+        resolve({ bytes, fileName: fileName || "Bai_giang_PMATH.pdf" });
+      };
+
+      try {
+        window.__pmathTriggerExportPdf(pages).catch((err) => {
+          clearTimeout(timeout);
+          window.__pmathSuppressDownload = prevSuppress;
+          window.__pmathOnPdfExported = null;
+          reject(err);
+        });
+      } catch (err) {
+        clearTimeout(timeout);
+        window.__pmathSuppressDownload = prevSuppress;
+        window.__pmathOnPdfExported = null;
+        reject(err);
+      }
+    });
+  }
+
+  if (window.__pmathLatestExportedPdf && window.__pmathLatestExportedPdf.bytes) {
+    return window.__pmathLatestExportedPdf;
+  }
+
+  throw new Error("Trình kết xuất PDF tự động chưa sẵn sàng. Bạn có thể bấm Menu -> 'Xuất PDF...' trước khi bấm ghi đè.");
+};
+
 // Ghi đè bản mới lên Google Drive nếu quyền chia sẻ cho phép
 async function overwriteDrivePdf() {
   const current = GoogleDriveState.currentFile;
