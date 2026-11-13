@@ -464,7 +464,7 @@
     <div class="app-header">
       <div class="space-switcher" role="tablist" aria-label="Chế độ không gian">
         <button class="space-btn active" id="mode2DBtn" data-space="2d">Mặt phẳng 2D (Oxy)</button>
-        <button class="space-btn" id="mode3DBtn" data-space="3d" style="display: none;">Không gian 3D (Oxyz)</button>
+        <button class="space-btn" id="mode3DBtn" data-space="3d">Không gian 3D (Oxyz)</button>
       </div>
 
       <!-- 2D Graphing Mode Tools: Khảo sát hàm số chuẩn đề thi & Slider m -->
@@ -534,15 +534,24 @@
               <span class="top-item-title">🌀 Đường xoắn ốc Helix</span>
               <span class="top-item-desc">x = cos(t), y = sin(t), z = 0.25t</span>
             </button>
+            <button type="button" class="top-dropdown-item desmos-preset-item" data-preset="airplanes_motion">
+              <span class="top-item-title">✈️ 2 Máy bay &amp; Khoảng cách tiếp cận Oxyz</span>
+              <span class="top-item-desc">Mô phỏng CPA: d_min = 500 m tại t = 50 s</span>
+            </button>
           </div>
         </div>
 
         <span style="font-size:0.82rem; font-weight:700; color:var(--defcolor);">Góc nhìn:</span>
-        <button type="button" class="cad-btn" id="camPresetIsoBtn" title="Góc phối cảnh chuẩn (35°/45°)">Phối cảnh</button>
-        <button type="button" class="cad-btn" id="camPresetTopBtn" title="Nhìn từ trên xuống mặt phẳng Oxy">Mặt Oxy</button>
-        <button type="button" class="cad-btn" id="camPresetFrontBtn" title="Nhìn chính diện mặt phẳng Oxz">Mặt Oxz</button>
-        <button type="button" class="cad-btn" id="camPresetSideBtn" title="Nhìn từ cạnh bên mặt phẳng Oyz">Mặt Oyz</button>
+        <button type="button" class="cad-btn" id="camPresetIsoBtn" title="Góc phối cảnh chuẩn (Isometric 35°/45°)">Phối cảnh</button>
+        <button type="button" class="cad-btn" id="camPresetTopBtn" title="Nhìn từ trên xuống mặt phẳng Oxy (Chiếu đứng)">Mặt Oxy</button>
+        <button type="button" class="cad-btn" id="camPresetFrontBtn" title="Nhìn chính diện mặt phẳng Oxz (Chiếu bằng)">Mặt Oxz</button>
+        <button type="button" class="cad-btn" id="camPresetSideBtn" title="Nhìn từ cạnh bên mặt phẳng Oyz (Chiếu cạnh)">Mặt Oyz</button>
         <button type="button" class="cad-btn" id="camResetBtn" title="Đặt lại góc xoay ban đầu">↺ Đặt lại</button>
+
+        <span style="display:inline-block; width:1px; height:18px; background:var(--border-color); margin:0 3px;"></span>
+        <button type="button" class="cad-btn" id="camZoomInBtn" title="Phóng to khung nhìn 3D (Phím +)">+ Phóng to</button>
+        <button type="button" class="cad-btn" id="camZoomOutBtn" title="Thu nhỏ khung nhìn 3D (Phím -)">- Thu nhỏ</button>
+        <button type="button" class="cad-btn" id="camFitBtn" title="Căn chỉnh toàn bộ đối tượng 3D vào giữa khung nhìn (Phím F)">⛶ Vừa khung</button>
 
         <!-- Desmos 3D Bounding Box & Floor Toggles -->
         <label style="display:inline-flex; align-items:center; gap:4px; font-size:0.8rem; font-weight:600; cursor:pointer; color:var(--text-main); margin-left:4px;">

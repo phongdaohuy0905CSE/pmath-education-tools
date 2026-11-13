@@ -988,6 +988,117 @@ const GEOMETRY_DATA = [
   },
 
   {
+    id: "point3d",
+    category: "3d",
+    group: "Hình học Không gian Oxyz & Chuyển động",
+    name: "Tọa Độ Điểm M(x, y, z) & Gióng Hình Chiếu",
+    subtitle: "Hình chiếu vuông góc lên 3 trục Ox, Oy, Oz và 3 mặt phẳng tọa độ (Oxy), (Oyz), (Oxz)",
+    icon: "📍",
+    interactiveHint: "💡 Kéo góc xoay 3D để quan sát các đường gióng vuông góc từ điểm M xuống mặt phẳng sàn Oxy và 3 trục tọa độ.",
+    sliders: [
+      { key: "x", label: "Hoành độ x", min: -6, max: 6, step: 0.5, default: 2, unit: "" },
+      { key: "y", label: "Tung độ y", min: -6, max: 6, step: 0.5, default: 3, unit: "" },
+      { key: "z", label: "Cao độ z", min: -6, max: 6, step: 0.5, default: 4, unit: "" }
+    ],
+    definition:
+      "Trong không gian với hệ tọa độ Oxyz, vị trí của mỗi điểm M được xác định duy nhất bởi bộ ba số thực (x; y; z), trong đó x là hoành độ, y là tung độ và z là cao độ.",
+    properties: [
+      "Vectơ vị trí: OM = x·i + y·j + z·k (với i, j, k là các vectơ đơn vị trên Ox, Oy, Oz).",
+      "Hình chiếu vuông góc của M lên mặt phẳng (Oxy) là M'(x; y; 0).",
+      "Hình chiếu vuông góc của M lên các trục: M_x(x; 0; 0), M_y(0; y; 0), M_z(0; 0; z).",
+      "Khoảng cách từ gốc O đến M: OM = √(x² + y² + z²)."
+    ],
+    formulas: [
+      {
+        title: "Tọa độ điểm và Vectơ vị trí",
+        math: "\\vec{OM} = x\\vec{i} + y\\vec{j} + z\\vec{k} \\iff M(x; y; z)",
+        note: "Bộ ba (x; y; z) tương ứng là hoành độ, tung độ, cao độ."
+      },
+      {
+        title: "Khoảng cách từ gốc O đến điểm M",
+        math: "OM = \\sqrt{x^2 + y^2 + z^2}",
+        note: "Độ dài đoạn thẳng nối gốc O(0; 0; 0) tới M(x; y; z)."
+      }
+    ],
+    tips: [
+      "Khoảng cách từ M(x; y; z) đến mặt phẳng (Oxy) chính là |z|, đến (Oxz) là |y|, đến (Oyz) là |x|."
+    ]
+  },
+  {
+    id: "vector3d",
+    category: "3d",
+    group: "Hình học Không gian Oxyz & Chuyển động",
+    name: "Vectơ Không Gian Oxyz & Tích Có Hướng",
+    subtitle: "Độ dài, góc giữa 2 vectơ, tích vô hướng và tích có hướng trong không gian",
+    icon: "↗",
+    interactiveHint: "💡 Điều chỉnh tọa độ vectơ u⃗(x, y, z) để xem độ lớn |u⃗|, cosin chỉ phương và góc giữa các vectơ.",
+    sliders: [
+      { key: "x", label: "Tọa độ x", min: -6, max: 6, step: 0.5, default: 2, unit: "" },
+      { key: "y", label: "Tọa độ y", min: -6, max: 6, step: 0.5, default: 3, unit: "" },
+      { key: "z", label: "Tọa độ z", min: -6, max: 6, step: 0.5, default: 2, unit: "" }
+    ],
+    definition:
+      "Vectơ trong không gian là một đoạn thẳng có hướng. Tọa độ của vectơ u⃗ = (x; y; z) là các thành phần chiếu theo 3 trục tọa độ Ox, Oy, Oz.",
+    properties: [
+      "Độ dài của vectơ: |u⃗| = √(x² + y² + z²).",
+      "Tích vô hướng của 2 vectơ: u⃗ · v⃗ = x₁x₂ + y₁y₂ + z₁z₂ = |u⃗|·|v⃗|·cos(u⃗, v⃗).",
+      "Hai vectơ vuông góc khi và chỉ khi u⃗ · v⃗ = 0.",
+      "Tích có hướng [u⃗, v⃗] tạo ra một vectơ mới vuông góc với cả u⃗ và v⃗."
+    ],
+    formulas: [
+      {
+        title: "Độ dài vectơ không gian",
+        math: "|\\vec{u}| = \\sqrt{x^2 + y^2 + z^2}",
+        note: "Khoảng cách từ gốc đến ngọn vectơ."
+      },
+      {
+        title: "Tích vô hướng và góc giữa hai vectơ",
+        math: "\\cos(\\vec{u}, \\vec{v}) = \\frac{x_1 x_2 + y_1 y_2 + z_1 z_2}{|\\vec{u}| \\cdot |\\vec{v}|}",
+        note: "Công thức cơ bản để tìm góc giữa 2 vectơ trong đề thi tốt nghiệp THPT."
+      }
+    ],
+    tips: [
+      "Tích có hướng [u⃗, v⃗] có độ lớn bằng diện tích hình bình hành dựng bởi u⃗ và v⃗: S = |[u⃗, v⃗]|."
+    ]
+  },
+  {
+    id: "plane3d",
+    category: "3d",
+    group: "Hình học Không gian Oxyz & Chuyển động",
+    name: "Mặt Phẳng Trong Không Gian (α)",
+    subtitle: "Phương trình tổng quát Ax + By + Cz + D = 0, vectơ pháp tuyến n⃗ và khoảng cách",
+    icon: "📐",
+    interactiveHint: "💡 Quan sát mặt phẳng cắt trong hộp không gian 3D cùng vectơ pháp tuyến n⃗ dựng vuông góc.",
+    sliders: [
+      { key: "a", label: "Hệ số A", min: -5, max: 5, step: 0.5, default: 2, unit: "" },
+      { key: "b", label: "Hệ số B", min: -5, max: 5, step: 0.5, default: -1, unit: "" },
+      { key: "c", label: "Hệ số C", min: -5, max: 5, step: 0.5, default: 2, unit: "" },
+      { key: "d", label: "Hệ số D", min: -10, max: 10, step: 0.5, default: -4, unit: "" }
+    ],
+    definition:
+      "Mọi mặt phẳng trong không gian Oxyz đều có phương trình tổng quát dạng Ax + By + Cz + D = 0 (với A² + B² + C² > 0). Khi đó n⃗ = (A; B; C) là một vectơ pháp tuyến của mặt phẳng.",
+    properties: [
+      "Vectơ pháp tuyến n⃗ = (A; B; C) vuông góc với mọi đường thẳng nằm trong mặt phẳng.",
+      "Khoảng cách từ điểm M₀(x₀; y₀; z₀) đến mặt phẳng (α) là: d(M₀, α) = |Ax₀ + By₀ + Cz₀ + D| / √(A² + B² + C²).",
+      "Hai mặt phẳng vuông góc khi hai vectơ pháp tuyến tương ứng vuông góc: A₁A₂ + B₁B₂ + C₁C₂ = 0."
+    ],
+    formulas: [
+      {
+        title: "Phương trình tổng quát của mặt phẳng",
+        math: "Ax + By + Cz + D = 0 \\quad (A^2 + B^2 + C^2 > 0)",
+        note: "n⃗ = (A; B; C) là vectơ pháp tuyến."
+      },
+      {
+        title: "Khoảng cách từ điểm M₀ đến mặt phẳng",
+        math: "d(M_0, \\alpha) = \\frac{|Ax_0 + By_0 + Cz_0 + D|}{\\sqrt{A^2 + B^2 + C^2}}",
+        note: "Công thức tính khoảng cách điểm đến mặt phẳng chuẩn SGK Toán 12."
+      }
+    ],
+    tips: [
+      "Mặt phẳng (Oxy) có phương trình z = 0, (Oxz) có phương trình y = 0, (Oyz) có phương trình x = 0."
+    ]
+  },
+  {
     id: "line3d_velocity",
     category: "3d",
     group: "Hình học Không gian Oxyz & Chuyển động",

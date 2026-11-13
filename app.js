@@ -16,7 +16,7 @@ window.escapeHtml = escapeHtml;
 
 const COLORS_PALETTE = ["#1e64b4", "#148250", "#008c96", "#b45a14", "#6a1b9a", "#c62828"];
 
-const ENABLE_3D_OXYZ = false; // Feature flag: temporarily disable 3D Oxyz
+const ENABLE_3D_OXYZ = true; // 3D Oxyz Space Geometry & CAD Engine Active
 
 const state = {
   spaceMode: "2d", // "2d" | "3d"
@@ -461,7 +461,7 @@ function bindUIEvents() {
 
   const quickPtBtn = document.getElementById("quickAddPointBtn");
   if (quickPtBtn) {
-    quickPtBtn.addEventListener("click", () => quickAddShape("point2d"));
+    quickPtBtn.addEventListener("click", () => quickAddShape(state.spaceMode === "3d" ? "point3d" : "point2d"));
   }
 
   // Category Filter Pills inside Geometry Library
@@ -680,6 +680,33 @@ function bindUIEvents() {
     });
   }
 
+  const camZoomInBtn = document.getElementById("camZoomInBtn");
+  if (camZoomInBtn) {
+    camZoomInBtn.addEventListener("click", () => {
+      state.cam3D.zoom = Math.min(20.0, state.cam3D.zoom * 1.2);
+      drawScene();
+      updateCursorStatusPill();
+      showToast(`Phóng to 3D: ${Math.round(state.cam3D.zoom * 100)}%`);
+    });
+  }
+
+  const camZoomOutBtn = document.getElementById("camZoomOutBtn");
+  if (camZoomOutBtn) {
+    camZoomOutBtn.addEventListener("click", () => {
+      state.cam3D.zoom = Math.max(0.02, state.cam3D.zoom / 1.2);
+      drawScene();
+      updateCursorStatusPill();
+      showToast(`Thu nhỏ 3D: ${Math.round(state.cam3D.zoom * 100)}%`);
+    });
+  }
+
+  const camFitBtn = document.getElementById("camFitBtn");
+  if (camFitBtn) {
+    camFitBtn.addEventListener("click", () => {
+      zoomToFit();
+    });
+  }
+
   // Desmos 3D Bounding Box & Floor Toggles
   const boxCheck = document.getElementById("toggle3DBoxCheck");
   if (boxCheck) {
@@ -845,16 +872,24 @@ function syncSpaceModeUI() {
     if (!ENABLE_3D_OXYZ) {
       mode3DBtn.style.display = "none";
     } else {
+      mode3DBtn.style.display = "";
       mode3DBtn.classList.toggle("active", state.spaceMode === "3d");
     }
   }
   const eqModeEl = document.getElementById("eqModeBadge");
-  if (eqModeEl) eqModeEl.textContent = "ƒ(x) Oxy";
+  const eqInput = document.getElementById("equationInput");
+  if (state.spaceMode === "3d") {
+    if (eqModeEl) eqModeEl.textContent = "ƒ(x,y,z) Oxyz";
+    if (eqInput) eqInput.placeholder = "Nhập mặt phẳng (2x - y + 2z - 6 = 0), mặt cầu (x^2 + y^2 + z^2 = 16), đường 3D, hoặc z = x^2 + y^2...";
+  } else {
+    if (eqModeEl) eqModeEl.textContent = "ƒ(x) Oxy";
+    if (eqInput) eqInput.placeholder = "Nhập hàm số hoặc phương trình: y = x^3 - 3x + 1, (x-1)^2 + (y+1)^2 = 16, 2x - y + 2z - 6 = 0...";
+  }
   const ovBar = document.getElementById("specialOverlayBar");
   if (ovBar) ovBar.style.display = state.spaceMode === "2d" ? "flex" : "none";
 
   const g2dBar = document.getElementById("graph2dToolbar");
-  if (g2dBar) g2dBar.style.display = "flex";
+  if (g2dBar) g2dBar.style.display = state.spaceMode === "2d" ? "flex" : "none";
 
   const c3dBar = document.getElementById("camera3dToolbar");
   if (c3dBar) c3dBar.style.display = (!ENABLE_3D_OXYZ || state.spaceMode !== "3d") ? "none" : "flex";
@@ -863,6 +898,15 @@ function syncSpaceModeUI() {
   if (motBar) {
     const hasMot = ENABLE_3D_OXYZ && state.spaceMode === "3d" && state.objects3D.some((o) => o.type === "line3d" && o.hasVelocity);
     motBar.style.display = (state.spaceMode === "3d" && hasMot) ? "flex" : "none";
+  }
+
+  const canvasHint = document.getElementById("canvasHint");
+  if (canvasHint) {
+    if (state.spaceMode === "3d") {
+      canvasHint.textContent = "Kéo chuột trái: Xoay 3D quán tính • Chuột phải / Shift + kéo: Di chuyển • Lăn chuột: Phóng to/thu nhỏ • Bấm La bàn: Chuyển góc nhìn";
+    } else {
+      canvasHint.textContent = "Kéo đỉnh để thay đổi hình • Nhấp đúp vào hình để sửa tọa độ • Giữ chuột giữa (hoặc Alt + kéo) để dịch chuyển • Lăn chuột để thu phóng";
+    }
   }
 
   renderQuickAddToolbar();
@@ -891,11 +935,13 @@ function renderQuickAddToolbar() {
     });
   } else {
     const tools3D = [
+      { label: "+ Điểm 3D (Gióng trục)", action: () => quickAddShape("point3d") },
+      { label: "+ Vectơ 3D", action: () => quickAddShape("vector3d") },
+      { label: "+ Mặt phẳng (α)", action: () => quickAddShape("plane3d") },
+      { label: "+ Mặt cầu (S)", action: () => quickAddShape("sphere") },
+      { label: "+ Đường thẳng Δ", action: () => quickAddShape("line3d") },
       { label: "+ Chuyển động Oxyz", action: () => quickAddShape("line3d_velocity") },
-      { label: "+ Mặt cầu", action: () => quickAddShape("sphere") },
-      { label: "+ Mặt phẳng", action: () => quickAddShape("plane3d") },
-      { label: "+ Đường 3D", action: () => quickAddShape("line3d") },
-      { label: "+ Hình chóp", action: () => quickAddShape("pyramid_square") },
+      { label: "+ Khối chóp", action: () => quickAddShape("pyramid_square") },
       { label: "+ Lập phương", action: () => quickAddShape("cube") }
     ];
     tools3D.forEach((t) => {
@@ -1542,6 +1588,48 @@ function quickAddShape(shapeKey) {
     };
     state.objects2D.push(obj);
     state.selectedIds = [obj.id];
+  } else if (shapeKey === "point3d") {
+    state.spaceMode = "3d";
+    const idx = state.objects3D.filter((o) => o.type === "point3d").length + 1;
+    const obj = {
+      id: genId("pt3"),
+      space: "3d",
+      type: "point3d",
+      name: `M${idx}`,
+      x: 2 + off,
+      y: 3 - off,
+      z: 2.5 + off,
+      dropline: true,
+      equationText: `M${idx}(${(2 + off).toFixed(1)}, ${(3 - off).toFixed(1)}, ${(2.5 + off).toFixed(1)})`,
+      visible: true,
+      color: "#dc2626",
+      lineWidth: 2.5,
+      dash: "solid"
+    };
+    state.objects3D.push(obj);
+    state.selectedIds = [obj.id];
+  } else if (shapeKey === "vector3d") {
+    state.spaceMode = "3d";
+    const idx = state.objects3D.filter((o) => o.type === "vector3d").length + 1;
+    const obj = {
+      id: genId("vec3"),
+      space: "3d",
+      type: "vector3d",
+      name: `u⃗${idx}`,
+      x: 2 + off,
+      y: 3 - off,
+      z: 2,
+      x0: 0,
+      y0: 0,
+      z0: 0,
+      equationText: `u⃗${idx} = (${(2 + off).toFixed(1)}, ${(3 - off).toFixed(1)}, 2)`,
+      visible: true,
+      color: "#9333ea",
+      lineWidth: 2.8,
+      dash: "solid"
+    };
+    state.objects3D.push(obj);
+    state.selectedIds = [obj.id];
   } else if (shapeKey === "plane3d") {
     state.spaceMode = "3d";
     const idx = state.objects3D.filter((o) => o.type === "plane3d").length + 1;
@@ -2017,6 +2105,39 @@ function bindKeyboardShortcuts() {
     } else if (e.key.toLowerCase() === "e") {
       e.preventDefault();
       openEditModal();
+    } else if (e.key === "+" || e.key === "=") {
+      e.preventDefault();
+      if (state.spaceMode === "3d") {
+        state.cam3D.zoom = Math.min(20.0, state.cam3D.zoom * 1.15);
+      } else {
+        state.view2D.scale = Math.min(3000, state.view2D.scale * 1.15);
+      }
+      updateCursorStatusPill();
+      drawScene();
+    } else if (e.key === "-" || e.key === "_") {
+      e.preventDefault();
+      if (state.spaceMode === "3d") {
+        state.cam3D.zoom = Math.max(0.02, state.cam3D.zoom / 1.15);
+      } else {
+        state.view2D.scale = Math.max(1.5, state.view2D.scale / 1.15);
+      }
+      updateCursorStatusPill();
+      drawScene();
+    } else if (state.spaceMode === "3d" && e.key.startsWith("Arrow")) {
+      e.preventDefault();
+      const step = e.shiftKey ? 18 : 0.08;
+      if (e.shiftKey) {
+        if (e.key === "ArrowLeft") state.cam3D.panX -= step;
+        else if (e.key === "ArrowRight") state.cam3D.panX += step;
+        else if (e.key === "ArrowUp") state.cam3D.panY -= step;
+        else if (e.key === "ArrowDown") state.cam3D.panY += step;
+      } else {
+        if (e.key === "ArrowLeft") state.cam3D.yaw -= step;
+        else if (e.key === "ArrowRight") state.cam3D.yaw += step;
+        else if (e.key === "ArrowUp") state.cam3D.pitch = Math.min(1.35, state.cam3D.pitch + step);
+        else if (e.key === "ArrowDown") state.cam3D.pitch = Math.max(-1.35, state.cam3D.pitch - step);
+      }
+      drawScene();
     }
   });
 }
@@ -2110,7 +2231,7 @@ function bindCanvasEvents() {
     if (state.spaceMode === "3d" && state.show3DTriad !== false) {
       const rect = canvas.getBoundingClientRect();
       const triadCx = rect.width / 2 - 55;
-      const triadCy = rect.height / 2 - 55;
+      const triadCy = -rect.height / 2 + 65;
       const relX = pos.x - triadCx;
       const relY = pos.y - triadCy;
       if (Math.hypot(relX, relY) <= 42) {
@@ -2167,6 +2288,7 @@ function bindCanvasEvents() {
 
     if (state.spaceMode === "3d") {
       state.interaction.mode = "orbit3d";
+      canvas.style.cursor = "grabbing";
       canvas.setPointerCapture(e.pointerId);
       return;
     }
@@ -2326,12 +2448,22 @@ function bindCanvasEvents() {
       return;
     }
 
-    // Hover feedback in 2D
+    // Hover feedback in 2D & 3D
     if (state.spaceMode === "2d") {
       const hit = hitTest2D(pos.x, pos.y);
       state.hoverTarget = hit;
       canvas.style.cursor = hit ? (hit.vertexIdx !== -1 ? "pointer" : "move") : "default";
       drawScene();
+    } else {
+      if (state.interaction.mode === "orbit3d" || state.interaction.mode === "pan") {
+        canvas.style.cursor = "grabbing";
+      } else {
+        const rect = canvas.getBoundingClientRect();
+        const triadCx = rect.width / 2 - 55;
+        const triadCy = -rect.height / 2 + 65;
+        const distTriad = Math.hypot(pos.x - triadCx, pos.y - triadCy);
+        canvas.style.cursor = distTriad <= 42 ? "pointer" : "grab";
+      }
     }
   });
 
@@ -2356,7 +2488,7 @@ function bindCanvasEvents() {
     }
     if (activeTouches.size === 0) {
       state.interaction.mode = "none";
-      canvas.style.cursor = "default";
+      canvas.style.cursor = state.spaceMode === "3d" ? "grab" : "default";
     }
   };
 
@@ -3154,6 +3286,70 @@ function renderLiveMetrics() {
           val: `d(O, α) = ${fmt(dO)}`,
           sub: "|D| / √(A² + B² + C²)"
         });
+      } else if (obj.type === "point3d") {
+        const distO = Math.hypot(obj.x, obj.y, obj.z);
+        items.push({
+          name: `Tọa độ điểm ${obj.name}`,
+          val: `(${fmt(obj.x)}; ${fmt(obj.y)}; ${fmt(obj.z)})`,
+          sub: `Khoảng cách OM = ${fmt(distO)} đv`
+        });
+        items.push({
+          name: "Hình chiếu vuông góc",
+          val: `M'(${fmt(obj.x)}; ${fmt(obj.y)}; 0) trên (Oxy)`,
+          sub: `M_x(${fmt(obj.x)};0;0), M_y(0;${fmt(obj.y)};0), M_z(0;0;${fmt(obj.z)})`
+        });
+      } else if (obj.type === "vector3d") {
+        const mag = Math.hypot(obj.x, obj.y, obj.z);
+        items.push({
+          name: `Vectơ ${obj.name}`,
+          val: `(${fmt(obj.x)}; ${fmt(obj.y)}; ${fmt(obj.z)})`,
+          sub: `Độ dài |${obj.name}| = ${fmt(mag)} đv`
+        });
+        const otherVecs = state.objects3D.filter((o) => o.type === "vector3d" && o.id !== obj.id);
+        if (otherVecs.length > 0) {
+          const v2 = otherVecs[0];
+          const dot = obj.x * v2.x + obj.y * v2.y + obj.z * v2.z;
+          const mag2 = Math.hypot(v2.x, v2.y, v2.z);
+          const cosTheta = (mag > 1e-5 && mag2 > 1e-5) ? Math.max(-1, Math.min(1, dot / (mag * mag2))) : 1;
+          const deg = (Math.acos(cosTheta) * 180) / Math.PI;
+          items.push({
+            name: `Tích vô hướng & Góc với ${v2.name}`,
+            val: `${obj.name}·${v2.name} = ${fmt(dot)} | φ = ${deg.toFixed(1)}°`,
+            sub: `cos(φ) = (${fmt(dot)}) / (${fmt(mag)}·${fmt(mag2)})`
+          });
+        } else {
+          items.push({
+            name: "Cosin chỉ phương",
+            val: mag > 1e-5 ? `cos = (${fmt(obj.x/mag)}; ${fmt(obj.y/mag)}; ${fmt(obj.z/mag)})` : "Vectơ không",
+            sub: "cos²α + cos²β + cos²γ = 1"
+          });
+        }
+      } else if (obj.type === "line3d") {
+        if (obj.hasVelocity) {
+          const spd = Math.hypot(obj.vx || obj.ux, obj.vy || obj.uy, obj.vz || obj.uz);
+          const t = obj.t !== undefined ? obj.t : (state.motionTime || 0);
+          const curX = obj.x0 + (obj.vx || 0) * t;
+          const curY = obj.y0 + (obj.vy || 0) * t;
+          const curZ = obj.z0 + (obj.vz || 0) * t;
+          items.push({
+            name: `Chuyển động ${obj.name} (t = ${t.toFixed(1)}s)`,
+            val: `M(t) = (${fmt(curX)}; ${fmt(curY)}; ${fmt(curZ)})`,
+            sub: `Tốc độ v = ${fmt(spd)} m/s (Gốc M₀(${fmt(obj.x0)}; ${fmt(obj.y0)}; ${fmt(obj.z0)}))`
+          });
+          if (obj.tMinCpa !== undefined) {
+            items.push({
+              name: "Tiếp cận gần nhất (CPA)",
+              val: `t_min = ${obj.tMinCpa.toFixed(1)}s`,
+              sub: "Phân tích cực trị hàm khoảng cách d(t)"
+            });
+          }
+        } else {
+          items.push({
+            name: `Đường thẳng 3D ${obj.name}`,
+            val: obj.equationText || `M₀(${fmt(obj.x0)}; ${fmt(obj.y0)}; ${fmt(obj.z0)})`,
+            sub: `VTCP u⃗ = (${fmt(obj.ux)}; ${fmt(obj.uy)}; ${fmt(obj.uz)})`
+          });
+        }
       } else if (obj.type === "solid3d") {
         const { a, b, h, r, solidType } = obj;
         if (solidType === "cube") {
@@ -4745,6 +4941,21 @@ function draw3DGridAndAxes(w, h, theme) {
 
   // 2. Infinite Adaptive Oxy Floor Grid (z = 0 plane)
   if (state.show3DFloor !== false && state.showGrid) {
+    // Subtle Oxy Floor Plane Shading (Depth Ground Reference)
+    const floorCorners = [
+      project3D({ x: -extent, y: -extent, z: 0 }),
+      project3D({ x: extent, y: -extent, z: 0 }),
+      project3D({ x: extent, y: extent, z: 0 }),
+      project3D({ x: -extent, y: extent, z: 0 })
+    ];
+    ctx.save();
+    ctx.beginPath();
+    floorCorners.forEach((pt, i) => (i === 0 ? ctx.moveTo(pt.x, pt.y) : ctx.lineTo(pt.x, pt.y)));
+    ctx.closePath();
+    ctx.fillStyle = theme.isLight ? "rgba(30, 100, 180, 0.035)" : "rgba(59, 130, 246, 0.045)";
+    ctx.fill();
+    ctx.restore();
+
     const numSteps = Math.round(extent / step);
     const clampedSteps = Math.min(numSteps, 40);
 
@@ -5586,7 +5797,7 @@ function draw3DOrientationTriad(w, h, theme) {
   if (state.spaceMode !== "3d" || state.show3DTriad === false) return;
 
   const cx = w / 2 - 55;
-  const cy = h / 2 - 55;
+  const cy = -h / 2 + 65;
   const R = 32;
 
   const { yaw, pitch } = state.cam3D;
@@ -5868,6 +6079,9 @@ function loadDesmos3DPreset(presetKey) {
       }
     ];
     showToast("Đã vẽ Đường xoắn ốc Helix trong không gian");
+  } else if (presetKey === "airplanes_motion") {
+    loadInteractionCombo("airplanes_motion");
+    return;
   }
 
   state.selectedIds = state.objects3D.map((o) => o.id);
@@ -6323,6 +6537,25 @@ function renderEditDialogContent(obj) {
         </div>
       </div>
     `;
+  } else if (obj.type === "vector3d") {
+    html += `
+      <div class="edit-form-group">
+        <label>Tọa độ vectơ u⃗(x, y, z):</label>
+        <div class="edit-coord-grid">
+          <div class="edit-coord-item"><span>x =</span><input type="number" id="editVecX" step="0.1" value="${obj.x ?? 1}" /></div>
+          <div class="edit-coord-item"><span>y =</span><input type="number" id="editVecY" step="0.1" value="${obj.y ?? 1}" /></div>
+          <div class="edit-coord-item"><span>z =</span><input type="number" id="editVecZ" step="0.1" value="${obj.z ?? 1}" /></div>
+        </div>
+      </div>
+      <div class="edit-form-group">
+        <label>Điểm đặt gốc vectơ (Mặc định O(0,0,0)):</label>
+        <div class="edit-coord-grid">
+          <div class="edit-coord-item"><span>x₀ =</span><input type="number" id="editVecX0" step="0.1" value="${obj.x0 ?? 0}" /></div>
+          <div class="edit-coord-item"><span>y₀ =</span><input type="number" id="editVecY0" step="0.1" value="${obj.y0 ?? 0}" /></div>
+          <div class="edit-coord-item"><span>z₀ =</span><input type="number" id="editVecZ0" step="0.1" value="${obj.z0 ?? 0}" /></div>
+        </div>
+      </div>
+    `;
   }
 
   return html;
@@ -6483,6 +6716,20 @@ function saveEditModalChanges() {
     if (a) obj.a = parseFloat(a.value) || 3;
     if (h) obj.h = parseFloat(h.value) || 3;
     if (r) obj.r = parseFloat(r.value) || 2;
+  } else if (obj.type === "vector3d") {
+    const vx = document.getElementById("editVecX");
+    const vy = document.getElementById("editVecY");
+    const vz = document.getElementById("editVecZ");
+    const vx0 = document.getElementById("editVecX0");
+    const vy0 = document.getElementById("editVecY0");
+    const vz0 = document.getElementById("editVecZ0");
+    if (vx) obj.x = parseFloat(vx.value) || 0;
+    if (vy) obj.y = parseFloat(vy.value) || 0;
+    if (vz) obj.z = parseFloat(vz.value) || 0;
+    if (vx0) obj.x0 = parseFloat(vx0.value) || 0;
+    if (vy0) obj.y0 = parseFloat(vy0.value) || 0;
+    if (vz0) obj.z0 = parseFloat(vz0.value) || 0;
+    obj.equationText = `${obj.name} = (${obj.x}, ${obj.y}, ${obj.z})`;
   }
 
   document.getElementById("editObjectDialog").close();

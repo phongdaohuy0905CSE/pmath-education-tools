@@ -1362,6 +1362,23 @@ dialog.app-dialog p {
   background-color: rgba(198, 40, 40, 0.1);
 }
 
+/* 3D Oxyz Camera Toolbar */
+.camera-3d-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.camera-3d-toolbar .cad-btn {
+  padding: 0.24rem 0.55rem;
+  font-size: 0.8rem;
+}
+
+.camera-3d-toolbar label {
+  user-select: none;
+}
+
 /* Style & Special Lines Sub-Toolbar */
 .style-toolbar {
   display: flex;
