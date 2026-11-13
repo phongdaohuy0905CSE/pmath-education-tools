@@ -14,14 +14,14 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <!-- Core Styles & Fonts (AxMath + KaTeX + Times New Roman) -->
   <link rel="stylesheet" href="./assets/index-B5VXrJpN.css" />
-  <!-- PMATH Education Signature Styles (Cache Busted v4.3) -->
-  <link rel="stylesheet" href="./styles.css?v=4.3" />
+  <!-- PMATH Education Signature Styles (Cache Busted v4.4) -->
+  <link rel="stylesheet" href="./styles.css?v=4.4" />
   <script>
     try {
       if ('caches' in window) {
         caches.keys().then(function(keys) {
           keys.forEach(function(k) {
-            if (k !== 'pmath-cache-v4.3') caches.delete(k);
+            if (k !== 'pmath-cache-v4.4') caches.delete(k);
           });
         });
       }
@@ -85,6 +85,37 @@
             <div>
               <strong>Tài liệu 24 chuyên đề</strong>
               <small>Định nghĩa, định lý, phương pháp giải &amp; bài tập</small>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mục thứ 5: Máy tính (580 & 880) -->
+      <div class="top-dropdown-wrap" id="calculatorDropdownWrap">
+        <button type="button" class="pmath-nav-tab" id="topCalculatorMenuBtn" aria-expanded="false" title="Máy tính khoa học THPT fx-580 &amp; fx-880">
+          <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M8 18h.01M12 18h.01"/></svg>Máy tính (580 / 880) ▾
+        </button>
+        <div class="top-dropdown-menu" id="calculatorDropdownMenu" style="display: none;">
+          <button type="button" class="top-dropdown-item" id="topOpenCalc580Btn">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><circle cx="8.5" cy="11.5" r="1"/><circle cx="12" cy="11.5" r="1"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="8.5" cy="15.5" r="1"/><circle cx="12" cy="15.5" r="1"/><circle cx="15.5" cy="15.5" r="1"/></svg>
+            <div>
+              <strong>Mở máy tính fx-580 PRO</strong>
+              <small>Bố cục bàn phím chuẩn ClassWiz fx-580VN X</small>
+            </div>
+          </button>
+          <button type="button" class="top-dropdown-item" id="topOpenCalc880Btn">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="6" r="2"/><circle cx="8" cy="11" r="1"/><circle cx="12" cy="11" r="1.5"/><circle cx="16" cy="11" r="1"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><rect x="15" y="14" width="2" height="4" rx="0.5"/></svg>
+            <div>
+              <strong>Mở máy tính fx-880 ULTRA</strong>
+              <small>Bố cục bàn phím thế hệ mới CW (Home/OK/Catalog/EXE)</small>
+            </div>
+          </button>
+          <div style="height:1px; background:var(--border-color); margin:4px 0;"></div>
+          <button type="button" class="top-dropdown-item" id="topOpenDualCalcsBtn" style="color:var(--defcolor); font-weight:700;">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="9" height="16" rx="1.5"/><rect x="13" y="4" width="9" height="16" rx="1.5"/></svg>
+            <div>
+              <strong>Mở song song cả 2 máy (580 &amp; 880)</strong>
+              <small>Đặt 2 máy cạnh nhau để so sánh thao tác giảng dạy</small>
             </div>
           </button>
         </div>
@@ -1304,6 +1335,8 @@
       const moreMenu = document.getElementById("moreOptionsDropdownMenu");
       const d3dBtn = document.getElementById("desmos3DPresetsBtn");
       const d3dMenu = document.getElementById("desmos3DPresetsMenu");
+      const calcBtn = document.getElementById("topCalculatorMenuBtn");
+      const calcMenu = document.getElementById("calculatorDropdownMenu");
 
       function closeAllTopDropdowns() {
         if (refMenu) {
@@ -1321,6 +1354,11 @@
           d3dMenu.style.display = "none";
         }
         if (d3dBtn) d3dBtn.setAttribute("aria-expanded", "false");
+        if (calcMenu) {
+          calcMenu.classList.remove("open");
+          calcMenu.style.display = "none";
+        }
+        if (calcBtn) calcBtn.setAttribute("aria-expanded", "false");
       }
 
       if (refBtn && refMenu) {
@@ -1362,8 +1400,46 @@
         });
       }
 
+      if (calcBtn && calcMenu) {
+        calcBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = calcMenu.style.display === "flex" || calcMenu.classList.contains("open");
+          closeAllTopDropdowns();
+          if (!isOpen) {
+            calcMenu.classList.add("open");
+            calcMenu.style.display = "flex";
+            calcBtn.setAttribute("aria-expanded", "true");
+          }
+        });
+      }
+
+      // Máy tính fx-580 & fx-880 buttons
+      const openCalc580Btn = document.getElementById("topOpenCalc580Btn");
+      if (openCalc580Btn) {
+        openCalc580Btn.addEventListener("click", () => {
+          closeAllTopDropdowns();
+          if (window.PMathCalculator) window.PMathCalculator.open("580");
+        });
+      }
+
+      const openCalc880Btn = document.getElementById("topOpenCalc880Btn");
+      if (openCalc880Btn) {
+        openCalc880Btn.addEventListener("click", () => {
+          closeAllTopDropdowns();
+          if (window.PMathCalculator) window.PMathCalculator.open("880");
+        });
+      }
+
+      const openDualCalcsBtn = document.getElementById("topOpenDualCalcsBtn");
+      if (openDualCalcsBtn) {
+        openDualCalcsBtn.addEventListener("click", () => {
+          closeAllTopDropdowns();
+          if (window.PMathCalculator) window.PMathCalculator.openDual();
+        });
+      }
+
       document.addEventListener("click", () => closeAllTopDropdowns());
-      [refMenu, moreMenu, d3dMenu].forEach((menu) => {
+      [refMenu, moreMenu, d3dMenu, calcMenu].forEach((menu) => {
         if (!menu) return;
         menu.addEventListener("click", (e) => {
           if (e.target.closest(".top-dropdown-item")) {
@@ -1735,15 +1811,16 @@
   </script>
 
   <!-- PMATH Board Core Engine -->
-  <script defer src="./assets/index-Cfxrtuua.js?v=4.3"></script>
-  <!-- PMATH 2D/3D Equation, Formula Hub & Knowledge Handbook Engine -->
-  <script defer src="./data.js?v=4.3"></script>
-  <script defer src="./formulas-data.js?v=4.3"></script>
-  <script defer src="./equations.js?v=4.3"></script>
-  <script defer src="./analysis-engine.js?v=4.3"></script>
-  <script defer src="./google-drive.js?v=4.3"></script>
-  <script defer src="./app.js?v=4.3"></script>
-  <script defer src="./knowledge-handbook.js?v=4.3"></script>
+  <script defer src="./assets/index-Cfxrtuua.js?v=4.4"></script>
+  <!-- PMATH 2D/3D Equation, Formula Hub, Scientific Calculators & Knowledge Handbook Engine -->
+  <script defer src="./data.js?v=4.4"></script>
+  <script defer src="./formulas-data.js?v=4.4"></script>
+  <script defer src="./equations.js?v=4.4"></script>
+  <script defer src="./analysis-engine.js?v=4.4"></script>
+  <script defer src="./google-drive.js?v=4.4"></script>
+  <script defer src="./calculators.js?v=4.4"></script>
+  <script defer src="./app.js?v=4.4"></script>
+  <script defer src="./knowledge-handbook.js?v=4.4"></script>
   <!-- Hidden file picker for global PDF loading -->
   <input type="file" id="pmathGlobalPdfInput" accept="application/pdf,.pdf" style="display:none;" />
 
