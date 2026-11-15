@@ -6820,10 +6820,62 @@ function sanitizeObjectForWorkspace(obj) {
 }
 
 function initAutoSaveEngine() {
-  // Trigger periodic auto-save every 10 seconds (10000 ms)
+  // Trigger periodic auto-save every 5 seconds (5000 ms)
   setInterval(() => {
     runAutoSaveCycle();
-  }, 10000);
+  }, 5000);
+
+  // Click on top bar auto-save pill to trigger immediate manual save
+  const topPill = document.getElementById("topAutoSavePill");
+  if (topPill) {
+    topPill.addEventListener("click", () => {
+      runAutoSaveCycle(true);
+      if (typeof showToast === "function") {
+        showToast("💾 Toàn bộ bài giảng và hình vẽ đã được lưu an toàn vào máy!");
+      }
+    });
+  }
+
+  // Hook up whiteboard dirty changes to top pill
+  window.__pmathUpdateAutoSaveUI = (isDirty, customTimeStr) => {
+    updateAutoSaveBadgeUI(isDirty, customTimeStr);
+  };
+
+  // Prevent accidental close / refresh when user has unsaved work ("Anti-Ói Cơm" Protection)
+  window.addEventListener("beforeunload", (e) => {
+    const isWbDirty = !!window.__pmathWhiteboardDirty;
+    const isStudioDirty = !!(state && state.isDirty);
+
+    // Emergency silent/synchronous save on exit attempt
+    if (isStudioDirty) {
+      try {
+        saveStudioWorkspaceToLocalStorage();
+        state.isDirty = false;
+      } catch (err) {}
+    }
+    if (isWbDirty && typeof window.__pmathSaveWhiteboard === "function") {
+      try {
+        window.__pmathSaveWhiteboard();
+      } catch (err) {}
+    }
+
+    if (isWbDirty || isStudioDirty) {
+      e.preventDefault();
+      const warningMsg = "Bạn có thay đổi bài giảng hoặc hình vẽ chưa lưu. Bạn có chắc chắn muốn đóng trình duyệt không?";
+      e.returnValue = warningMsg;
+      return warningMsg;
+    }
+  });
+
+  // Emergency save on pagehide and visibility hidden
+  window.addEventListener("pagehide", () => {
+    runAutoSaveCycle();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      runAutoSaveCycle();
+    }
+  });
 
   // Multi-tab synchronization (BUG-05)
   window.addEventListener("storage", (e) => {
@@ -6850,11 +6902,36 @@ function initAutoSaveEngine() {
   });
 }
 
-function runAutoSaveCycle() {
-  // 1. Auto-save studio workspace to localStorage only if modified (BUG-05)
-  if (state.isDirty) {
+function updateAutoSaveBadgeUI(isSavingOrDirty, customTimeStr) {
+  const topPill = document.getElementById("topAutoSavePill");
+  const topLabel = document.getElementById("topAutoSaveLabel");
+  const dropdownText = document.getElementById("autoSaveText");
+  const dropdownBadge = document.getElementById("autoSaveBadge");
+
+  const now = new Date();
+  const timeStr = customTimeStr || `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+  if (isSavingOrDirty) {
+    if (topPill) topPill.classList.add("saving");
+    if (topLabel) topLabel.textContent = "Đang lưu...";
+    if (dropdownBadge) dropdownBadge.classList.add("saving");
+    if (dropdownText) dropdownText.textContent = "Đang tự động lưu...";
+  } else {
+    if (topPill) topPill.classList.remove("saving");
+    if (topLabel) topLabel.textContent = `Đã lưu ${timeStr}`;
+    if (dropdownBadge) dropdownBadge.classList.remove("saving");
+    if (dropdownText) dropdownText.textContent = `Đã lưu vào máy lúc ${timeStr}`;
+  }
+}
+
+function runAutoSaveCycle(forceSave = false) {
+  let saved = false;
+
+  // 1. Auto-save studio workspace to localStorage only if modified or forced (BUG-05)
+  if (state.isDirty || forceSave) {
     saveStudioWorkspaceToLocalStorage();
     state.isDirty = false;
+    saved = true;
   }
 
   // 2. Silent draft auto-save without synthetic Ctrl+S disruption (BUG-06)
@@ -6865,18 +6942,16 @@ function runAutoSaveCycle() {
   const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
   state.lastAutoSavedAt = timeStr;
 
-  const text = document.getElementById("autoSaveText");
-  const badge = document.getElementById("autoSaveBadge");
-  if (text) text.textContent = `Đã lưu lúc ${timeStr}`;
-  if (badge) {
-    badge.classList.add("saving");
-    setTimeout(() => badge.classList.remove("saving"), 1400);
-  }
+  const isStillDirty = !!(state.isDirty || window.__pmathWhiteboardDirty);
+  updateAutoSaveBadgeUI(isStillDirty, timeStr);
 }
 
 function triggerNoteRendererSilentDraft() {
   // DO NOT dispatch synthetic Ctrl+S which disrupts the user by popping open the save modal!
   try {
+    if (typeof window.__pmathSaveWhiteboard === "function") {
+      window.__pmathSaveWhiteboard();
+    }
     const rawActive = localStorage.getItem("pmath_active_notebook");
     if (rawActive) {
       localStorage.setItem("pmath_notebook_autosave_draft", rawActive);
