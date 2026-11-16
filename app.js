@@ -132,6 +132,7 @@ function saveHistory() {
   state.isDirty = true;
   state.lastModifiedAt = Date.now();
   updateUndoRedoButtons();
+  if (typeof updateSaveStatusBadgeUI === "function") updateSaveStatusBadgeUI(true);
 }
 
 function undo() {
@@ -153,6 +154,7 @@ function undo() {
   syncSpaceModeUI();
   updateUndoRedoButtons();
   refreshAllUI();
+  if (typeof updateSaveStatusBadgeUI === "function") updateSaveStatusBadgeUI(true);
 }
 
 function redo() {
@@ -174,6 +176,7 @@ function redo() {
   syncSpaceModeUI();
   updateUndoRedoButtons();
   refreshAllUI();
+  if (typeof updateSaveStatusBadgeUI === "function") updateSaveStatusBadgeUI(true);
 }
 
 function updateUndoRedoButtons() {
@@ -6820,64 +6823,45 @@ function sanitizeObjectForWorkspace(obj) {
 }
 
 function initAutoSaveEngine() {
-  // Trigger periodic auto-save every 5 seconds (5000 ms)
-  setInterval(() => {
-    runAutoSaveCycle();
-  }, 5000);
+  // NOTE: Periodic background auto-save timer is intentionally eliminated
+  // to ensure 100% fluid, buttery-smooth stylus & pen writing without
+  // micro-stutter, GC spikes, or canvas thread interruptions.
 
-  // Click on top bar auto-save pill to trigger immediate manual save
+  // 1. Click on top bar Save button triggers immediate manual save
   const topPill = document.getElementById("topAutoSavePill");
   if (topPill) {
     topPill.addEventListener("click", () => {
-      runAutoSaveCycle(true);
-      if (typeof showToast === "function") {
-        showToast("💾 Toàn bộ bài giảng và hình vẽ đã được lưu an toàn vào máy!");
-      }
+      handleExplicitSave();
     });
   }
 
-  // Hook up whiteboard dirty changes to top pill
+  // 2. Global Ctrl+S / Cmd+S shortcut to save anytime
+  window.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+      e.preventDefault();
+      handleExplicitSave();
+    }
+  });
+
+  // 3. Hook up whiteboard dirty changes to top pill
   window.__pmathUpdateAutoSaveUI = (isDirty, customTimeStr) => {
     updateAutoSaveBadgeUI(isDirty, customTimeStr);
   };
 
-  // Prevent accidental close / refresh when user has unsaved work ("Anti-Ói Cơm" Protection)
+  // 4. Strict Exit & Reload Warning ("Cảnh báo buộc lưu trước khi tắt")
   window.addEventListener("beforeunload", (e) => {
     const isWbDirty = !!window.__pmathWhiteboardDirty;
     const isStudioDirty = !!(state && state.isDirty);
 
-    // Emergency silent/synchronous save on exit attempt
-    if (isStudioDirty) {
-      try {
-        saveStudioWorkspaceToLocalStorage();
-        state.isDirty = false;
-      } catch (err) {}
-    }
-    if (isWbDirty && typeof window.__pmathSaveWhiteboard === "function") {
-      try {
-        window.__pmathSaveWhiteboard();
-      } catch (err) {}
-    }
-
     if (isWbDirty || isStudioDirty) {
       e.preventDefault();
-      const warningMsg = "Bạn có thay đổi bài giảng hoặc hình vẽ chưa lưu. Bạn có chắc chắn muốn đóng trình duyệt không?";
+      const warningMsg = "⚠️ CẢNH BÁO QUAN TRỌNG: Bạn có bài giảng hoặc hình vẽ CHƯA ĐƯỢC LƯU! Hãy chọn 'Ở lại trang' (Cancel) và bấm nút LƯU BÀI trước khi tắt để tránh mất dữ liệu!";
       e.returnValue = warningMsg;
       return warningMsg;
     }
   });
 
-  // Emergency save on pagehide and visibility hidden
-  window.addEventListener("pagehide", () => {
-    runAutoSaveCycle();
-  });
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-      runAutoSaveCycle();
-    }
-  });
-
-  // Multi-tab synchronization (BUG-05)
+  // 5. Multi-tab synchronization (BUG-05)
   window.addEventListener("storage", (e) => {
     if (e.key === "pmath_studio_workspace" && e.newValue) {
       try {
@@ -6902,7 +6886,7 @@ function initAutoSaveEngine() {
   });
 }
 
-function updateAutoSaveBadgeUI(isSavingOrDirty, customTimeStr) {
+function updateAutoSaveBadgeUI(isDirty, customTimeStr) {
   const topPill = document.getElementById("topAutoSavePill");
   const topLabel = document.getElementById("topAutoSaveLabel");
   const dropdownText = document.getElementById("autoSaveText");
@@ -6911,39 +6895,60 @@ function updateAutoSaveBadgeUI(isSavingOrDirty, customTimeStr) {
   const now = new Date();
   const timeStr = customTimeStr || `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
-  if (isSavingOrDirty) {
-    if (topPill) topPill.classList.add("saving");
-    if (topLabel) topLabel.textContent = "Đang lưu...";
-    if (dropdownBadge) dropdownBadge.classList.add("saving");
-    if (dropdownText) dropdownText.textContent = "Đang tự động lưu...";
+  if (isDirty) {
+    if (topPill) {
+      topPill.className = "top-autosave-pill dirty";
+      topPill.title = "⚠️ Có thay đổi chưa lưu! Bấm vào đây hoặc nhấn Ctrl+S để lưu bài trước khi đóng.";
+    }
+    if (topLabel) topLabel.textContent = "Chưa lưu (Bấm để lưu)";
+    if (dropdownBadge) dropdownBadge.className = "top-dropdown-status dirty";
+    if (dropdownText) dropdownText.textContent = "Chưa lưu (Nhấn Ctrl+S)";
   } else {
-    if (topPill) topPill.classList.remove("saving");
+    if (topPill) {
+      topPill.className = "top-autosave-pill saved";
+      topPill.title = `Tất cả bài giảng và hình vẽ đã được lưu an toàn lúc ${timeStr}. Bấm để lưu lại bất cứ lúc nào.`;
+    }
     if (topLabel) topLabel.textContent = `Đã lưu ${timeStr}`;
-    if (dropdownBadge) dropdownBadge.classList.remove("saving");
+    if (dropdownBadge) dropdownBadge.className = "top-dropdown-status saved";
     if (dropdownText) dropdownText.textContent = `Đã lưu vào máy lúc ${timeStr}`;
   }
 }
 
-function runAutoSaveCycle(forceSave = false) {
-  let saved = false;
+function handleExplicitSave() {
+  let savedSomething = false;
 
-  // 1. Auto-save studio workspace to localStorage only if modified or forced (BUG-05)
-  if (state.isDirty || forceSave) {
+  // 1. Save Studio 2D/3D workspace to localStorage
+  if (state.isDirty) {
     saveStudioWorkspaceToLocalStorage();
     state.isDirty = false;
-    saved = true;
+    savedSomething = true;
   }
 
-  // 2. Silent draft auto-save without synthetic Ctrl+S disruption (BUG-06)
-  triggerNoteRendererSilentDraft();
+  // 2. Save Whiteboard document to IndexedDB library
+  if (typeof window.__pmathSaveWhiteboard === "function") {
+    try {
+      window.__pmathSaveWhiteboard();
+      savedSomething = true;
+    } catch (err) {
+      console.warn("Whiteboard save error:", err);
+    }
+  }
 
-  // 3. Update top indicator badge
+  // 3. Update UI state
   const now = new Date();
   const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-  state.lastAutoSavedAt = timeStr;
+  state.lastSavedAt = timeStr;
+  updateAutoSaveBadgeUI(false, timeStr);
 
-  const isStillDirty = !!(state.isDirty || window.__pmathWhiteboardDirty);
-  updateAutoSaveBadgeUI(isStillDirty, timeStr);
+  if (typeof showToast === "function") {
+    showToast("💾 Đã lưu bài giảng và hình vẽ an toàn vào máy!");
+  }
+}
+window.handleExplicitSave = handleExplicitSave;
+
+// Backward-compatibility alias
+function runAutoSaveCycle(forceSave = false) {
+  if (forceSave) handleExplicitSave();
 }
 
 function triggerNoteRendererSilentDraft() {

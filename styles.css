@@ -5568,7 +5568,7 @@ canvas.board-canvas {
 }
 
 /* ========================================================================== */
-/* TOP BAR CONTINUOUS AUTO-SAVE PILL & STATUS BADGE (v4.5)                    */
+/* TOP BAR MANUAL SAVE BUTTON & UNLOAD WARNING INDICATOR (v4.6)              */
 /* ========================================================================== */
 
 .top-autosave-pill {
@@ -5578,8 +5578,8 @@ canvas.board-canvas {
   background: var(--card-bg, #ffffff);
   border: 1px solid var(--border-color, #e2e8f0);
   border-radius: 9999px;
-  padding: 4px 10px;
-  font-size: 0.76rem;
+  padding: 4px 11px;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-color, #334155);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -5597,28 +5597,31 @@ canvas.board-canvas {
 }
 
 .top-autosave-pill .autosave-dot {
-  width: 7.5px;
-  height: 7.5px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #10b981;
   box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-.top-autosave-pill.saving {
+/* Dirty State: Prompts user to click to save */
+.top-autosave-pill.dirty {
   border-color: #f59e0b;
-  background: rgba(245, 158, 11, 0.08);
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  font-weight: 700;
 }
 
-.top-autosave-pill.saving .autosave-dot {
+.top-autosave-pill.dirty .autosave-dot {
   background: #f59e0b;
   box-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
-  animation: pmathPulseSaving 0.9s infinite alternate;
+  animation: pmathPulseDirty 0.8s infinite alternate;
 }
 
-@keyframes pmathPulseSaving {
-  0% { transform: scale(0.85); opacity: 0.5; }
-  100% { transform: scale(1.2); opacity: 1; }
+@keyframes pmathPulseDirty {
+  0% { transform: scale(0.85); opacity: 0.55; }
+  100% { transform: scale(1.25); opacity: 1; }
 }
 
 [data-theme="dark"] .top-autosave-pill {
@@ -5630,6 +5633,17 @@ canvas.board-canvas {
 [data-theme="dark"] .top-autosave-pill:hover {
   background: rgba(51, 65, 85, 0.9);
   border-color: rgba(255, 255, 255, 0.25);
+}
+
+[data-theme="dark"] .top-autosave-pill.dirty {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #fbbf24;
+  color: #fde68a;
+}
+
+[data-theme="dark"] .top-autosave-pill.dirty .autosave-dot {
+  background: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.9);
 }
 
 @media (max-width: 640px) {
