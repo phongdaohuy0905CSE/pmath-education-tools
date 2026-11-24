@@ -6059,3 +6059,182 @@ body.true-fullscreen .pmath-fs-dock {
   transform: rotate(180deg);
 }
 
+/* ========================================================================== */
+/* WHITEBOARD VERTICAL TOOLBAR IN TRUE FULLSCREEN MODE                        */
+/* ========================================================================== */
+
+body.true-fullscreen #root header.toolbar {
+  position: fixed !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 90px !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  border-bottom: none !important;
+  padding: 8px 4px !important;
+  gap: 6px !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  z-index: 9999 !important;
+  scrollbar-width: thin !important;
+  transition: right 0.22s cubic-bezier(0.16, 1, 0.3, 1), left 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="dark"] body.true-fullscreen #root header.toolbar {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-color: rgba(51, 65, 85, 0.85) !important;
+  color: #f8fafc !important;
+}
+
+body.true-fullscreen #root header.toolbar::-webkit-scrollbar {
+  width: 3px !important;
+}
+body.true-fullscreen #root header.toolbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+  border-radius: 3px !important;
+}
+[data-theme="dark"] body.true-fullscreen #root header.toolbar::-webkit-scrollbar-thumb {
+  background: #475569 !important;
+}
+
+body.true-fullscreen #root .tb-group {
+  display: grid !important;
+  grid-template-columns: repeat(2, 38px) !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  width: 100% !important;
+}
+
+body.true-fullscreen #root .tb-group.tools {
+  display: grid !important;
+  grid-template-columns: repeat(2, 38px) !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  border-top: 1px solid #e2e8f0 !important;
+  padding-top: 6px !important;
+}
+
+[data-theme="dark"] body.true-fullscreen #root .tb-group.tools {
+  border-top-color: rgba(51, 65, 85, 0.8) !important;
+}
+
+body.true-fullscreen #root .tb-palette {
+  grid-column: span 2 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  height: auto !important;
+  width: 100% !important;
+  border-radius: 10px !important;
+  padding: 4px 2px !important;
+  margin: 2px 0 !important;
+  gap: 3px !important;
+}
+
+[data-theme="dark"] body.true-fullscreen #root .tb-palette {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(51, 65, 85, 0.6) !important;
+}
+
+body.true-fullscreen #root .tb-title {
+  display: none !important;
+}
+
+body.true-fullscreen #root .tb {
+  min-width: 36px !important;
+  width: 38px !important;
+  height: 38px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 8px !important;
+}
+
+[data-theme="dark"] body.true-fullscreen #root .tb {
+  color: #cbd5e1 !important;
+}
+[data-theme="dark"] body.true-fullscreen #root .tb:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+body.true-fullscreen #root .tb-group.tools > .sep {
+  grid-column: span 2 !important;
+  width: 60px !important;
+  height: 1px !important;
+  background: #e2e8f0 !important;
+  margin: 4px auto !important;
+}
+
+[data-theme="dark"] body.true-fullscreen #root .tb-group.tools > .sep {
+  background: rgba(51, 65, 85, 0.8) !important;
+}
+
+/* KHI CÔNG CỤ Ở BÊN PHẢI (Mặc định) */
+body.true-fullscreen.nr-dock-right #root header.toolbar,
+body.true-fullscreen:not(.nr-dock-left) #root header.toolbar {
+  right: 0 !important;
+  left: auto !important;
+  border-left: 1px solid #cbd5e1 !important;
+  border-right: none !important;
+  box-shadow: -2px 0 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="dark"] body.true-fullscreen.nr-dock-right #root header.toolbar,
+[data-theme="dark"] body.true-fullscreen:not(.nr-dock-left) #root header.toolbar {
+  border-left-color: rgba(51, 65, 85, 0.85) !important;
+}
+
+body.true-fullscreen.nr-dock-right #root .app,
+body.true-fullscreen:not(.nr-dock-left) #root .app {
+  padding-right: 90px !important;
+  padding-left: 0 !important;
+}
+
+body.true-fullscreen.nr-dock-right .pmath-fs-dock,
+body.true-fullscreen:not(.nr-dock-left) .pmath-fs-dock {
+  left: 12px !important;
+  right: auto !important;
+}
+
+/* KHI CÔNG CỤ Ở BÊN TRÁI */
+body.true-fullscreen.nr-dock-left #root header.toolbar {
+  left: 0 !important;
+  right: auto !important;
+  border-right: 1px solid #cbd5e1 !important;
+  border-left: none !important;
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="dark"] body.true-fullscreen.nr-dock-left #root header.toolbar {
+  border-right-color: rgba(51, 65, 85, 0.85) !important;
+}
+
+body.true-fullscreen.nr-dock-left #root .app {
+  padding-left: 90px !important;
+  padding-right: 0 !important;
+}
+
+body.true-fullscreen.nr-dock-left .pmath-fs-dock {
+  right: 12px !important;
+  left: auto !important;
+}
+
+/* Nút đổi bên trên chính thanh công cụ vẽ */
+.pmath-tb-side-flip {
+  color: #2563eb !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+}
+.pmath-tb-side-flip:hover {
+  background: rgba(37, 99, 235, 0.12) !important;
+}
+
+

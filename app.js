@@ -7588,11 +7588,64 @@ function initTrueFullscreenEngine() {
   if (!dock) return;
 
   // 1. Phục hồi vị trí dock bên Trái / Phải đã lưu trong máy
-  let currentSide = localStorage.getItem("pmath_dock_side") || "right";
+  let currentSide = localStorage.getItem("pmath_dock_side") || "left";
   dock.classList.remove("left", "right");
   dock.classList.add(currentSide);
+
+  // Phục hồi vị trí thanh công cụ vẽ NoteRenderer (mặc định bên Phải để tiện tay vẽ)
+  let currentToolbarSide = localStorage.getItem("pmath_nr_toolbar_side") || (currentSide === "left" ? "right" : "left");
+  document.body.classList.remove("nr-dock-left", "nr-dock-right");
+  document.body.classList.add(currentToolbarSide === "left" ? "nr-dock-left" : "nr-dock-right");
+
   if (sideTooltip) {
-    sideTooltip.textContent = currentSide === "right" ? "Chuyển sang bên Trái" : "Chuyển sang bên Phải";
+    sideTooltip.textContent = currentToolbarSide === "right" ? "Chuyển công cụ sang bên Trái" : "Chuyển công cụ sang bên Phải";
+  }
+
+  function updateToolbarSide(side) {
+    document.body.classList.remove("nr-dock-left", "nr-dock-right");
+    document.body.classList.add(side === "left" ? "nr-dock-left" : "nr-dock-right");
+    localStorage.setItem("pmath_nr_toolbar_side", side);
+
+    // Đồng bộ dock nổi sang bên đối diện để không bị đè lên thanh vẽ
+    dock.classList.remove("left", "right");
+    const oppositeSide = side === "left" ? "right" : "left";
+    dock.classList.add(oppositeSide);
+    localStorage.setItem("pmath_dock_side", oppositeSide);
+
+    if (sideTooltip) {
+      sideTooltip.textContent = side === "right" ? "Chuyển công cụ sang bên Trái" : "Chuyển công cụ sang bên Phải";
+    }
+
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 60);
+  }
+
+  function toggleToolbarSide() {
+    closeAllDockPopovers();
+    const isCurrentlyLeft = document.body.classList.contains("nr-dock-left");
+    const nextSide = isCurrentlyLeft ? "right" : "left";
+    updateToolbarSide(nextSide);
+    if (typeof showToast === "function") {
+      showToast("⇄ Đã chuyển các công cụ vẽ sang bên " + (nextSide === "left" ? "Trái" : "Phải"));
+    }
+  }
+
+  function injectToolbarSideButton() {
+    const tbGroup = document.querySelector("#root header.toolbar .tb-group");
+    if (tbGroup && !document.getElementById("pmathTbSideFlipBtn")) {
+      const flipBtn = document.createElement("button");
+      flipBtn.type = "button";
+      flipBtn.className = "tb pmath-tb-side-flip";
+      flipBtn.id = "pmathTbSideFlipBtn";
+      flipBtn.title = "Chuyển thanh công cụ vẽ sang Trái / Phải (Fullscreen)";
+      flipBtn.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>`;
+      flipBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleToolbarSide();
+      });
+      tbGroup.appendChild(flipBtn);
+    }
   }
 
   // 2. Phục hồi trạng thái thu gọn dock đã lưu
@@ -7619,8 +7672,12 @@ function initTrueFullscreenEngine() {
       }
     } catch (_) {}
 
+    // Tự động chèn nút đổi bên vào thanh công cụ vẽ nếu có
+    injectToolbarSideButton();
+
     // Báo sự kiện resize để canvas tự co giãn phủ kín 100% màn hình
     setTimeout(() => {
+      injectToolbarSideButton();
       window.dispatchEvent(new Event("resize"));
       if (typeof drawScene === "function") drawScene();
     }, 60);
@@ -7684,20 +7741,7 @@ function initTrueFullscreenEngine() {
   if (sideBtn) {
     sideBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      closeAllDockPopovers();
-      if (dock.classList.contains("right")) {
-        dock.classList.remove("right");
-        dock.classList.add("left");
-        localStorage.setItem("pmath_dock_side", "left");
-        if (sideTooltip) sideTooltip.textContent = "Chuyển sang bên Phải";
-        if (typeof showToast === "function") showToast("Đã chuyển thanh công cụ sang bên Trái");
-      } else {
-        dock.classList.remove("left");
-        dock.classList.add("right");
-        localStorage.setItem("pmath_dock_side", "right");
-        if (sideTooltip) sideTooltip.textContent = "Chuyển sang bên Trái";
-        if (typeof showToast === "function") showToast("Đã chuyển thanh công cụ sang bên Phải");
-      }
+      toggleToolbarSide();
     });
   }
 
@@ -7906,6 +7950,7 @@ function initTrueFullscreenEngine() {
   window.__pmathEnterTrueFullscreen = enterTrueFullscreen;
   window.__pmathExitTrueFullscreen = exitTrueFullscreen;
   window.__pmathToggleTrueFullscreen = toggleTrueFullscreen;
+  window.__pmathToggleToolbarSide = toggleToolbarSide;
 }
 
 // Tự khởi chạy khi DOM sẵn sàng
