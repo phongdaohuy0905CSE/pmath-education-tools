@@ -330,6 +330,7 @@ function initApp() {
   bindKeyboardShortcuts();
   initStorageLocationEvents();
   initAutoSaveEngine();
+  initTrueFullscreenEngine();
   syncSpaceModeUI();
   refreshAllUI();
 }
@@ -6891,6 +6892,7 @@ function updateAutoSaveBadgeUI(isDirty, customTimeStr) {
   const topLabel = document.getElementById("topAutoSaveLabel");
   const dropdownText = document.getElementById("autoSaveText");
   const dropdownBadge = document.getElementById("autoSaveBadge");
+  const fsDockSaveBtn = document.getElementById("fsDockSaveBtn");
 
   const now = new Date();
   const timeStr = customTimeStr || `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -6903,6 +6905,10 @@ function updateAutoSaveBadgeUI(isDirty, customTimeStr) {
     if (topLabel) topLabel.textContent = "Chưa lưu (Bấm để lưu)";
     if (dropdownBadge) dropdownBadge.className = "top-dropdown-status dirty";
     if (dropdownText) dropdownText.textContent = "Chưa lưu (Nhấn Ctrl+S)";
+    if (fsDockSaveBtn) {
+      fsDockSaveBtn.classList.add("dirty");
+      fsDockSaveBtn.title = "⚠️ Có thay đổi chưa lưu! Bấm để lưu (Ctrl+S)";
+    }
   } else {
     if (topPill) {
       topPill.className = "top-autosave-pill saved";
@@ -6911,7 +6917,15 @@ function updateAutoSaveBadgeUI(isDirty, customTimeStr) {
     if (topLabel) topLabel.textContent = `Đã lưu ${timeStr}`;
     if (dropdownBadge) dropdownBadge.className = "top-dropdown-status saved";
     if (dropdownText) dropdownText.textContent = `Đã lưu vào máy lúc ${timeStr}`;
+    if (fsDockSaveBtn) {
+      fsDockSaveBtn.classList.remove("dirty");
+      fsDockSaveBtn.title = `Đã lưu an toàn lúc ${timeStr}. Bấm để lưu lại (Ctrl+S)`;
+    }
   }
+}
+
+function updateSaveStatusBadgeUI(isDirty, customTimeStr) {
+  updateAutoSaveBadgeUI(isDirty, customTimeStr);
 }
 
 function handleExplicitSave() {
@@ -7556,3 +7570,349 @@ function initPdfLoadingFeature() {
     }
   };
 }
+
+// ============================================================================
+// PMATH TRUE FULLSCREEN ENGINE & FLOATING SIDE DOCK (v4.7)
+// ============================================================================
+function initTrueFullscreenEngine() {
+  const dock = document.getElementById("fullscreenSideDock");
+  const topFsBtn = document.getElementById("topFullScreenBtn");
+  const topFsLabel = document.getElementById("topFullScreenLabel");
+  const exitBtn = document.getElementById("fsDockExitBtn");
+  const saveBtn = document.getElementById("fsDockSaveBtn");
+  const sideBtn = document.getElementById("fsDockSideBtn");
+  const sideTooltip = document.getElementById("fsDockSideTooltip");
+  const collapseBtn = document.getElementById("fsDockCollapseBtn");
+  const expandTab = document.getElementById("fsDockExpandTab");
+
+  if (!dock) return;
+
+  // 1. Phục hồi vị trí dock bên Trái / Phải đã lưu trong máy
+  let currentSide = localStorage.getItem("pmath_dock_side") || "right";
+  dock.classList.remove("left", "right");
+  dock.classList.add(currentSide);
+  if (sideTooltip) {
+    sideTooltip.textContent = currentSide === "right" ? "Chuyển sang bên Trái" : "Chuyển sang bên Phải";
+  }
+
+  // 2. Phục hồi trạng thái thu gọn dock đã lưu
+  const isCollapsed = localStorage.getItem("pmath_dock_collapsed") === "true";
+  if (isCollapsed) {
+    dock.classList.add("collapsed");
+  }
+
+  function closeAllDockPopovers() {
+    dock.querySelectorAll(".fs-dock-popover").forEach((p) => p.classList.remove("open"));
+    dock.querySelectorAll(".fs-dock-btn").forEach((b) => b.classList.remove("active"));
+  }
+
+  function enterTrueFullscreen() {
+    document.body.classList.add("true-fullscreen");
+    document.documentElement.classList.add("true-fullscreen");
+    if (topFsLabel) topFsLabel.textContent = "Thoát toàn màn hình";
+    if (topFsBtn) topFsBtn.title = "Thoát toàn màn hình (F11 hoặc Esc)";
+
+    // Cố gắng yêu cầu Fullscreen từ trình duyệt nếu được cấp quyền
+    try {
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    } catch (_) {}
+
+    // Báo sự kiện resize để canvas tự co giãn phủ kín 100% màn hình
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+      if (typeof drawScene === "function") drawScene();
+    }, 60);
+
+    if (typeof showToast === "function") {
+      showToast("🖥️ Đã bật Toàn màn hình thật sự! Thanh bar trên đã ẩn, dùng thanh nổi bên cạnh để thao tác nhanh.");
+    }
+  }
+
+  function exitTrueFullscreen() {
+    document.body.classList.remove("true-fullscreen");
+    document.documentElement.classList.remove("true-fullscreen");
+    closeAllDockPopovers();
+    if (topFsLabel) topFsLabel.textContent = "Toàn màn hình";
+    if (topFsBtn) topFsBtn.title = "Toàn màn hình thật sự (F11 - Tắt thanh trên & gom tính năng về 1 phía)";
+
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    } catch (_) {}
+
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+      if (typeof drawScene === "function") drawScene();
+    }, 60);
+  }
+
+  function toggleTrueFullscreen() {
+    if (document.body.classList.contains("true-fullscreen")) {
+      exitTrueFullscreen();
+    } else {
+      enterTrueFullscreen();
+    }
+  }
+
+  // Nút Toàn màn hình trên Top Bar
+  if (topFsBtn) {
+    topFsBtn.addEventListener("click", () => {
+      toggleTrueFullscreen();
+    });
+  }
+
+  // Nút Thoát trên Side Dock
+  if (exitBtn) {
+    exitBtn.addEventListener("click", () => {
+      exitTrueFullscreen();
+    });
+  }
+
+  // Nút Lưu bài trên Side Dock
+  if (saveBtn) {
+    saveBtn.addEventListener("click", () => {
+      if (typeof handleExplicitSave === "function") {
+        handleExplicitSave();
+      }
+    });
+  }
+
+  // Nút Đổi bên (Trái ⇋ Phải)
+  if (sideBtn) {
+    sideBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeAllDockPopovers();
+      if (dock.classList.contains("right")) {
+        dock.classList.remove("right");
+        dock.classList.add("left");
+        localStorage.setItem("pmath_dock_side", "left");
+        if (sideTooltip) sideTooltip.textContent = "Chuyển sang bên Phải";
+        if (typeof showToast === "function") showToast("Đã chuyển thanh công cụ sang bên Trái");
+      } else {
+        dock.classList.remove("left");
+        dock.classList.add("right");
+        localStorage.setItem("pmath_dock_side", "right");
+        if (sideTooltip) sideTooltip.textContent = "Chuyển sang bên Trái";
+        if (typeof showToast === "function") showToast("Đã chuyển thanh công cụ sang bên Phải");
+      }
+    });
+  }
+
+  // Nút Thu gọn Dock
+  if (collapseBtn) {
+    collapseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeAllDockPopovers();
+      dock.classList.add("collapsed");
+      localStorage.setItem("pmath_dock_collapsed", "true");
+    });
+  }
+
+  // Nút Mở rộng Dock (Tab mép màn hình)
+  if (expandTab) {
+    expandTab.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dock.classList.remove("collapsed");
+      localStorage.setItem("pmath_dock_collapsed", "false");
+    });
+  }
+
+  // Cơ chế mở Popover bay ra
+  function setupPopoverToggle(btnId, popoverId) {
+    const btn = document.getElementById(btnId);
+    const pop = document.getElementById(popoverId);
+    if (!btn || !pop) return;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const wasOpen = pop.classList.contains("open");
+      closeAllDockPopovers();
+      if (!wasOpen) {
+        pop.classList.add("open");
+        btn.classList.add("active");
+      }
+    });
+  }
+
+  setupPopoverToggle("fsDockNavBtn", "fsDockNavPopover");
+  setupPopoverToggle("fsDockCalcBtn", "fsDockCalcPopover");
+  setupPopoverToggle("fsDockFormulaBtn", "fsDockFormulaPopover");
+  setupPopoverToggle("fsDockMoreBtn", "fsDockMorePopover");
+
+  // Đóng popover khi bấm ra ngoài dock
+  document.addEventListener("pointerdown", (e) => {
+    if (!dock.contains(e.target)) {
+      closeAllDockPopovers();
+    }
+  });
+
+  // Nút đổi giao diện Sáng / Tối trên Dock
+  const themeBtn = document.getElementById("fsDockThemeBtn");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", () => {
+      const mainThemeBtn = document.getElementById("themeToggleBtn");
+      if (mainThemeBtn) mainThemeBtn.click();
+    });
+  }
+
+  // Các mục Chuyển Chế độ
+  const fsNavNR = document.getElementById("fsNavBtnNR");
+  const fsNavGL = document.getElementById("fsNavBtnGeoLab");
+  const fsNavHome = document.getElementById("fsNavBtnHome");
+
+  if (fsNavNR) {
+    fsNavNR.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const topNR = document.getElementById("navBtnNR");
+      if (topNR) topNR.click();
+    });
+  }
+  if (fsNavGL) {
+    fsNavGL.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const topGL = document.getElementById("navBtnGeoLab");
+      if (topGL) topGL.click();
+    });
+  }
+  if (fsNavHome) {
+    fsNavHome.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const topHome = document.getElementById("navBtnHome");
+      if (topHome) topHome.click();
+    });
+  }
+
+  // Các mục Máy tính Casio
+  const fsCalc580 = document.getElementById("fsCalc580Btn");
+  const fsCalc880 = document.getElementById("fsCalc880Btn");
+  const fsCalcDual = document.getElementById("fsCalcDualBtn");
+
+  if (fsCalc580) {
+    fsCalc580.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const top580 = document.getElementById("topOpenCalc580Btn");
+      if (top580) top580.click();
+    });
+  }
+  if (fsCalc880) {
+    fsCalc880.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const top880 = document.getElementById("topOpenCalc880Btn");
+      if (top880) top880.click();
+    });
+  }
+  if (fsCalcDual) {
+    fsCalcDual.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const topDual = document.getElementById("topOpenDualCalcsBtn");
+      if (topDual) topDual.click();
+    });
+  }
+
+  // Các mục Tra cứu Công thức
+  const fsFormula = document.getElementById("fsFormulaHubBtn");
+  const fsKnowledge = document.getElementById("fsKnowledgeBtn");
+
+  if (fsFormula) {
+    fsFormula.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const topFormula = document.getElementById("toggleFormulaHubBtn");
+      if (topFormula) topFormula.click();
+    });
+  }
+  if (fsKnowledge) {
+    fsKnowledge.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const topKnowledge = document.getElementById("toggleKnowledgeBtn");
+      if (topKnowledge) topKnowledge.click();
+    });
+  }
+
+  // Các mục Tùy chọn khác
+  const fsImportPdf = document.getElementById("fsImportPdfBtn");
+  const fsDrivePdf = document.getElementById("fsDrivePdfBtn");
+  const fsBackupJson = document.getElementById("fsBackupJsonBtn");
+  const fsPencilGuard = document.getElementById("fsPencilGuardBtn");
+  const fsShortcuts = document.getElementById("fsShortcutsBtn");
+
+  if (fsImportPdf) {
+    fsImportPdf.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const topImport = document.getElementById("topImportPdfBtn");
+      if (topImport) topImport.click();
+    });
+  }
+  if (fsDrivePdf) {
+    fsDrivePdf.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const topDrive = document.getElementById("topOpenDrivePdfBtn");
+      if (topDrive) topDrive.click();
+    });
+  }
+  if (fsBackupJson) {
+    fsBackupJson.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const topStorage = document.getElementById("openStorageLocationBtn");
+      if (topStorage) topStorage.click();
+    });
+  }
+  if (fsPencilGuard) {
+    fsPencilGuard.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const topGuard = document.getElementById("togglePencilGuardBtn");
+      if (topGuard) topGuard.click();
+      const guardText = document.getElementById("fsPencilGuardText");
+      if (guardText) {
+        const isOff = document.body.classList.contains("pencil-guard-off");
+        guardText.textContent = isOff ? "Chống tỳ tay iPad: Đang bật" : "Chống tỳ tay iPad: Đang tắt";
+      }
+    });
+  }
+  if (fsShortcuts) {
+    fsShortcuts.addEventListener("click", () => {
+      closeAllDockPopovers();
+      const topShortcuts = document.getElementById("openShortcutsBtn");
+      if (topShortcuts) topShortcuts.click();
+    });
+  }
+
+  // Phím tắt bàn phím (F11 & Esc)
+  window.addEventListener("keydown", (e) => {
+    // Không chặn F11/Esc nếu người dùng đang gõ trong ô nhập liệu văn bản
+    const isEditing = e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable);
+    if (isEditing && e.key === "Escape") return;
+
+    if (e.key === "F11") {
+      e.preventDefault();
+      toggleTrueFullscreen();
+    } else if (e.key === "Escape") {
+      const openPop = dock.querySelector(".fs-dock-popover.open");
+      if (openPop) {
+        closeAllDockPopovers();
+        e.preventDefault();
+        return;
+      }
+      if (document.body.classList.contains("true-fullscreen")) {
+        exitTrueFullscreen();
+        e.preventDefault();
+      }
+    }
+  });
+
+  // Đồng bộ toàn cầu
+  window.__pmathEnterTrueFullscreen = enterTrueFullscreen;
+  window.__pmathExitTrueFullscreen = exitTrueFullscreen;
+  window.__pmathToggleTrueFullscreen = toggleTrueFullscreen;
+}
+
+// Tự khởi chạy khi DOM sẵn sàng
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initTrueFullscreenEngine);
+} else {
+  initTrueFullscreenEngine();
+}
+window.addEventListener("load", initTrueFullscreenEngine);
+

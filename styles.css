@@ -5654,3 +5654,408 @@ canvas.board-canvas {
     padding: 6px;
   }
 }
+
+/* ========================================================================== */
+/* PMATH TRUE FULLSCREEN ENGINE & FLOATING SIDE DOCK (v4.7)                  */
+/* ========================================================================== */
+
+/* Nút Toàn màn hình trên Top Bar */
+.fullscreen-action-btn {
+  background: rgba(37, 99, 235, 0.08);
+  color: #2563eb;
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.fullscreen-action-btn:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+}
+
+[data-theme="dark"] .fullscreen-action-btn {
+  background: rgba(59, 130, 246, 0.14);
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.28);
+}
+
+[data-theme="dark"] .fullscreen-action-btn:hover {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.45);
+}
+
+/* KHI BẬT TOÀN MÀN HÌNH THẬT SỰ:
+   - Ẩn hoàn toàn thanh bar phía trên (#pmathGlobalBar)
+   - Kéo toàn bộ bảng viết (#root) và studio (#geolabView) phủ trọn 100vh / 100dvh
+   - Trả lại 100% diện tích màn hình để chia sẻ giảng dạy Google Meet / Zoom / bảng tương tác */
+body.true-fullscreen #pmathGlobalBar,
+body.true-fullscreen .pmath-global-bar {
+  display: none !important;
+}
+
+body.true-fullscreen #root,
+body.true-fullscreen.in-canvas-mode #root,
+body.true-fullscreen #geolabView,
+body.true-fullscreen.in-canvas-mode #geolabView {
+  height: 100vh !important;
+  height: 100dvh !important;
+  top: 0 !important;
+  margin-top: 0 !important;
+}
+
+body.true-fullscreen #homeView {
+  padding-top: 20px !important;
+}
+
+/* FLOATING SIDE DOCK: Thanh công cụ gom tất cả tính năng về 1 phía */
+.pmath-fs-dock {
+  display: none;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10500;
+  flex-direction: column;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, right 0.2s ease, left 0.2s ease;
+}
+
+/* Chỉ hiển thị Side Dock khi đang ở chế độ Toàn màn hình thật sự */
+body.true-fullscreen .pmath-fs-dock {
+  display: flex !important;
+}
+
+/* Đặt dock phía bên Phải (mặc định) */
+.pmath-fs-dock.right {
+  right: 12px;
+  left: auto;
+}
+
+/* Đặt dock phía bên Trái (khi giáo viên đổi bên để tiện tay viết) */
+.pmath-fs-dock.left {
+  left: 12px;
+  right: auto;
+}
+
+/* Hộp chứa icon dạng kính mờ cao cấp (Glassmorphism) */
+.fs-dock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 6px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 12px 36px -4px rgba(15, 23, 42, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] .fs-dock-container {
+  background: rgba(15, 23, 42, 0.88);
+  border-color: rgba(51, 65, 85, 0.85);
+  box-shadow: 0 12px 40px -4px rgba(0, 0, 0, 0.55), 0 4px 14px -2px rgba(0, 0, 0, 0.35);
+}
+
+/* Các nút chức năng trên Side Dock */
+.fs-dock-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+[data-theme="dark"] .fs-dock-btn {
+  color: #cbd5e1;
+}
+
+.fs-dock-btn:hover {
+  background: rgba(15, 23, 42, 0.07);
+  color: #0f172a;
+  transform: scale(1.06);
+}
+
+[data-theme="dark"] .fs-dock-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+.fs-dock-btn.active {
+  background: #2563eb;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+/* Nút thoát toàn màn hình nổi bật */
+.fs-dock-btn.exit-btn {
+  color: #ef4444;
+}
+.fs-dock-btn.exit-btn:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+/* Nút lưu bài kèm chấm trạng thái */
+.fs-dock-btn.save-btn {
+  color: #10b981;
+}
+.fs-dock-btn.save-btn:hover {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+.fs-dock-btn.save-btn.dirty {
+  color: #d97706;
+}
+.fs-dock-btn.save-btn.dirty:hover {
+  background: rgba(217, 119, 6, 0.12);
+}
+
+.fs-dock-status-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.85);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.fs-dock-btn.save-btn.dirty .fs-dock-status-dot {
+  background: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.95);
+  animation: pmathPulseDirty 1.4s infinite alternate;
+}
+
+/* Vạch phân chia tinh tế */
+.fs-dock-separator {
+  width: 26px;
+  height: 1px;
+  background: rgba(226, 232, 240, 0.9);
+  margin: 2px 0;
+}
+
+[data-theme="dark"] .fs-dock-separator {
+  background: rgba(51, 65, 85, 0.8);
+}
+
+/* Tooltip hiển thị khi rê chuột vào nút dock */
+.fs-dock-tooltip {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #0f172a;
+  color: #f8fafc;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 10600;
+}
+
+.pmath-fs-dock.right .fs-dock-tooltip {
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(4px);
+}
+.pmath-fs-dock.right .fs-dock-btn:hover .fs-dock-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+}
+
+.pmath-fs-dock.left .fs-dock-tooltip {
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+}
+.pmath-fs-dock.left .fs-dock-btn:hover .fs-dock-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* POPOVER MENU bay ra khi bấm nút trên Side Dock */
+.fs-dock-item-wrap {
+  position: relative;
+}
+
+.fs-dock-popover {
+  display: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 250px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px -4px rgba(15, 23, 42, 0.22), 0 4px 16px -2px rgba(15, 23, 42, 0.1);
+  padding: 6px;
+  z-index: 10700;
+  animation: fsPopoverFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] .fs-dock-popover {
+  background: rgba(15, 23, 42, 0.96);
+  border-color: rgba(51, 65, 85, 0.9);
+  box-shadow: 0 16px 44px -4px rgba(0, 0, 0, 0.65), 0 4px 18px -2px rgba(0, 0, 0, 0.45);
+}
+
+.pmath-fs-dock.right .fs-dock-popover {
+  right: calc(100% + 12px);
+}
+
+.pmath-fs-dock.left .fs-dock-popover {
+  left: calc(100% + 12px);
+}
+
+.fs-dock-popover.open {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+@keyframes fsPopoverFadeIn {
+  from { opacity: 0; transform: translateY(-50%) scale(0.96); }
+  to { opacity: 1; transform: translateY(-50%) scale(1); }
+}
+
+.fs-popover-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  padding: 6px 10px 4px;
+}
+
+[data-theme="dark"] .fs-popover-header {
+  color: #94a3b8;
+}
+
+.fs-popover-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: #1e293b;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s ease;
+  font-family: inherit;
+}
+
+[data-theme="dark"] .fs-popover-item {
+  color: #e2e8f0;
+}
+
+.fs-popover-item:hover {
+  background: rgba(37, 99, 235, 0.09);
+  color: #2563eb;
+}
+
+[data-theme="dark"] .fs-popover-item:hover {
+  background: rgba(59, 130, 246, 0.16);
+  color: #60a5fa;
+}
+
+.fs-popover-item svg {
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+.fs-popover-item div {
+  display: flex;
+  flex-direction: column;
+}
+
+.fs-popover-item strong {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.fs-popover-item small {
+  font-size: 10.5px;
+  color: #64748b;
+  line-height: 1.25;
+  margin-top: 1px;
+}
+
+[data-theme="dark"] .fs-popover-item small {
+  color: #94a3b8;
+}
+
+/* THU GỌN VÀ MỞ RỘNG DOCK */
+.pmath-fs-dock.collapsed .fs-dock-container {
+  display: none !important;
+}
+
+.fs-dock-expand-tab {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: rgba(37, 99, 235, 0.92);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.38);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fs-dock-expand-tab:hover {
+  background: #1d4ed8;
+  transform: scale(1.08);
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.5);
+}
+
+.pmath-fs-dock.collapsed .fs-dock-expand-tab {
+  display: flex !important;
+}
+
+.pmath-fs-dock.right.collapsed {
+  right: 6px;
+}
+
+.pmath-fs-dock.left.collapsed {
+  left: 6px;
+}
+
+.pmath-fs-dock.left .fs-collapse-arrow {
+  transform: rotate(180deg);
+}
+
