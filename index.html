@@ -10,18 +10,22 @@
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="manifest" href="./manifest.json" />
   <title>PMATH EDUCATION TOOLS — Không Gian Oxyz, Vectơ Vận Tốc 3D &amp; Hình Học Động THPT</title>
+  <!-- Google Fonts: Newsreader (Editorial Serif) & Be Vietnam Pro (Clean Sans) synchronous with PMATH Website -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&display=swap" rel="stylesheet">
   <!-- Google Identity Services (GIS) for Google Drive Sync & Overwrite -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <!-- Core Styles & Fonts (AxMath + KaTeX + Times New Roman) -->
   <link rel="stylesheet" href="./assets/index-B5VXrJpN.css" />
-  <!-- PMATH Education Signature Styles (Cache Busted v4.6) -->
-  <link rel="stylesheet" href="./styles.css?v=4.6" />
+  <!-- PMATH Education Signature Styles (Cache Busted v4.9) -->
+  <link rel="stylesheet" href="./styles.css?v=4.9" />
   <script>
     try {
       if ('caches' in window) {
         caches.keys().then(function(keys) {
           keys.forEach(function(k) {
-            if (k !== 'pmath-cache-v4.6') caches.delete(k);
+            if (k !== 'pmath-cache-v4.9') caches.delete(k);
           });
         });
       }
@@ -202,41 +206,42 @@
   <!-- ===================================================================== -->
   <!-- VIEW 0: PMATH HOME (TRANG CHỦ GIỚI THIỆU TÍNH NĂNG & CHỌN MẪU)        -->
   <!-- ===================================================================== -->
-  <div id="homeView" class="pmath-home-view">
+    <div id="homeView" class="pmath-home-view">
+    <!-- HERO SECTION (PMATH EDITORIAL BRANDING) -->
     <section class="home-hero-section">
-      <div class="bioforge-badge">
-        <span class="bioforge-badge-dot"></span>
-        <span class="bioforge-badge-text">Công cụ trực quan hóa Toán THPT • Chương trình GDPT 2018</span>
+      <div class="bioforge-badge pmath-pill-badge">
+        <span class="bioforge-badge-dot pmath-pulse-dot"></span>
+        <span class="bioforge-badge-text">PMATH EDUCATION • Hệ sinh thái công cụ Toán THPT chuẩn GDPT 2018</span>
       </div>
 
-      <h1 class="bioforge-hero-title">
-        Mô phỏng không gian Oxyz, vectơ vận tốc 3D<br />
-        <span class="bioforge-gradient-text">&amp; bảng vẽ hình học động THPT</span>
+      <h1 class="bioforge-hero-title pmath-hero-title">
+        Học Toán hiểu gốc, trực quan hóa không gian Oxyz<br />
+        <span class="pmath-title-italic">&amp; bảng viết bài giảng.</span>
       </h1>
 
-      <p class="bioforge-hero-desc">
-        Trực quan hóa nhanh bài toán tọa độ không gian <em>Oxyz</em>, chuyển động thẳng đều <strong>r</strong>(t) = <strong>r</strong>₀ + <strong>v</strong>t và dựng hình phẳng, khối đa diện cho chương trình Toán 10–11–12 ngay trên trình duyệt.
+      <p class="bioforge-hero-desc pmath-hero-desc">
+        Hệ thống công cụ trực quan hóa Toán học PMATH EDUCATION: Mô phỏng không gian Oxyz, chuyển động vectơ vận tốc 3D thời gian thực, bảng viết lời giải bài giảng trên PDF và tích hợp bộ đôi máy tính Casio ClassWiz fx-580VN X &amp; fx-880BTG song song.
       </p>
 
-      <!-- Primary Action Buttons (Consistent verb: Mở...) -->
-      <div class="bioforge-hero-actions">
-        <button type="button" class="bioforge-btn-primary" id="heroBtnOpenStudio">
-          <span class="bioforge-btn-icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          </span>
-          <div class="bioforge-btn-text">
-            <strong>Mở Không gian Oxyz &amp; Đồ thị</strong>
-            <small>Vẽ mặt phẳng, mặt cầu, đồ thị &amp; mô phỏng chuyển động 3D</small>
-          </div>
-        </button>
-
-        <button type="button" class="bioforge-btn-secondary" id="heroBtnOpenNR">
+      <!-- Primary Action Buttons -->
+      <div class="bioforge-hero-actions pmath-hero-actions">
+        <button type="button" class="bioforge-btn-primary" id="heroBtnOpenNR">
           <span class="bioforge-btn-icon" aria-hidden="true">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </span>
           <div class="bioforge-btn-text">
             <strong>Mở Bảng viết bài giảng</strong>
-            <small>Viết tay tự do, dựng hình khai triển 3D &amp; máy tính khoa học</small>
+            <small>Viết tay mượt mà, import đề PDF &amp; Casio Dual</small>
+          </div>
+        </button>
+
+        <button type="button" class="bioforge-btn-secondary" id="heroBtnOpenStudio">
+          <span class="bioforge-btn-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </span>
+          <div class="bioforge-btn-text">
+            <strong>Mở Không gian Oxyz &amp; Đồ thị</strong>
+            <small>Vẽ mặt phẳng, mặt cầu &amp; mô phỏng chuyển động 3D</small>
           </div>
         </button>
 
@@ -246,7 +251,7 @@
           </span>
           <div class="bioforge-btn-text">
             <strong>Mở Bảng công thức</strong>
-            <small>Tìm kiếm, sao chép &amp; tự bổ sung công thức</small>
+            <small>Tra cứu, sao chép &amp; tự bổ sung</small>
           </div>
         </button>
 
@@ -256,9 +261,34 @@
           </span>
           <div class="bioforge-btn-text">
             <strong>Mở Tài liệu 24 chuyên đề</strong>
-            <small>Định nghĩa, phương pháp giải &amp; câu hỏi tự luyện</small>
+            <small>Định nghĩa, phương pháp &amp; bài tập</small>
           </div>
         </button>
+
+        <a href="https://pmath-website.vercel.app/" target="_blank" rel="noopener noreferrer" class="pmath-hero-btn-site" title="Xem website chính thức PMATH EDUCATION">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>Về website PMATH EDUCATION ↗</span>
+        </a>
+      </div>
+
+      <!-- METRICS STRIP (ĐỒNG BỘ VỚI PMATH WEBSITE DL GRID) -->
+      <div class="pmath-metrics-grid bioforge-metrics-strip">
+        <div class="pmath-metric-item bioforge-metric-item">
+          <strong class="pmath-metric-val">4 năm</strong>
+          <span class="pmath-metric-lbl">Kinh nghiệm dạy kèm &amp; biên soạn</span>
+        </div>
+        <div class="pmath-metric-item bioforge-metric-item">
+          <strong class="pmath-metric-val">Oxyz 3D</strong>
+          <span class="pmath-metric-lbl">Mô phỏng không gian thời gian thực</span>
+        </div>
+        <div class="pmath-metric-item bioforge-metric-item">
+          <strong class="pmath-metric-val">PDF + Viết tay</strong>
+          <span class="pmath-metric-lbl">Import bài tập &amp; lưu trữ tự động</span>
+        </div>
+        <div class="pmath-metric-item bioforge-metric-item">
+          <strong class="pmath-metric-val">Casio Duo</strong>
+          <span class="pmath-metric-lbl">fx-580 &amp; fx-880 chạy song song</span>
+        </div>
       </div>
 
       <!-- CENTERPIECE: INTERACTIVE 3D MATH CONSOLE -->
@@ -271,13 +301,13 @@
             <span style="margin-left: 8px;">Mô phỏng hình học không gian Oxyz • Toán 12</span>
           </div>
           <div class="console-status-pill">
-            <span class="bioforge-badge-dot" style="width:6px; height:6px;"></span>
+            <span class="bioforge-badge-dot pmath-pulse-dot" style="width:6px; height:6px;"></span>
             <span>Kéo chuột trên hình để xoay góc nhìn 3D</span>
           </div>
         </div>
 
         <div class="console-canvas-wrap">
-          <!-- Floating Telemetry Chips (Chuẩn dấu trừ − và dấu phẩy thập phân Việt Nam) -->
+          <!-- Floating Telemetry Chips -->
           <div class="console-telemetry-chip left">
             <strong class="console-telemetry-title" style="color: #38bdf8;">Mặt phẳng (α)</strong>
             <span>2x − y + 2z − 6 = 0 • d(O, α) = 2,0</span>
@@ -289,7 +319,7 @@
           </div>
 
           <div class="console-telemetry-chip bottom">
-            <strong class="console-telemetry-title" style="color: #34d399;">Bài toán khoảng cách hai chuyển động trong Oxyz</strong>
+            <strong class="console-telemetry-title" style="color: #22c55e;">Bài toán khoảng cách hai chuyển động trong Oxyz</strong>
             <span>d(t) = |M₁(t)M₂(t)| = 4,2 km &gt; 3,0 km (Cự ly an toàn)</span>
           </div>
 
@@ -319,80 +349,82 @@
     <section class="home-modules-section">
       <div class="home-section-header">
         <h2 class="home-section-title">Các công cụ chính trong PMATH TOOLS</h2>
-        <p class="home-section-subtitle">Bổ trợ cho GeoGebra và Desmos nhờ dựng sẵn các mô hình đặc thù của chương trình Toán THPT Việt Nam: bài toán hai chuyển động trong không gian Oxyz, giao tuyến mặt cầu – mặt phẳng, hình khai triển khối đa diện và bảng viết bài giảng trực tiếp.</p>
+        <p class="home-section-subtitle">Đồng bộ hoàn hảo với hệ sinh thái PMATH EDUCATION: bài toán hai chuyển động trong không gian Oxyz, giao tuyến mặt cầu – mặt phẳng, hình khai triển khối đa diện, bảng viết bài giảng trên PDF và bộ đôi máy tính Casio fx-580 &amp; fx-880 song song.</p>
       </div>
 
       <div class="bioforge-bento-grid">
         <!-- Module Bento 1: Khảo sát đồ thị & Hình học Oxy -->
-        <div class="bento-card wide highlight">
+        <div class="bento-card highlight">
           <div class="card-badge-top">Trọng tâm Toán 10-11-12</div>
           <div class="bento-icon-wrap red" aria-hidden="true">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
           </div>
-          <span class="card-category">Giải tích hàm số &amp; Hình học phẳng</span>
-          <h3 class="card-title">Khảo sát hàm số, Bảng biến thiên &amp; Hình học phẳng Oxy</h3>
+          <span class="card-category">Không gian Oxyz &amp; Hình học 3D</span>
+          <h3 class="card-title">PMATH TOOLS — Mô phỏng không gian Oxyz và hình học động 3D</h3>
+          <p class="card-desc">
+            Trực quan hóa nhanh mặt phẳng, mặt cầu, đồ thị hàm số, chuyển động vectơ vận tốc 3D và hình khai triển khối đa diện ngay trên trình duyệt.
+          </p>
+          <ul class="card-feature-list">
+            <li>Mô phỏng hai chuyển động máy bay trong không gian Oxyz và theo dõi khoảng cách d(t)</li>
+            <li>Giao tuyến mặt phẳng và mặt cầu (S), hình chiếu trực giao và khoảng cách d(I, α)</li>
+            <li>Dựng hình học phẳng: tam giác, đường thẳng Euler, trực tâm H, trọng tâm G, tâm ngoại tiếp O</li>
+            <li>Kéo xoay 3D mượt mà 360°, hiển thị tọa độ thời gian thực và xuất hình ảnh chất lượng cao</li>
+          </ul>
+          <button type="button" class="btn-card-action primary" id="cardBtnStudio">Mở Không gian Oxyz &amp; Đồ thị →</button>
+        </div>
+
+        <!-- Module Bento 2: Bảng viết bài giảng & hình khai triển 3D -->
+        <div class="bento-card">
+          <div class="card-badge-top" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.35); background: rgba(56, 189, 248, 0.1);">Viết tay &amp; Giảng dạy</div>
+          <div class="bento-icon-wrap blue" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <span class="card-category">Viết tay tự do &amp; PDF chuẩn hóa</span>
+          <h3 class="card-title">Bảng viết bài giảng trực tiếp trên phiếu bài tập chuẩn hóa</h3>
+          <p class="card-desc">
+            Mỗi buổi học được trình bày sạch đẹp từng bước, vẽ hình minh họa rõ ràng và đánh dấu ý cốt lõi trực tiếp trên tài liệu để học sinh dễ ghi chép và xem lại.
+          </p>
+          <ul class="card-feature-list">
+            <li>Tương tác viết vẽ mượt mà trên iPad, laptop hoặc bảng vẽ điện tử (chống tỳ tay thông minh)</li>
+            <li>Import bài tập PDF từ máy tính hoặc Google Drive, ghi chú và vẽ hình trực tiếp</li>
+            <li>Tích hợp máy tính Casio ClassWiz fx-580VN X &amp; fx-880BTG chạy song song độc lập</li>
+            <li>Chế độ Toàn màn hình thật sự (True Fullscreen) tắt thanh bar, tập trung 100% diện tích giảng dạy</li>
+          </ul>
+          <button type="button" class="btn-card-action" id="cardBtnNR">Mở Bảng viết bài giảng →</button>
+        </div>
+
+        <!-- Module Bento 3: Khảo sát đồ thị hàm số -->
+        <div class="bento-card">
+          <div class="bento-icon-wrap teal" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <span class="card-category">Giải tích 12 &amp; Khảo sát hàm số</span>
+          <h3 class="card-title">Đồ thị giải tích, Bảng biến thiên &amp; Biện luận tham số m</h3>
           <p class="card-desc">
             Vẽ chính xác đồ thị đa thức bậc ba, hàm trùng phương, phân thức bậc 1/1, phân thức bậc 2/1 với tiệm cận đứng, tiệm cận xiên, tìm cực trị, tâm đối xứng và biện luận số nghiệm với đường thẳng y = m.
           </p>
           <ul class="card-feature-list">
             <li>Khảo sát chi tiết hàm số, xuất Bảng biến thiên (BBT) 3 dòng chuẩn sách giáo khoa GDPT 2018</li>
             <li>Biện luận tương giao đồ thị và số nghiệm phương trình theo tham số m với thanh trượt trực quan</li>
-            <li>Dựng hình học phẳng: tam giác, đường thẳng Euler, trực tâm H, trọng tâm G, tâm ngoại tiếp O, đường tròn nội tiếp</li>
-            <li>Tính toán giải tích chính xác các điểm cực đại, cực tiểu, tiếp tuyến, diện tích hình phẳng giới hạn giữa hai đồ thị</li>
-          </ul>
-          <button type="button" class="btn-card-action primary" id="cardBtnStudio">Mở Khảo sát Đồ thị &amp; Hình học Oxy →</button>
-        </div>
-
-        <!-- Module Bento 2: Bảng viết bài giảng & hình khai triển 3D -->
-        <div class="bento-card normal">
-          <div class="bento-icon-wrap blue" aria-hidden="true">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          </div>
-          <span class="card-category">Viết tay tự do &amp; hình học không gian</span>
-          <h3 class="card-title">Bảng viết bài giảng &amp; hình khai triển khối 3D</h3>
-          <p class="card-desc">
-            Không gian trang viết tay tự do dành cho giáo viên và học sinh (có chống tỳ tay khi dùng bút cảm ứng trên iPad), tích hợp dựng hình khai triển khối chóp, lăng trụ, hình nón, hình trụ và máy tính khoa học.
-          </p>
-          <ul class="card-feature-list">
-            <li>Tách biệt hoàn toàn với khung dựng hình tọa độ để thao tác viết tay không bị xung đột</li>
-            <li>Trải phẳng (hình khai triển) khối đa diện 3D ra mặt phẳng 2D để tính diện tích xung quanh, toàn phần</li>
-            <li>Tích hợp bảng biến thiên, máy tính khoa học và xuất trang bài giảng ra PDF/PNG</li>
-          </ul>
-          <button type="button" class="btn-card-action" id="cardBtnNR">Mở Bảng viết bài giảng →</button>
-        </div>
-
-        <!-- Module Bento 3: Khảo sát đồ thị hàm số -->
-        <div class="bento-card half">
-          <div class="bento-icon-wrap teal" aria-hidden="true">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          </div>
-          <span class="card-category">Giải tích 12 &amp; khảo sát hàm số</span>
-          <h3 class="card-title">Đồ thị giải tích &amp; khảo sát hàm số</h3>
-          <p class="card-desc">
-            Vẽ đồ thị các hàm số thường gặp trong chương trình THPT: hàm bậc ba, hàm phân thức hữu tỉ bậc nhất/bậc nhất, bậc hai/bậc nhất và hàm lượng giác. Hiển thị rõ cực trị, tâm đối xứng và đường tiệm cận.
-          </p>
-          <ul class="card-feature-list">
-            <li>Nhập biểu thức hàm số: y = x³ − 3x + 1, y = (2x − 1)/(x + 1), y = (x² − x + 1)/(x − 1)</li>
-            <li>Hiển thị trực quan tiệm cận đứng, tiệm cận ngang và tiệm cận xiên</li>
-            <li>Vẽ mặt cong hai biến z = f(x, y) trong không gian 3 chiều</li>
+            <li>Tính toán giải tích chính xác các điểm cực đại, cực tiểu, tiếp tuyến, diện tích hình phẳng</li>
           </ul>
           <button type="button" class="btn-card-action" id="cardBtnGraph">Mở công cụ vẽ đồ thị →</button>
         </div>
 
         <!-- Module Bento 4: Bảng công thức & Tài liệu 24 chuyên đề -->
-        <div class="bento-card half">
+        <div class="bento-card">
           <div class="bento-icon-wrap green" aria-hidden="true">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           </div>
-          <span class="card-category">Tra cứu công thức &amp; ôn tập</span>
-          <h3 class="card-title">Bảng công thức &amp; Tài liệu 24 chuyên đề</h3>
+          <span class="card-category">Tra cứu công thức &amp; Ôn tập</span>
+          <h3 class="card-title">Bảng công thức &amp; Tài liệu 24 chuyên đề Toán THPT</h3>
           <p class="card-desc">
             Tách biệt rõ Bảng công thức (hỗ trợ tìm kiếm, sao chép, tự thêm mới) và Tài liệu 24 chuyên đề (tóm tắt định nghĩa, định lý, phương pháp giải, sai lầm thường gặp và câu hỏi tự luyện có lời giải).
           </p>
           <ul class="card-feature-list">
             <li>24 chuyên đề lý thuyết hình học phẳng, khối đa diện, đồ thị và tọa độ Oxyz</li>
             <li>Nút "Đưa hình vào khung vẽ" liên kết trực tiếp từ lý thuyết sang mô hình tương tác</li>
-            <li>Cho phép giáo viên chỉnh sửa nội dung chuyên đề và xuất tệp .json lưu trữ</li>
+            <li>Hiển thị công thức toán học sắc nét chuẩn KaTeX, sao chép mã LaTeX nhanh</li>
           </ul>
           <button type="button" class="btn-card-action" id="cardBtnKnowledge">Mở Tài liệu 24 chuyên đề →</button>
         </div>
@@ -465,7 +497,7 @@
         </span>
         <div class="pwa-text">
           <h3>Hỗ trợ cài đặt ứng dụng web (PWA) và dùng ngoại tuyến</h3>
-          <p>Sau lần tải đầu tiên, trình duyệt lưu bộ nhớ đệm (Service Worker) giúp bạn mở công cụ vẽ hình ngay cả khi mất kết nối mạng. Lưu ý: dữ liệu được lưu trong trình duyệt của thiết bị hiện tại, hãy xuất tệp <code>.json</code> định kỳ để sao lưu an toàn.</p>
+          <p>Sau lần tải đầu tiên, trình duyệt lưu bộ nhớ đệm (Service Worker) giúp bạn mở công cụ vẽ hình ngay cả khi mất kết nối mạng. Dữ liệu bài giảng được lưu trên thiết bị của bạn.</p>
         </div>
         <button type="button" class="btn-pwa-install" id="homeInstallPwaBtn">
           Cài đặt ứng dụng
@@ -473,27 +505,28 @@
       </div>
     </section>
 
-    <!-- Clean Signature Footer -->
+    <!-- Clean Signature Footer (PMATH EDUCATION) -->
     <footer class="home-signature-footer">
       <div class="home-footer-inner">
         <div class="home-footer-brand">
           <img src="./favicon.png" alt="" class="footer-logo" />
-          <span><strong>PMATH EDUCATION TOOLS</strong> • <em>Công cụ trực quan hóa hình học &amp; giải tích THPT</em></span>
+          <span><strong>PMATH EDUCATION TOOLS</strong> • <em>Học Toán hiểu gốc, tự ôn vững vàng.</em></span>
         </div>
         <div class="home-footer-links">
-          <a href="./privacy.html" style="color:var(--text-muted); text-decoration:underline;">Chính sách quyền riêng tư</a> •
-          <a href="./terms.html" style="color:var(--text-muted); text-decoration:underline;">Điều khoản dịch vụ</a> •
-          <a href="https://github.com/phongdaohuy0905CSE/pmath-education-tools" target="_blank" rel="noopener noreferrer" style="color:var(--text-muted); text-decoration:underline;">Mã nguồn mở GitHub</a> •
-          <span>Hiển thị công thức bằng KaTeX</span>
+          <a href="https://pmath-website.vercel.app/" target="_blank" rel="noopener noreferrer" style="color:var(--text-muted); text-decoration:underline;">PMATH Website</a> •
+          <a href="https://pmath-website.vercel.app/tai-lieu" target="_blank" rel="noopener noreferrer" style="color:var(--text-muted); text-decoration:underline;">Kho tài liệu</a> •
+          <a href="https://pmath-website.vercel.app/#khoa-hoc" target="_blank" rel="noopener noreferrer" style="color:var(--text-muted); text-decoration:underline;">Khóa học gia sư</a> •
+          <a href="./privacy.html" style="color:var(--text-muted); text-decoration:underline;">Chính sách</a> •
+          <a href="./terms.html" style="color:var(--text-muted); text-decoration:underline;">Điều khoản</a> •
+          <a href="https://github.com/phongdaohuy0905CSE/pmath-education-tools" target="_blank" rel="noopener noreferrer" style="color:var(--text-muted); text-decoration:underline;">GitHub</a>
         </div>
       </div>
-      <div style="max-width:1200px; margin:0.45rem auto 0; padding-top:0.45rem; border-top:1px dashed var(--border-color); font-size:0.74rem; color:var(--text-muted); text-align:center;">
+      <div style="max-width:1160px; margin:0.8rem auto 0; padding-top:0.6rem; border-top:1px dashed var(--border-color); font-size:0.75rem; color:var(--text-muted); text-align:center;">
         Lưu ý pháp lý: Máy tính khoa học tích hợp trong bảng viết bài giảng là trình mô phỏng phục vụ học tập độc lập, không liên kết và không được tài trợ bởi Casio Computer Co., Ltd.
       </div>
     </footer>
   </div>
 
-  <!-- ===================================================================== -->
   <!-- VIEW 1: BẢNG VIẾT BÀI GIẢNG (VIẾT TAY TỰ DO, KHAI TRIỂN 3D, MÁY TÍNH) -->
   <!-- ===================================================================== -->
   <div id="root" class="pmath-board-root" style="display: none;"></div>

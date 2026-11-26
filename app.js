@@ -7617,6 +7617,7 @@ function initTrueFullscreenEngine() {
     }
 
     setTimeout(() => {
+      repositionFullscreenDropdowns();
       window.dispatchEvent(new Event("resize"));
     }, 60);
   }
@@ -7659,6 +7660,81 @@ function initTrueFullscreenEngine() {
     dock.querySelectorAll(".fs-dock-btn").forEach((b) => b.classList.remove("active"));
   }
 
+  // =========================================================================
+  // FIX LAYER VÀ VỊ TRÍ DROPDOWN MENU KHI Ở CHẾ ĐỘ FULLSCREEN
+  // Đảm bảo Bảng pha màu, Bảng gợi ý hình vẽ, Tùy chọn bút/tẩy không bị kẹt dưới canvas
+  // =========================================================================
+  function repositionFullscreenDropdowns() {
+    if (!document.body.classList.contains("true-fullscreen")) return;
+
+    const dropdowns = document.querySelectorAll("#root .dropdown-menu, #root .page-menu");
+    if (!dropdowns.length) return;
+
+    const isLeft = document.body.classList.contains("nr-dock-left");
+
+    dropdowns.forEach((menu) => {
+      menu.style.setProperty("z-index", "100000", "important");
+      menu.style.setProperty("position", "fixed", "important");
+
+      // Định vị thoát khỏi chiều rộng 90px của toolbar dọc
+      if (isLeft) {
+        menu.style.setProperty("left", "94px", "important");
+        menu.style.setProperty("right", "auto", "important");
+      } else {
+        menu.style.setProperty("right", "94px", "important");
+        menu.style.setProperty("left", "auto", "important");
+      }
+
+      // Giới hạn chiều cao & cho phép cuộn nội dung mượt mà
+      const maxH = Math.max(220, window.innerHeight - 36);
+      menu.style.setProperty("max-height", maxH + "px", "important");
+      menu.style.setProperty("overflow-y", "auto", "important");
+
+      // Kẹp tọa độ top để không bao giờ bị tràn ra đáy màn hình
+      const menuRect = menu.getBoundingClientRect();
+      const menuH = menuRect.height || menu.offsetHeight || 380;
+      const currentTop = menuRect.top;
+      if (currentTop + menuH > window.innerHeight - 16) {
+        const clampedTop = Math.max(16, window.innerHeight - menuH - 16);
+        menu.style.setProperty("top", clampedTop + "px", "important");
+      } else if (currentTop < 16) {
+        menu.style.setProperty("top", "16px", "important");
+      }
+    });
+  }
+
+  // Observer tự động cập nhật ngay khi React render bất kỳ dropdown hay popup nào
+  const rootElement = document.getElementById("root");
+  if (rootElement) {
+    const observer = new MutationObserver((mutations) => {
+      if (!document.body.classList.contains("true-fullscreen")) return;
+      for (let i = 0; i < mutations.length; i++) {
+        if (mutations[i].addedNodes.length > 0 || mutations[i].type === "attributes") {
+          repositionFullscreenDropdowns();
+          break;
+        }
+      }
+    });
+    observer.observe(rootElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["style", "class"],
+    });
+  }
+
+  // Tương tác trực tiếp trên thanh công cụ vẽ: cập nhật vị trí dropdown lập tức
+  document.addEventListener("pointerdown", (e) => {
+    if (!document.body.classList.contains("true-fullscreen")) return;
+    if (e.target && e.target.closest && e.target.closest("#root header.toolbar")) {
+      requestAnimationFrame(() => {
+        repositionFullscreenDropdowns();
+        setTimeout(repositionFullscreenDropdowns, 40);
+        setTimeout(repositionFullscreenDropdowns, 120);
+      });
+    }
+  }, true);
+
   function enterTrueFullscreen() {
     document.body.classList.add("true-fullscreen");
     document.documentElement.classList.add("true-fullscreen");
@@ -7675,9 +7751,13 @@ function initTrueFullscreenEngine() {
     // Tự động chèn nút đổi bên vào thanh công cụ vẽ nếu có
     injectToolbarSideButton();
 
+    // Định vị lại ngay các dropdown đang mở (nếu có)
+    repositionFullscreenDropdowns();
+
     // Báo sự kiện resize để canvas tự co giãn phủ kín 100% màn hình
     setTimeout(() => {
       injectToolbarSideButton();
+      repositionFullscreenDropdowns();
       window.dispatchEvent(new Event("resize"));
       if (typeof drawScene === "function") drawScene();
     }, 60);
